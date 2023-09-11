@@ -1,6 +1,6 @@
 import Image from "next/image";
 import SatuPassword from "@public/SatuPassword.svg";
-import LoginForm from "./components/login/login-form";
+import LoginForm from "@components/login/login-form";
 
 export default function Login() {
   return (
