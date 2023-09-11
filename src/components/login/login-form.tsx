@@ -31,12 +31,18 @@ export default function LoginForm() {
     UserLogin(email, password);
   };
 
+  const navigateToRegister = () => {
+    router.push("/register");
+  };
+
   return (
     <form
       className="flex flex-col w-2/3 max-w-md gap-2 p-8 mx-auto "
       onSubmit={handleSubmit}
     >
-      <p className="mb-3 font-normal text-center text-lg pb-5 text-gray-500">Log into your Account</p>
+      <p className="mb-3 font-normal text-center text-lg pb-5 text-gray-500">
+        Log into your Account
+      </p>
       <p className="font-semibold">Email</p>
       <input
         id="email"
@@ -74,6 +80,16 @@ export default function LoginForm() {
       >
         Log In
       </button>
+      <p className="mt-3 font-bold text-center text-sm pb-5 text-black">
+        New to SatuPassword?{" "}
+        <span
+          className=" text-blue-600 font-bold cursor-pointer"
+          onClick={navigateToRegister}
+        >
+          {" "}
+          Sign Up{" "}
+        </span>
+      </p>
       {showModal && (
         <>
           <div className="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto outline-none focus:outline-none">
