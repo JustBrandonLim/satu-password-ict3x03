@@ -58,7 +58,7 @@ export default function Navbar() {
   }, []);
 
   return (
-    <nav className="px-20 bg-[#0F172A]">
+    <nav className="px-20 bg-slate-900">
       <div className="mx-auto sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center space-x-4">
@@ -72,7 +72,7 @@ export default function Navbar() {
                     priority
                     className="m-6"
                   />
-                  <p className="text-xl font-bold text-white">
+                  <p className="text-xl font-bold text-white" style={{fontFamily: 'Inika, sans-serif'}}>
                     SatuPassword
                   </p>
                 </div>
