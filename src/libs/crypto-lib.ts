@@ -1,119 +1,97 @@
 import { pbkdf2Sync, randomBytes, createCipheriv, createDecipheriv } from "crypto";
+import { EncodeHex, DecodeHex, EncodeUTF8 } from "@libs/enc-dec-lib";
 
-/** @author JustBrandonLim */
+/**
+ * @author JustBrandonLim
+ *
+ * @param {string} password The password to hash
+ * @returns {[string, string]} The hashed password with a length of 256 bits and its salt
+ */
 export function HashPassword(password: string): [string, string] {
-  const salt = randomBytes(32).toString("hex");
+  const salt = randomBytes(32);
 
-  const hashedPassword = pbkdf2Sync(password, salt, 10000, 32, "sha512").toString("hex");
+  const hashedPassword = pbkdf2Sync(password, salt, 10000, 32, "sha512");
 
-  return [hashedPassword, salt];
+  return [EncodeHex(hashedPassword), EncodeHex(salt)];
 }
 
-/** @author JustBrandonLim */
-export function VerifyPassword(password: string, salt: string, hashedPassword: string): boolean {
-  return pbkdf2Sync(password, salt, 30000, 32, "SHA512").toString("hex") === hashedPassword;
+/**
+ * @author JustBrandonLim
+ *
+ * @param {string} password The password to verify
+ * @param {string} hashedPasswordSalt The salt of the hashed password
+ * @param {string} hashedPassword The hashed password to verify against
+ * @returns {boolean} Whether the password is verified
+ */
+export function VerifyPassword(password: string, hashedPasswordSalt: string, hashedPassword: string): boolean {
+  return EncodeHex(pbkdf2Sync(password, hashedPasswordSalt, 30000, 32, "SHA512")) === hashedPassword;
 }
 
-/** @author JustBrandonLim */
-export function GenerateWrappingKey(password: string, salt: string): Buffer {
-  return pbkdf2Sync(password, salt, 15000, 32, "SHA512");
+/**
+ * @author JustBrandonLim
+ *
+ * @param {string} password The password to generate the wrapping key from
+ * @returns {[string, string]} The generated wrapping key with a length of 256 bits and its salt
+ */
+export function GenerateWrappingKey(password: string): [string, string] {
+  const salt = randomBytes(32);
+
+  const wrappingKey = pbkdf2Sync(password, salt, 15000, 32, "sha512");
+
+  return [EncodeHex(wrappingKey), EncodeHex(salt)];
+}
+
+/**
+ * @author JustBrandonLim
+ *
+ * @returns {[string]} A generated random key with a length of 256 bits
+ */
+export function GenerateRandomKey(): string {
+  return EncodeHex(randomBytes(32));
 }
 
 /**
  * @author S0meDev99
- * 
- * @param encryptionKey 256 bits (32 bytes)
- * @param plaintext 
- * @returns ciphertext
+ * @author JustBrandonLim
+ *
+ * @param {string} string The string to encrypt
+ * @param {string | Buffer} key The key to use for encryption
+ * @returns {string} The encrypted string
  */
-export function GenerateStoredCiphertext(encryptionKey: Buffer, plaintext: string): string {
-  const [encryptedContent, iv, authenticationTag] = _Encrypt(encryptionKey, plaintext);
+export function EncryptAES(string: string, key: string | Buffer): string {
+  const iv = randomBytes(12);
 
-  const storedCiphertext = ConvertToBase64(encryptedContent) + "." + ConvertToBase64(iv) + "." + ConvertToBase64(authenticationTag);
-  return storedCiphertext;
-}
+  const cipher = createCipheriv("aes-256-gcm", typeof key === "string" ? DecodeHex(key as string) : key, iv);
 
-/**
- * @author S0meDev99
- * 
- * @param decryptionKey 256 bits (32 bytes)
- * @param storedCiphertext 
- * @returns plaintext or null
- */
-export function ParseStoredCiphertext(decryptionKey: Buffer, storedCiphertext: string): string | null {
-  const components = storedCiphertext.split('.');
-  if (components.length === 3) {
-    const encryptedContent = ConvertFromBase64(components[0]);
-    const iv = ConvertFromBase64(components[1]);
-    const authenticationTag = ConvertFromBase64(components[2]);
+  let encryptedData = cipher.update(string, "utf-8");
+  encryptedData = Buffer.concat([encryptedData, cipher.final()]);
 
-    const decryptedData = _Decrypt(decryptionKey, encryptedContent, iv, authenticationTag);
-
-    return decryptedData;
-  } else {
-    console.error('Invalid storedCiphertext format. Expected three components separated by periods.');
-
-    return null;
-  }
-}
-
-/**
- * @author S0meDev99
- * 
- * @param encryptionKey 256 bits (32 bytes)
- * @param iv 96 bits (12 bytes)
- * @param data plaintext
- * @returns ciphertext and authentication tag
- */
-function _Encrypt(encryptionKey: Buffer, data: string): [Buffer, Buffer, Buffer] {
-  const iv = _GenerateAESIv();
-  
-  const cipher = createCipheriv('aes-256-gcm', encryptionKey, iv);
-
-  let encryptedData = cipher.update(data, "utf-8");
-  encryptedData = Buffer.concat([encryptedData, cipher.final()]);;
-
-  // Get the authentication tag
   const authenticationTag = cipher.getAuthTag();
 
-  return [encryptedData, iv, authenticationTag];
+  return EncodeHex(iv).concat(".", EncodeHex(encryptedData), ".", EncodeHex(authenticationTag));
 }
 
 /**
  * @author S0meDev99
- * 
- * @param decryptionKey 256 bits (32 bytes)
- * @param iv 96 bits (12 bytes)
- * @param encryptedData ciphertext
- * @param authenticationTag 128 bits (16 bytes)
- * @returns plaintext
+ * @author JustBrandonLim
+ *
+ * @param {string} string The data to decrypt
+ * @param {string | Buffer} key The key to use for decryption
+ * @returns {string} The decoded string
  */
-function _Decrypt(decryptionKey: Buffer, encryptedData: Buffer, iv: Buffer, authenticationTag: Buffer): string {
-  const decipher = createDecipheriv('aes-256-gcm', decryptionKey, iv);
+export function DecryptAES(string: string, key: string | Buffer): string {
+  const data = string.split(".");
+
+  const iv = DecodeHex(data[0]);
+  const encryptedData = DecodeHex(data[1]);
+  const authenticationTag = DecodeHex(data[2]);
+
+  const decipher = createDecipheriv("aes-256-gcm", typeof key === "string" ? DecodeHex(key as string) : key, iv);
+
   decipher.setAuthTag(authenticationTag);
 
   let decryptedData = decipher.update(encryptedData);
-  decryptedData = Buffer.concat([decryptedData, decipher.final()]);;
+  decryptedData = Buffer.concat([decryptedData, decipher.final()]);
 
-  return decryptedData.toString('utf-8');
-}
-
-/** @author JustBrandonLim */
-export function GenerateKey256Bit(): Buffer {
-  return randomBytes(32);
-}
-
-/** @author S0meDev99 */
-function _GenerateAESIv(): Buffer {
-  return randomBytes(12);
-}
-
-/** @author S0meDev99 */
-export function ConvertToBase64(plainBuffer: Buffer): string {
-  return plainBuffer.toString('base64');
-}
-
-/** @author S0meDev99 */
-export function ConvertFromBase64(encodedString: string): Buffer {
-  return Buffer.from(encodedString, 'base64');;
+  return EncodeUTF8(decryptedData);
 }
