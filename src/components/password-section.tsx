@@ -41,8 +41,8 @@ import { Button } from "@components/ui/button"
               control={control}
               name="confirmPassword"
               render={({ field }) => (
-              <FormItem>
-                <FormLabel>Password</FormLabel>
+              <FormItem className="mt-4">
+                <FormLabel>Confirm Password</FormLabel>
                 <FormControl>
                   <Input placeholder="Re-enter Password" type="password" {...field} />
                 </FormControl>
