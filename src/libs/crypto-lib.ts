@@ -66,7 +66,7 @@ export function ParseStoredCiphertext(decryptionKey: Buffer, storedCiphertext: s
  * @returns ciphertext and authentication tag
  */
 function _Encrypt(encryptionKey: Buffer, data: string): [Buffer, Buffer, Buffer] {
-  const iv = _GenerateRandomIv();
+  const iv = _GenerateAESIv();
   
   const cipher = createCipheriv('aes-256-gcm', encryptionKey, iv);
 
@@ -88,7 +88,7 @@ function _Encrypt(encryptionKey: Buffer, data: string): [Buffer, Buffer, Buffer]
  * @param authenticationTag 128 bits (16 bytes)
  * @returns plaintext
  */
-export function _Decrypt(decryptionKey: Buffer, encryptedData: Buffer, iv: Buffer, authenticationTag: Buffer): string {
+function _Decrypt(decryptionKey: Buffer, encryptedData: Buffer, iv: Buffer, authenticationTag: Buffer): string {
   const decipher = createDecipheriv('aes-256-gcm', decryptionKey, iv);
   decipher.setAuthTag(authenticationTag);
 
@@ -99,12 +99,12 @@ export function _Decrypt(decryptionKey: Buffer, encryptedData: Buffer, iv: Buffe
 }
 
 /** @author JustBrandonLim */
-export function GenerateRandomKey(): Buffer {
+export function GenerateKey256Bit(): Buffer {
   return randomBytes(32);
 }
 
 /** @author S0meDev99 */
-function _GenerateRandomIv(): Buffer {
+function _GenerateAESIv(): Buffer {
   return randomBytes(12);
 }
 
