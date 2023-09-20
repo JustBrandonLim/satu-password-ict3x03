@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import  PasswordInput  from "@/components/password-input"
 
 export default function RegisterForm() {
   const router = useRouter();
@@ -51,13 +52,14 @@ export default function RegisterForm() {
         onChange={(e) => setEmail(e.target.value)}
       />
       <p className="font-semibold">Password</p>
-      <input
+      {/* <input
         id="password"
         type="password"
         placeholder="Password"
         className="p-2 rounded-sm ring-2 ring-gray-300"
         onChange={(e) => setPassword(e.target.value)}
-      />
+      /> */}
+      <PasswordInput/>
       <p className="font-semibold">Confirm Password</p>
       <input
         id="confirmPassword"
@@ -72,7 +74,7 @@ export default function RegisterForm() {
       >
         Sign In
       </button>
-      <p className="mt-3 font-bold text-center text-sm pb-5 text-black">
+      <p className="mt-3 font-medium text-center text-sm pb-5 text-black">
         Already have an account?{" "}
         <span className=" text-blue-600 font-bold cursor-pointer" onClick={navigateToLogin}>
           {" "}
