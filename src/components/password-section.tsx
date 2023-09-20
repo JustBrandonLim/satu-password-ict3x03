@@ -9,14 +9,24 @@
   } from "@/components/ui/form"
 import { Progress } from "@components/ui/progress"
 import { Button } from "@components/ui/button"
+import zxcvbn from 'zxcvbn';
 
-  export interface PasswordSectionProps
+  export default interface PasswordSectionProps
     extends React.InputHTMLAttributes<HTMLInputElement> {
       control: any
     }
 
     const PasswordSection = React.forwardRef<HTMLInputElement, PasswordSectionProps>(
       ({ className, type, control, ...props}, ref) => {
+        //Password Strength Logic
+        const [passwordStrength, setPasswordStrength] = React.useState<number>(0);
+
+        const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+          const password = e.target.value;
+          const result = zxcvbn(password);
+          const strength = result.score; // zxcvbn provides a score from 0 to 4
+          setPasswordStrength(strength);
+        };
         return (
           <div>
             <FormField
@@ -26,7 +36,7 @@ import { Button } from "@components/ui/button"
               <FormItem>
                 <FormLabel>Password</FormLabel>
                 <FormControl>
-                  <Input placeholder="Enter Password" type="password" {...field} />
+                  <Input placeholder="Enter Password" type="password" {...field} onChange={handlePasswordChange}/>
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -34,7 +44,7 @@ import { Button } from "@components/ui/button"
             />
             <div className="flex justify-center items-center space-x-4 my-2">
               <label className="text-sm text-character-secondary">Strength</label>
-              <Progress value={63} className="h-2"/>
+              <Progress value={passwordStrength * 25} className="h-2" />
             </div>
             <Button type="button" variant={'secondary'} className="w-full">Genereate Password</Button>
             <FormField
