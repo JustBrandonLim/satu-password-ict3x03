@@ -19,7 +19,6 @@ model Login {
 model User {
     id          Int         @default(autoincrement()) @unique
     name        String
-    sessionKey  String
     masterKey   String
 
     login       Login       @relation(fields: [loginId], references: [id])
