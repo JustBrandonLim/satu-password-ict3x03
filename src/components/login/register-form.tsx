@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import  PasswordInput  from "@/components/password-input"
 
 export default function RegisterForm() {
   const router = useRouter();

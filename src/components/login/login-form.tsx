@@ -21,7 +21,6 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -29,7 +28,7 @@ import {
 
 // Define Schemas that are used to call to api
 const LoginFormSchema = z.object({
-  username: z.string().min(1, {
+  email: z.string().min(1, {
     message: "Email is required",
   }).email('Invalid Email'),
   password: z.string().min(1, {
@@ -47,7 +46,7 @@ const RecoverFormSchema = z.object({
 })
 
 // The actual component
-function InputForm() {
+function LoginForm() {
   const router = useRouter();
 
   // For Login Form
@@ -59,13 +58,13 @@ function InputForm() {
     console.log("Login Form Submitted")
     console.log(data)
     console.log(typeof data)
-    let username = data.username
+    let email = data.email
     let password = data.password
 
     const response = await fetch(`/api/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, password, type: "administrator" }),
+      body: JSON.stringify({ email, password, type: "administrator" }),
     });
     const json = await response.json();
 
@@ -93,7 +92,7 @@ function InputForm() {
       <form onSubmit={loginForm.handleSubmit(onLogin)} className="w-2/3 space-y-6">
         <FormField
           control={loginForm.control}
-          name="username"
+          name="email"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Username</FormLabel>
@@ -181,4 +180,4 @@ function InputForm() {
     </Form>
   )
 }
-export default InputForm;
+export default LoginForm;
