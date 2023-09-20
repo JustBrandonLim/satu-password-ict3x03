@@ -43,7 +43,7 @@ export default function RegisterForm() {
       <p className="mb-3 font-normal text-center text-lg pb-5 text-gray-500">
         Get started with SatuPassword
       </p>
-      <p className="font-semibold">Email</p>
+      <label className="font-semibold">Email</label>
       <input
         id="email"
         type="email"
@@ -51,6 +51,7 @@ export default function RegisterForm() {
         className="p-2 rounded-sm ring-2 ring-gray-300"
         onChange={(e) => setEmail(e.target.value)}
       />
+      <label className="font-semibold">Password</label>
       {/* <input
         id="password"
         type="password"
@@ -58,8 +59,8 @@ export default function RegisterForm() {
         className="p-2 rounded-sm ring-2 ring-gray-300"
         onChange={(e) => setPassword(e.target.value)}
       /> */}
-      {/* <PasswordInput onChange={(e) => setConfirmPassword(e.target.value)}/> */}
-      <p className="font-semibold">Confirm Password</p>
+      <PasswordInput/>
+      <label className="font-semibold">Confirm Password</label>
       <input
         id="confirmPassword"
         type="password"
