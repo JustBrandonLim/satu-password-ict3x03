@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 
-import { HashPassword, GenerateWrappingKey, GenerateRandomKey, GenerateStoredCiphertext, ParseStoredCiphertext } from "../../../libs/crypto-lib";
+import { HashPassword, GenerateWrappingKey, GenerateKey256Bit, GenerateStoredCiphertext, ParseStoredCiphertext } from "../../../libs/crypto-lib";
 
 interface RegisterData {
   email: string;
@@ -17,7 +17,7 @@ export async function POST(nextRequest: NextRequest) {
 
     const wrappingKey = GenerateWrappingKey(registerData.password, salt); //used to encrypt/decrypt masterKey
 
-    const masterKey = GenerateRandomKey().toString('hex'); //used to encrypt/decrypt passwords and notes
+    const masterKey = GenerateKey256Bit().toString('hex'); //used to encrypt/decrypt passwords and notes
 
     console.log("\n\nmasterKey");
     console.log(masterKey);
