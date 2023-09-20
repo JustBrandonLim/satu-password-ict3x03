@@ -1,9 +1,6 @@
 import './globals.css'
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
-import Footer from "@/components/page-footer";
-
-const inter = Inter({ subsets: ['latin'] })
+import { ThemeProvider } from "@/components/theme-provider"
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -17,7 +14,16 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className='min-h-screen'>{children}</body>
+      <body className='min-h-screen light'>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="light"
+            enableSystem
+            disableTransitionOnChange
+          >
+            {children}
+          </ThemeProvider>
+        </body>
     </html>
   )
 }
