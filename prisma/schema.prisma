@@ -10,8 +10,8 @@ datasource db {
 model Login {
     id          Int         @id @default(autoincrement()) @unique
     email       String      @unique
-    password    String
-    salt        String
+    password    String      // hashed password
+    salt        String      // salt of the hashed password
     token       String
 
     User        User?
@@ -20,7 +20,8 @@ model Login {
 model User {
     id          Int         @default(autoincrement()) @unique
     name        String
-    masterKey   String
+    key         String      // key to encrypt/decrypt passwords and notes, encrypted/decrypted with wrapping key
+    salt        String      // salt of the wrapping key
 
     login       Login       @relation(fields: [loginId], references: [id])
     loginId     Int         @unique

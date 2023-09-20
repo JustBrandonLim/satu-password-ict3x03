@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 
-import { HashPassword, GenerateWrappingKey, GenerateKey256Bit, GenerateStoredCiphertext, ParseStoredCiphertext } from "../../../libs/crypto-lib";
+import { HashPassword, GenerateWrappingKey, GenerateRandomKey, EncryptAES, DecryptAES } from "@libs/crypto-lib";
 
 interface RegisterData {
   email: string;
@@ -13,50 +13,47 @@ export async function POST(nextRequest: NextRequest) {
   try {
     const registerData: RegisterData = await nextRequest.json();
 
-    const [hashedPassword, salt] = HashPassword(registerData.password);
+    const [hashedPassword, hashedPasswordSalt] = HashPassword(registerData.password);
 
-    const wrappingKey = GenerateWrappingKey(registerData.password, salt); //used to encrypt/decrypt masterKey
+    const [generatedWrappingKey, generatedWrappingKeySalt] = GenerateWrappingKey(registerData.password);
 
-    const masterKey = GenerateKey256Bit().toString('hex'); //used to encrypt/decrypt passwords and notes
+    const key = GenerateRandomKey();
 
-    console.log("\n\nmasterKey");
-    console.log(masterKey);
+    const encryptedKey = EncryptAES(key, generatedWrappingKey);
 
-    const storedMasterKey = GenerateStoredCiphertext(wrappingKey, masterKey);
+    /*const key = GenerateRandomKey();
+    console.log("key: " + key);
 
-    console.log("\n\nstoredMasterKey");
-    console.log(storedMasterKey);
+    const encryptedKey = EncryptAES(key, generatedWrappingKey);
+    console.log("encrypted key: " + encryptedKey);
 
-    const decryptedMasterKey = ParseStoredCiphertext(wrappingKey, storedMasterKey);
+    const decryptedKey = DecryptAES(encryptedKey, generatedWrappingKey);
+    console.log("decrypted key: " + decryptedKey);*/
 
-    console.log("\n\ndecryptedMasterKey");
-    console.log(decryptedMasterKey);
-
-
-    /*
     const prisma = new PrismaClient();
 
     await prisma.login
       .create({
         data: {
           email: registerData.email,
-          password: await hash(registerData.password, await genSalt(10)),
-          token: AES.encrypt(tokenSecret, process.env.SECRET_KEY!).toString(),
+          password: hashedPassword,
+          salt: hashedPasswordSalt,
+          token: "test",
         },
       })
       .then(async (loginData) => {
         await prisma.user.create({
           data: {
             name: registerData.name,
-            masterKey: AES.encrypt("", process.env.SECRET_KEY!).toString(),
+            key: encryptedKey,
+            salt: generatedWrappingKeySalt,
             loginId: loginData.id,
           },
         });
-      });*/
+      });
 
-    return NextResponse.json({ message: "TEST" });
-  } catch (e) {
-    console.log(e);
+    return NextResponse.json({ token: "" });
+  } catch {
     return NextResponse.json({ message: "Something went wrong!" });
   }
 }
