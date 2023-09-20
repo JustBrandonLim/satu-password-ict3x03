@@ -43,7 +43,7 @@ export default function LoginForm() {
       <p className="mb-3 font-normal text-center text-lg pb-5 text-gray-500">
         Log into your Account
       </p>
-      <p className="font-semibold">Email</p>
+      <label className="font-semibold">Email</label>
       <input
         id="email"
         type="email"
@@ -51,7 +51,7 @@ export default function LoginForm() {
         className="p-2 rounded-sm ring-2 ring-gray-300"
         onChange={(e) => setEmail(e.target.value)}
       />
-      <p className="font-semibold">Password</p>
+      <label className="font-semibold">Password</label>
       <input
         id="password"
         type="password"
@@ -80,7 +80,7 @@ export default function LoginForm() {
       >
         Log In
       </button>
-      <p className="mt-3 font-medium text-center text-sm pb-5 text-black">
+      <p className="mt-3 font-bold text-center text-sm pb-5 text-black">
         New to SatuPassword?{" "}
         <span
           className=" text-blue-600 font-bold cursor-pointer"
