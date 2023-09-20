@@ -11,6 +11,7 @@ model Login {
     id          Int         @id @default(autoincrement()) @unique
     email       String      @unique
     password    String
+    salt        String
     token       String
 
     User        User?

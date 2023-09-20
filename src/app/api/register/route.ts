@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import * as bcrypt from "bcrypt-ts";
-import { PrismaClient } from "@prisma/client/edge";
+import { PrismaClient } from "@prisma/client";
 
-export const runtime = "edge";
+import { HashPassword, GenerateWrappingKey, GenerateRandomKey } from "../../../libs/crypto-lib";
 
 interface RegisterData {
   email: string;
@@ -14,28 +13,36 @@ export async function POST(nextRequest: NextRequest) {
   try {
     const registerData: RegisterData = await nextRequest.json();
 
-    const passwordSalt = await bcrypt.genSalt(10);
-    const passwordHash = await bcrypt.hash(registerData.password, passwordSalt);
+    const [hashedPassword, salt] = HashPassword(registerData.password);
 
+    const wrappingKey = GenerateWrappingKey(registerData.password, salt); //used to encrypt/decrypt masterKey
+
+    const masterKey = GenerateRandomKey(); //used to encrypt/decrypt passwords and notes
+
+    /*
     const prisma = new PrismaClient();
 
-    const loginData = await prisma.login.create({
-      data: {
-        email: registerData.email,
-        password: passwordHash,
-        token: "encryptedToken",
-      },
-    });
+    await prisma.login
+      .create({
+        data: {
+          email: registerData.email,
+          password: await hash(registerData.password, await genSalt(10)),
+          token: AES.encrypt(tokenSecret, process.env.SECRET_KEY!).toString(),
+        },
+      })
+      .then(async (loginData) => {
+        await prisma.user.create({
+          data: {
+            name: registerData.name,
+            masterKey: AES.encrypt("", process.env.SECRET_KEY!).toString(),
+            loginId: loginData.id,
+          },
+        });
+      });*/
 
-    const userData = await prisma.user.create({
-      data: {
-        name: registerData.name,
-        sessionKey: "encryptedSessionKey",
-        masterKey: "PBKDF2",
-        loginId: loginData.id,
-      },
-    });
-  } catch {
+    return NextResponse.json({ message: "TEST" });
+  } catch (e) {
+    console.log(e);
     return NextResponse.json({ message: "Something went wrong!" });
   }
 }
