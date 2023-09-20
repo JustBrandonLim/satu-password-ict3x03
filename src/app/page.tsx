@@ -16,7 +16,10 @@ export default function Login() {
             priority
           />
         </div>
-        <LoginForm />
+        <p className="my-3 font-normal text-center text-lg pb-5 text-gray-500">
+          Log into your Account
+        </p>
+        <LoginForm/>
       </div>
       <Footer/>
     </main>

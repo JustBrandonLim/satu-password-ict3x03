@@ -1,20 +1,71 @@
-"use client"; // This is a client component
+"use client"
 
-import { useState } from "react";
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm } from "react-hook-form"
+import * as z from "zod"
 import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import Link from "next/link"
+import { Checkbox } from "@/components/ui/checkbox"
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormDescription,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
 
-export default function LoginForm() {
+// Define Schemas that are used to call to api
+const LoginFormSchema = z.object({
+  username: z.string().min(1, {
+    message: "Email is required",
+  }).email('Invalid Email'),
+  password: z.string().min(1, {
+    message: "Password is required"
+  }).min(8, {
+    message: "Password should be at least 8 characters"
+  }),
+  rememberEmail: z.boolean().default(true).optional(),
+})
+
+const RecoverFormSchema = z.object({
+  email: z.string().min(1, {
+    message: "Email is required"
+  }).email('Invalid Email')
+})
+
+// The actual component
+function InputForm() {
   const router = useRouter();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [recoveryEmail, setRecoveryEmail] = useState("");
-  const [showModal, setShowModal] = useState(false);
 
-  const UserLogin = async (email: string, password: string) => {
+  // For Login Form
+  const loginForm = useForm<z.infer<typeof LoginFormSchema>>({
+    resolver: zodResolver(LoginFormSchema),
+  })
+  const onLogin = async (data: z.infer<typeof LoginFormSchema>) => {
+    // For Debugging
+    console.log("Login Form Submitted")
+    console.log(data)
+    console.log(typeof data)
+    let username = data.username
+    let password = data.password
+
     const response = await fetch(`/api/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password, type: "administrator" }),
+      body: JSON.stringify({ username, password, type: "administrator" }),
     });
     const json = await response.json();
 
@@ -22,128 +73,112 @@ export default function LoginForm() {
       console.log(json);
     }
     if (response.ok) {
-      router.push("/dashboard");
+      router.push("/home");
     }
-  };
+  }
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    UserLogin(email, password);
-  };
-
-  const navigateToRegister = () => {
-    router.push("/register");
-  };
+  // For Recover Form (in dialog)
+  const recoverForm = useForm<z.infer<typeof RecoverFormSchema>>({
+    resolver: zodResolver(RecoverFormSchema),
+  })
+  const onRecover = async (data: z.infer<typeof RecoverFormSchema>) => {
+    // For Debugging
+    console.log("Recover Form Submitted")
+    console.log(data)
+    console.log(typeof data)
+  }
 
   return (
-    <form
-      className="flex flex-col w-2/3 max-w-md gap-2 p-8 mx-auto "
-      onSubmit={handleSubmit}
-    >
-      <p className="mb-3 font-normal text-center text-lg pb-5 text-gray-500">
-        Log into your Account
-      </p>
-      <p className="font-semibold">Email</p>
-      <input
-        id="email"
-        type="email"
-        placeholder="Email"
-        className="p-2 rounded-sm ring-2 ring-gray-300"
-        onChange={(e) => setEmail(e.target.value)}
-      />
-      <p className="font-semibold">Password</p>
-      <input
-        id="password"
-        type="password"
-        placeholder="Password"
-        className="p-2 rounded-sm ring-2 ring-gray-300"
-        onChange={(e) => setPassword(e.target.value)}
-      />
-      <div className="flex flex-col items-center justify-between gap-5 my-3 md:flex-row md:gap-0">
-        <label className="flex items-center">
-          <input type="checkbox" className="mr-1" />
-          Remember Me
-        </label>
-
-        <label className="flex items-center">
-          <a
-            className="mr-1 cursor-pointer hover:text-black/70"
-            onClick={() => setShowModal(true)}
-          >
-            Forgot your password?
-          </a>
-        </label>
-      </div>
-      <button
-        type="submit"
-        className="px-5 py-2 text-white transition-colors duration-150 bg-black rounded-md hover:bg-black/70"
-      >
-        Log In
-      </button>
-      <p className="mt-3 font-medium text-center text-sm pb-5 text-black">
-        New to SatuPassword?{" "}
-        <span
-          className=" text-blue-600 font-bold cursor-pointer"
-          onClick={navigateToRegister}
-        >
-          {" "}
-          Sign Up{" "}
-        </span>
-      </p>
-      {showModal && (
-        <>
-          <div className="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto outline-none focus:outline-none">
-            <div className="relative min-w-[420px] max-w-xs mx-auto my-6">
-              <div className="relative flex flex-col bg-white border-0 rounded-md shadow-lg outline-none w-fullm-12 focus:outline-none">
-                <div className="relative flex-auto px-5 py-6">
-                  <div className="flex items-start justify-center">
-                    <div className="flex flex-col gap-2.5">
-                      <span className="text-xl font-bold leading-relaxed text-black ">
-                        Recover your account
-                      </span>
-                      <div>
-                        <p className="pb-6">
-                          Please enter in your email address that is associated
-                          with your account
-                        </p>
-                        <p className="py-1 text-sm font-semibold"> Email</p>
-                        <input
-                          id="email"
-                          type="email"
-                          placeholder="Email"
-                          className="w-full p-2 rounded-sm ring-2 ring-gray-300"
-                          onChange={(e) => setRecoveryEmail(e.target.value)}
-                        />
-                        <p className="py-2 text-sm text-gray-400">
-                          A recovery email will be sent if such an account
-                          exists
-                        </p>
-                      </div>
-                    </div>
-                  </div>
+    <Form {...loginForm}>
+      <form onSubmit={loginForm.handleSubmit(onLogin)} className="w-2/3 space-y-6">
+        <FormField
+          control={loginForm.control}
+          name="username"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Username</FormLabel>
+              <FormControl>
+                <Input placeholder="Enter Email" type="email" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={loginForm.control}
+          name="password"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Passowrd</FormLabel>
+              <FormControl>
+                <Input placeholder="Enter Password" type="password" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+            )}
+          />
+          <div className="flex justify-between px-1 ">
+            <FormField
+            control={loginForm.control}
+            name="rememberEmail"
+            render={({ field }) => (
+              <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md">
+                <FormControl>
+                  <Checkbox
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                </FormControl>
+                <div className="space-y-1 leading-none">
+                  <FormLabel>
+                    Remember Me
+                  </FormLabel>
                 </div>
-                <div className="flex items-center justify-end gap-3 px-6 pb-6">
-                  <button
-                    className="flex px-5 py-2 text-black transition-colors duration-150 bg-white border-2 border-gray-200 rounded-md hover:bg-gray-200"
-                    type="button"
-                    onClick={() => setShowModal(false)}
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    className="flex h-full px-8 py-2 text-white transition-colors duration-150 bg-black rounded-md hover:bg-black/70"
-                    type="button"
-                    onClick={() => setShowModal(false)}
-                  >
-                    Recover
-                  </button>
-                </div>
-              </div>
-            </div>
+              </FormItem>
+            )}/>
+            <Dialog>
+              <DialogTrigger className="text-character-secondary text-sm hover:underline">Forgot your password?</DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Recover your account</DialogTitle>
+                    <DialogDescription>
+                      Please enter in your email address that is associated with your account
+                    </DialogDescription>
+                  </DialogHeader>
+                  <Form {...recoverForm}>
+                    <form onSubmit={recoverForm.handleSubmit(onRecover)} className="w-full space-y-3">
+                      <FormField
+                        control={recoverForm.control}
+                        name="email"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Username</FormLabel>
+                            <FormControl>
+                              <Input placeholder="Enter Email" type="email" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormDescription>
+                        A recovery email will be sent if such an account exists
+                      </FormDescription> 
+                      <Button type="submit" className="w-full">Recover</Button>
+                    </form>
+                  </Form>
+                </DialogContent>
+            </Dialog>
           </div>
-          <div className="fixed inset-0 z-40 bg-black opacity-25"></div>
-        </>
-      )}
-    </form>
-  );
+        <Button type="submit" className="w-full">Login</Button>
+      </form>
+      <p className="mt-8 font-medium text-center text-sm pb-5 text-black">
+        New to SatuPassword?{" "}
+        <Link href={"/register"} className="text-blue-500 hover:underline">Sign up</Link>
+        {/* <span className=" text-blue-500 hover:underline"
+          onClick={() => {router.push("/register");}}>{" "}Sign Up{" "}
+        </span> */}
+      </p>
+    </Form>
+  )
 }
+export default InputForm;
