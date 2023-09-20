@@ -59,7 +59,7 @@ export default function RegisterForm() {
         className="p-2 rounded-sm ring-2 ring-gray-300"
         onChange={(e) => setPassword(e.target.value)}
       /> */}
-      <PasswordInput/>
+      {/* <PasswordInput/> */}
       <label className="font-semibold">Confirm Password</label>
       <input
         id="confirmPassword"
