@@ -33,6 +33,7 @@ import { Eye, EyeOff } from "lucide-react"
 
         return (
           <div>
+            {/* Password Field*/}
             <FormField
               control={control}
               name="password"
@@ -42,22 +43,25 @@ import { Eye, EyeOff } from "lucide-react"
                 <FormControl>
                   <div className="relative">
                     <Input placeholder="Enter Password" type={showPassword?'text':'password'} {...field} onChange={handlePasswordChange}/>
-                    <Toggle size='sm' className="absolute right-4 bottom-0" aria-label="Toggle Passowrd Visibility" onPressedChange={() => {setShowPassword(!showPassword)}}>
+                    <Button variant="ghost" type="button" size='icon' className="absolute right-0 bottom-0" aria-label="Toggle Passowrd Visibility" onClick={() => {setShowPassword(!showPassword)}}>
                       <Eye className="absolute text-slate-400" visibility={showPassword? 'visible':'hidden'}/>
                       <EyeOff className="absolute text-slate-300" visibility={showPassword? 'hidden':'visible'}/>
-                    </Toggle>
+                    </Button>
                   </div>
                 </FormControl>
                 <FormMessage />
               </FormItem>
               )}
             />
-            
+
+            {/* Password Strength Checker*/}
             <div className="flex justify-center items-center space-x-4 my-2">
               <label className="text-sm text-character-secondary">Strength</label>
               <Progress value={passwordStrength * 25} className="h-2" />
             </div>
+            {/* Generate Password Button*/}
             <Button type="button" variant={'secondary'} className="w-full">Genereate Password</Button>
+            {/* Confirm Password Field*/}
             <FormField
               control={control}
               name="confirmPassword"
