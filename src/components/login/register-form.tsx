@@ -1,85 +1,94 @@
-"use client"; // This is a client component
+"use client"
 
-import { useState } from "react";
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm } from "react-hook-form"
+import * as z from "zod"
 import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import Link from "next/link"
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form"
+import { PasswordSection } from "../password-section";
 
-export default function RegisterForm() {
+
+// Define Schemas that are used to call to api
+const RegisterFormSchema = z.object({
+  email: z.string().min(1, {
+    message: "Email is required",
+  }).email('Invalid Email'),
+  password: z.string().min(1, {
+    message: "Password is required"
+  }).min(8, {
+    message: "Password should be at least 8 characters"
+  }).max(64, {message: "Password can not exceed 64 characters"}),
+  confirmPassword: z.string().min(1, "Password confirmation is required")
+}).refine((data) => data.password === data.confirmPassword, {
+  path: ['confirmPassword'],
+  message: 'Password do not match'
+})
+
+// The actual component
+function TestForm() {
   const router = useRouter();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
 
-  const UserRegister = async (email: string, password: string) => {
+  // For Login Form
+  const registerForm = useForm<z.infer<typeof RegisterFormSchema>>({
+    resolver: zodResolver(RegisterFormSchema),
+  })
+  const onRegister = async (data: z.infer<typeof RegisterFormSchema>) => {
+    // For Debugging
+    console.log("Register Form Submitted")
+    console.log(data)
+    console.log(typeof data)
+    let email = data.email
+    let password = data.password
+
     const response = await fetch(`/api/login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password, type: "administrator" }),
-    });
-    const json = await response.json();
-
-    if (!response.ok) {
-      console.log(json);
-    }
-    if (response.ok) {
-      router.push("/");
-    }
-  };
-
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    UserRegister(email, password);
-  };
-
-  const navigateToLogin = () => {
-    router.push("/");
-  };
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password, type: "administrator" }),
+      });
+      const json = await response.json();
+  
+      if (!response.ok) {
+        console.log(json);
+      }
+      if (response.ok) {
+        router.push("/");
+      }
+  }
 
   return (
-    <form
-      className="flex flex-col w-2/3 max-w-md gap-2 p-8 mx-auto "
-      onSubmit={handleSubmit}
-    >
-      <p className="mb-3 font-normal text-center text-lg pb-5 text-gray-500">
-        Get started with SatuPassword
-      </p>
-      <label className="font-semibold">Email</label>
-      <input
-        id="email"
-        type="email"
-        placeholder="Email"
-        className="p-2 rounded-sm ring-2 ring-gray-300"
-        onChange={(e) => setEmail(e.target.value)}
-      />
-      <label className="font-semibold">Password</label>
-      {/* <input
-        id="password"
-        type="password"
-        placeholder="Password"
-        className="p-2 rounded-sm ring-2 ring-gray-300"
-        onChange={(e) => setPassword(e.target.value)}
-      /> */}
-      {/* <PasswordInput/> */}
-      <label className="font-semibold">Confirm Password</label>
-      <input
-        id="confirmPassword"
-        type="password"
-        placeholder="Confirm Password"
-        className="p-2 rounded-sm ring-2 ring-gray-300"
-        onChange={(e) => setConfirmPassword(e.target.value)}
-      />
-      <button
-        type="submit"
-        className="px-5 py-2 mt-4 text-white transition-colors duration-150 bg-black rounded-md hover:bg-black/70"
-      >
-        Sign In
-      </button>
-      <p className="mt-3 font-medium text-center text-sm pb-5 text-black">
+    <Form {...registerForm}>
+      <form onSubmit={registerForm.handleSubmit(onRegister)} className="w-2/3 space-y-6">
+        <FormField
+          control={registerForm.control}
+          name="email"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Username</FormLabel>
+              <FormControl>
+                <Input placeholder="Enter Email" type="email" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <PasswordSection control={registerForm.control}/>
+        <Button type="submit" className="w-full">Sign up</Button>
+      </form>
+      <p className="mt-8 font-medium text-center text-sm pb-5 text-black">
         Already have an account?{" "}
-        <span className=" text-blue-600 font-bold cursor-pointer" onClick={navigateToLogin}>
-          {" "}
-          Login{" "}
-        </span>
+        <Link href={"/"} className="text-blue-500 hover:underline">Login</Link>
       </p>
-    </form>
-  );
+    </Form>
+  )
 }
+export default TestForm;
