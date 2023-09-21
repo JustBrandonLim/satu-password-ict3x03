@@ -30,8 +30,8 @@ import { Eye, EyeOff, HelpCircleIcon } from "lucide-react"
         const [passwordStrength, setPasswordStrength] = React.useState<number>(0);
 
         const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-          const password = e.target.value;
-          const result = zxcvbn(password);
+          const enteredPassword = e.target.value;
+          const result = zxcvbn(enteredPassword);
           const strength = result.score; // zxcvbn provides a score from 0 to 4
           setPasswordStrength(strength);
         };
@@ -48,7 +48,7 @@ import { Eye, EyeOff, HelpCircleIcon } from "lucide-react"
                 <FormLabel>Password</FormLabel>
                 <FormControl>
                   <div className="relative">
-                    <Input placeholder="Enter Password" type={showPassword?'text':'password'} {...field} onChange={handlePasswordChange}/>
+                    <Input placeholder="Enter Password" type={showPassword?'text':'password'} {...field} onInput={handlePasswordChange}/>
                     <Button variant="ghost" type="button" size='icon' className="absolute right-0 bottom-0" aria-label="Toggle Passowrd Visibility" onClick={() => {setShowPassword(!showPassword)}}>
                       <Eye className="absolute text-slate-400" visibility={showPassword? 'visible':'hidden'}/>
                       <EyeOff className="absolute text-slate-300" visibility={showPassword? 'hidden':'visible'}/>
@@ -61,7 +61,7 @@ import { Eye, EyeOff, HelpCircleIcon } from "lucide-react"
             />
             
             {/* Password Strength Checker*/}
-            <div className="flex justify-center items-center space-x-4 my-2">
+            <div className="flex justify-center items-center space-x-4 my-2 mr-1">
               <label className="text-sm text-character-secondary">Strength</label>
               <Progress value={passwordStrength * 25} className="h-2" />
               <TooltipProvider>

@@ -30,7 +30,8 @@ const RegisterFormSchema = z.object({
   }),
   confirmPassword: z.string().min(1, "Password confirmation is required")
 }).refine((data) => data.password === data.confirmPassword, {
-  message: 'Passowrd do not match'
+  path: ['confirmPassword'],
+  message: 'Password do not match'
 })
 
 // The actual component
