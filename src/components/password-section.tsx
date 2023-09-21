@@ -13,11 +13,20 @@
     TooltipProvider,
     TooltipTrigger,
   } from "@/components/ui/tooltip"
+  import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+  } from "@/components/ui/dialog"
   
 import { Progress } from "@components/ui/progress"
 import { Button } from "@components/ui/button"
 import zxcvbn from 'zxcvbn';
 import { Eye, EyeOff, HelpCircleIcon } from "lucide-react"
+import { GeneratePasswordForm } from "./genereate-password-dialog"
 
   export default interface PasswordSectionProps
     extends React.InputHTMLAttributes<HTMLInputElement> {
@@ -26,9 +35,9 @@ import { Eye, EyeOff, HelpCircleIcon } from "lucide-react"
 
     const PasswordSection = React.forwardRef<HTMLInputElement, PasswordSectionProps>(
       ({ className, type, control, ...props}, ref) => {
-        //Password Strength Logic
+        
+        // Password Strength Checker Logic: https://github.com/dropbox/zxcvbn 
         const [passwordStrength, setPasswordStrength] = React.useState<number>(0);
-
         const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
           const enteredPassword = e.target.value;
           const result = zxcvbn(enteredPassword);
@@ -66,7 +75,7 @@ import { Eye, EyeOff, HelpCircleIcon } from "lucide-react"
               <Progress value={passwordStrength * 25} className="h-2" />
               <TooltipProvider>
               <Tooltip>
-                <TooltipTrigger type="button" className="text-character-secondary">
+                <TooltipTrigger type="button" className="text-character-secondary cursor-help	">
                   <HelpCircleIcon/>
                 </TooltipTrigger>
                 <TooltipContent>
@@ -82,7 +91,20 @@ import { Eye, EyeOff, HelpCircleIcon } from "lucide-react"
             </TooltipProvider>
             </div>
             {/* Generate Password Button*/}
-            <Button type="button" variant={'secondary'} className="w-full">Genereate Password</Button>
+            
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button type="button" variant={'secondary'} className="w-full">Genereate Password</Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Genereate Password</DialogTitle>
+                  <DialogDescription>
+                    <GeneratePasswordForm/>
+                  </DialogDescription>
+                </DialogHeader>
+              </DialogContent>
+            </Dialog>
             {/* Confirm Password Field*/}
             <FormField
               control={control}

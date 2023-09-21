@@ -17,7 +17,6 @@ import {
 } from "@/components/ui/form"
 import { PasswordSection } from "../password-section";
 
-
 // Define Schemas that are used to call to api
 const RegisterFormSchema = z.object({
   email: z.string().min(1, {
@@ -25,8 +24,7 @@ const RegisterFormSchema = z.object({
   }).email('Invalid Email'),
   password: z.string().min(1, {
     message: "Password is required"
-  }).min(8, {
-    message: "Password should be at least 8 characters"
+  }).min(8, {message: "Password should be at least 8 characters"
   }).max(64, {message: "Password can not exceed 64 characters"}),
   confirmPassword: z.string().min(1, "Password confirmation is required")
 }).refine((data) => data.password === data.confirmPassword, {
@@ -35,7 +33,7 @@ const RegisterFormSchema = z.object({
 })
 
 // The actual component
-function TestForm() {
+function RegsiterForm() {
   const router = useRouter();
 
   // For Login Form
@@ -91,4 +89,4 @@ function TestForm() {
     </Form>
   )
 }
-export default TestForm;
+export default RegsiterForm;

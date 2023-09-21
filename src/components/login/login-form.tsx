@@ -90,8 +90,7 @@ function LoginForm() {
   return (
     <Form {...loginForm}>
       <form onSubmit={loginForm.handleSubmit(onLogin)} className="w-2/3 space-y-6">
-        <FormField
-          control={loginForm.control}
+        <FormField control={loginForm.control}
           name="email"
           render={({ field }) => (
             <FormItem>
@@ -103,12 +102,11 @@ function LoginForm() {
             </FormItem>
           )}
         />
-        <FormField
-          control={loginForm.control}
+        <FormField control={loginForm.control}
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Passowrd</FormLabel>
+              <FormLabel>Password</FormLabel>
               <FormControl>
                 <Input placeholder="Enter Password" type="password" {...field} />
               </FormControl>
@@ -117,8 +115,7 @@ function LoginForm() {
             )}
           />
           <div className="flex justify-between px-1 ">
-            <FormField
-            control={loginForm.control}
+            <FormField control={loginForm.control}
             name="rememberEmail"
             render={({ field }) => (
               <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md">
