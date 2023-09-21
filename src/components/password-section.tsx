@@ -9,7 +9,9 @@
   } from "@/components/ui/form"
 import { Progress } from "@components/ui/progress"
 import { Button } from "@components/ui/button"
+import { Toggle } from "@/components/ui/toggle"
 import zxcvbn from 'zxcvbn';
+import { Eye, EyeOff } from "lucide-react"
 
   export default interface PasswordSectionProps
     extends React.InputHTMLAttributes<HTMLInputElement> {
@@ -27,6 +29,8 @@ import zxcvbn from 'zxcvbn';
           const strength = result.score; // zxcvbn provides a score from 0 to 4
           setPasswordStrength(strength);
         };
+        const [showPassword, setShowPassword] = React.useState(false)
+
         return (
           <div>
             <FormField
@@ -36,12 +40,24 @@ import zxcvbn from 'zxcvbn';
               <FormItem>
                 <FormLabel>Password</FormLabel>
                 <FormControl>
-                  <Input placeholder="Enter Password" type="password" {...field} onChange={handlePasswordChange}/>
+                  <div className="relative">
+                    <Input placeholder="Enter Password" type={showPassword?'text':'password'} {...field} onChange={handlePasswordChange}/>
+                    <Toggle size='sm' className="absolute right-4 bottom-0" aria-label="Toggle Passowrd Visibility" onPressedChange={() => {setShowPassword(!showPassword)}}>
+                      <Eye className="absolute text-slate-400" visibility={showPassword? 'visible':'hidden'}/>
+                      <EyeOff className="absolute text-slate-300" visibility={showPassword? 'hidden':'visible'}/>
+                    </Toggle>
+                  </div>
                 </FormControl>
                 <FormMessage />
               </FormItem>
               )}
             />
+            
+            {/* <label onClick={()=>setShowPassword(!showPassword)} 
+            className="bg-gray-300 hover:bg-gray-400 rounded px-2 py-1 text-sm text-gray-600 font-mono cursor-pointer " 
+            htmlFor="toggle">{showPassword?'hide':'show'}</label> */}
+
+            
             <div className="flex justify-center items-center space-x-4 my-2">
               <label className="text-sm text-character-secondary">Strength</label>
               <Progress value={passwordStrength * 25} className="h-2" />
