@@ -53,11 +53,6 @@ import { Eye, EyeOff } from "lucide-react"
               )}
             />
             
-            {/* <label onClick={()=>setShowPassword(!showPassword)} 
-            className="bg-gray-300 hover:bg-gray-400 rounded px-2 py-1 text-sm text-gray-600 font-mono cursor-pointer " 
-            htmlFor="toggle">{showPassword?'hide':'show'}</label> */}
-
-            
             <div className="flex justify-center items-center space-x-4 my-2">
               <label className="text-sm text-character-secondary">Strength</label>
               <Progress value={passwordStrength * 25} className="h-2" />

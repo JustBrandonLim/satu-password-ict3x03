@@ -29,6 +29,9 @@ const RegisterFormSchema = z.object({
   }).min(8, {
     message: "Password should be at least 8 characters"
   }),
+  confirmPassword: z.string().min(1, "Password confirmation is required")
+}).refine((data) => data.password === data.confirmPassword, {
+  message: 'Passowrd do not match'
 })
 
 // The actual component
@@ -78,20 +81,7 @@ function TestForm() {
             </FormItem>
           )}
         />
-        {/* <FormField
-          control={registerForm.control}
-          name="password"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Passowrd</FormLabel>
-              <FormControl>
-                <Input placeholder="Enter Password" type="password" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-            )}
-          /> */}
-          <PasswordSection control={registerForm.control}/>
+        <PasswordSection control={registerForm.control}/>
         <Button type="submit" className="w-full">Sign up</Button>
       </form>
       <p className="mt-8 font-medium text-center text-sm pb-5 text-black">
