@@ -25,10 +25,10 @@ const genereatePasswordFormSchema = z.object({
     numerical: z.boolean().optional(),
     symbols: z.boolean().optional(),
     minNumber: z.coerce.number().min(1, {
-        message: "Minimum Numericals Required"}),
+        message: "Minimum Numericals Required"}).lte(64),
     passwordLength: z.coerce.number().min(8, {
         message: 'Password length must be at least 8'
-    })}).refine((data) => data.minNumber <= data.passwordLength, {
+    }).lte(64)}).refine((data) => data.minNumber <= data.passwordLength, {
     path: ['minNumber'],
     message: 'Number of numericals must be less than the password length'
   })
@@ -139,21 +139,7 @@ export function GeneratePasswordForm() {
                 )}
             />
         </div>
-        <FormField
-            control={genereatePasswordForm.control}
-            name="minNumber"
-            render={({ field }) => (
-                <FormItem className="w-full">
-                    <FormLabel>Minimum number of numerical characters</FormLabel>
-                    <FormControl>
-                    <div className="flex space-x-8">
-                        <Input placeholder="Enter number"  {...field} type="number"/>
-                    </div>
-                    </FormControl>
-                    <FormMessage />
-                </FormItem>
-            )}
-        /> 
+    
         <FormField
             control={genereatePasswordForm.control}
             name="passwordLength"
@@ -162,7 +148,7 @@ export function GeneratePasswordForm() {
                     <FormLabel>Length of password</FormLabel>
                     <FormControl>
                     <div className="flex space-x-8">
-                        <Input placeholder="Enter number"  {...field} type="number"/>
+                        <Input min={8} max={64} defaultValue={12} placeholder="Enter number"  {...field} type="number"/>
                     </div>
                     </FormControl>
                     <FormMessage />
@@ -172,7 +158,7 @@ export function GeneratePasswordForm() {
         <div className="flex space-x-4 w-full">
             <Button type="reset" variant={'outline'} className="w-full">Cancel</Button> 
             <Button type="button" className="w-full">Use Password</Button>
-        </div>        
+        </div>
       </form>
     </Form>
   )
