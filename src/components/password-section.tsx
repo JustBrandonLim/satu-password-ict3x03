@@ -7,11 +7,17 @@
     FormLabel,
     FormMessage,
   } from "@/components/ui/form"
+  import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+  } from "@/components/ui/tooltip"
+  
 import { Progress } from "@components/ui/progress"
 import { Button } from "@components/ui/button"
-import { Toggle } from "@/components/ui/toggle"
 import zxcvbn from 'zxcvbn';
-import { Eye, EyeOff } from "lucide-react"
+import { Eye, EyeOff, HelpCircleIcon } from "lucide-react"
 
   export default interface PasswordSectionProps
     extends React.InputHTMLAttributes<HTMLInputElement> {
@@ -53,11 +59,27 @@ import { Eye, EyeOff } from "lucide-react"
               </FormItem>
               )}
             />
-
+            
             {/* Password Strength Checker*/}
             <div className="flex justify-center items-center space-x-4 my-2">
               <label className="text-sm text-character-secondary">Strength</label>
               <Progress value={passwordStrength * 25} className="h-2" />
+              <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger type="button" className="text-character-secondary">
+                  <HelpCircleIcon/>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <h5 className="text-sm font-medium">Password Guidelines:</h5>
+                  <ol className="list-disc mx-5">
+                    <li>At least 8 characters in length</li>
+                    <li>Contain a number / symbol</li>
+                    <li>No repeated characters</li>
+                    <li>etc...</li>
+                  </ol>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
             </div>
             {/* Generate Password Button*/}
             <Button type="button" variant={'secondary'} className="w-full">Genereate Password</Button>
