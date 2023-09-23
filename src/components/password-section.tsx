@@ -1,131 +1,147 @@
-  import { Input } from "@/components/ui/input"
-  import * as React from "react"
-  import {
-    FormControl,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
-  } from "@/components/ui/form"
-  import {
-    Tooltip,
-    TooltipContent,
-    TooltipProvider,
-    TooltipTrigger,
-  } from "@/components/ui/tooltip"
-  import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-  } from "@/components/ui/dialog"
-  
+import { Input } from "@/components/ui/input"
+import * as React from "react"
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+
 import { Progress } from "@components/ui/progress"
 import { Button } from "@components/ui/button"
 import zxcvbn from 'zxcvbn';
 import { Eye, EyeOff, HelpCircleIcon } from "lucide-react"
 import { GeneratePasswordForm } from "./genereate-password-dialog"
+import { UseFormReturn } from "react-hook-form"
+import { ZodEffects, ZodObject, ZodString, ZodTypeAny, z } from "zod"
 
-  export default interface PasswordSectionProps
-    extends React.InputHTMLAttributes<HTMLInputElement> {
-      control: any
-    }
+interface PasswordSectionProps {
+form: UseFormReturn<{ password: string; confirmPassword: string; email: string; }, any, undefined>;
+formSchema: ZodEffects<ZodObject<
+  { email: ZodString; password: ZodString; confirmPassword: ZodString; }, 
+  "strip", 
+  ZodTypeAny, 
+  { password: string; confirmPassword: string; email: string;}
+  >>
+}
 
-    const PasswordSection = React.forwardRef<HTMLInputElement, PasswordSectionProps>(
-      ({ className, type, control, ...props}, ref) => {
-        
-        // Password Strength Checker Logic: https://github.com/dropbox/zxcvbn 
-        const [passwordStrength, setPasswordStrength] = React.useState<number>(0);
-        const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-          const enteredPassword = e.target.value;
-          const result = zxcvbn(enteredPassword);
-          const strength = result.score; // zxcvbn provides a score from 0 to 4
-          setPasswordStrength(strength);
-        };
-        const [showPassword, setShowPassword] = React.useState(false)
+const PasswordSection: React.FC<PasswordSectionProps> = ({ form }) => {
+// Maintain Password Visibility State
+const [showPassword, setShowPassword] = React.useState(false)
+// Dialog open UseState
+const [open, setOpen] = React.useState(false)
 
-        return (
-          <div>
-            {/* Password Field*/}
-            <FormField
-              control={control}
-              name="password"
-              render={({ field }) => (
-              <FormItem>
-                <FormLabel>Password</FormLabel>
-                <FormControl>
-                  <div className="relative">
-                    <Input placeholder="Enter Password" type={showPassword?'text':'password'} {...field} onInput={handlePasswordChange}/>
-                    <Button variant="ghost" type="button" size='icon' className="absolute right-0 bottom-0" aria-label="Toggle Passowrd Visibility" onClick={() => {setShowPassword(!showPassword)}}>
-                      <Eye className="absolute text-slate-400" visibility={showPassword? 'visible':'hidden'}/>
-                      <EyeOff className="absolute text-slate-300" visibility={showPassword? 'hidden':'visible'}/>
-                    </Button>
-                  </div>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-              )}
-            />
-            
-            {/* Password Strength Checker*/}
-            <div className="flex justify-center items-center space-x-4 my-2 mr-1">
-              <label className="text-sm text-character-secondary">Strength</label>
-              <Progress value={passwordStrength * 25} className="h-2" />
-              <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger type="button" className="text-character-secondary cursor-help	">
-                  <HelpCircleIcon/>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <h5 className="text-sm font-medium">Password Guidelines:</h5>
-                  <ol className="list-disc mx-5">
-                    <li>At least 8 characters in length</li>
-                    <li>Contain a number / symbol</li>
-                    <li>No repeated characters</li>
-                    <li>etc...</li>
-                  </ol>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-            </div>
-            {/* Generate Password Button*/}
-            
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button type="button" variant={'secondary'} className="w-full">Genereate Password</Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Genereate Password</DialogTitle>
-                  <DialogDescription>
-                    <GeneratePasswordForm/>
-                  </DialogDescription>
-                </DialogHeader>
-              </DialogContent>
-            </Dialog>
-            {/* Confirm Password Field*/}
-            <FormField
-              control={control}
-              name="confirmPassword"
-              render={({ field }) => (
-              <FormItem className="mt-4">
-                <FormLabel>Confirm Password</FormLabel>
-                <FormControl>
-                  <Input placeholder="Re-enter Password" type="password" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-              )}
-            />
+// Password Strength Checker Logic: https://github.com/dropbox/zxcvbn 
+const [passwordStrength, setPasswordStrength] = React.useState<number>(0);
+const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const enteredPassword = e.target.value;
+  const result = zxcvbn(enteredPassword);
+  const strength = result.score; // zxcvbn provides a score from 0 to 4
+  setPasswordStrength(strength);
+};
+
+// Callback function to update the Password field in the form schema
+const updatePasswordField = (password: string) => {
+  // Update the form schema's password field
+  form.setValue("password", password);
+  //show the password to the user
+  setShowPassword(true);
+  //trigger the password strength trigger
+  const result = zxcvbn(password);
+  const strength = result.score; // zxcvbn provides a score from 0 to 4
+  setPasswordStrength(strength);
+};
+
+return (
+  <div>
+    {/* Password Field*/}
+    <FormField
+      control={form.control}
+      name="password"
+      render={({ field }) => (
+      <FormItem>
+        <FormLabel>Password</FormLabel>
+        <FormControl>
+          <div className="relative">
+            <Input placeholder="Enter Password" type={showPassword?'text':'password'} {...field} onInput={handlePasswordChange}/>
+            <Button variant="ghost" type="button" size='icon' className="absolute right-0 bottom-0" aria-label="Toggle Passowrd Visibility" onClick={() => {setShowPassword(!showPassword)}}>
+              <Eye className="absolute text-slate-400" visibility={showPassword? 'visible':'hidden'}/>
+              <EyeOff className="absolute text-slate-300" visibility={showPassword? 'hidden':'visible'}/>
+            </Button>
           </div>
-        )
-      }
-    )
-    PasswordSection.displayName = "PasswordSection"
+        </FormControl>
+        <FormMessage />
+      </FormItem>
+      )}
+    />
     
-    export { PasswordSection }
-
-
-    
+    {/* Password Strength Checker*/}
+    <div className="flex justify-center items-center space-x-4 my-2 mr-1">
+      <label className="text-sm text-character-secondary">Strength</label>
+      <Progress value={passwordStrength * 25} className="h-2" />
+      <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger type="button" className="text-character-secondary cursor-help	">
+          <HelpCircleIcon/>
+        </TooltipTrigger>
+        <TooltipContent>
+          <h5 className="text-sm font-medium">Password Guidelines:</h5>
+          <ol className="list-disc mx-5">
+            <li>At least 8 characters in length</li>
+            <li>Contain a number / symbol</li>
+            <li>No repeated characters</li>
+            <li>etc...</li>
+          </ol>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+    </div>
+    {/* Generate Password Dialog*/}
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        {/* Generate Password Button*/}
+        <Button type="button" variant={'secondary'} className="w-full">Genereate Password</Button>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Genereate Password</DialogTitle>
+          <DialogDescription>
+            <GeneratePasswordForm updatePasswordCallback={updatePasswordField} setOpenDialog={setOpen}/>
+          </DialogDescription>
+        </DialogHeader>
+      </DialogContent>
+    </Dialog>
+    {/* Confirm Password Field*/}
+    <FormField
+      control={form.control}
+      name="confirmPassword"
+      render={({ field }) => (
+      <FormItem className="mt-4">
+        <FormLabel>Confirm Password</FormLabel>
+        <FormControl>
+          <Input placeholder="Re-enter Password" type="password" {...field} />
+        </FormControl>
+        <FormMessage />
+      </FormItem>
+      )}
+    />
+  </div>
+)
+}
+PasswordSection.displayName = "PasswordSection"
+export { PasswordSection }

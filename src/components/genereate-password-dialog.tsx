@@ -13,13 +13,12 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { useForm } from "react-hook-form"
-import React from "react"
+import React, { Dispatch, SetStateAction } from "react"
 import { Eye, EyeOff, RefreshCcw } from "lucide-react"
 import { Checkbox } from "@/components/ui/checkbox"
 
 const genereatePasswordFormSchema = z.object({
-    password: z.string().min(2, {
-        message: "Password must be at least 8 characters.",}),
+    password: z.string(),
     uppercase: z.boolean().optional(),
     lowercase: z.boolean().optional(),
     numerical: z.boolean().optional(),
@@ -31,34 +30,48 @@ const genereatePasswordFormSchema = z.object({
     }).lte(64)}).refine((data) => data.minNumber <= data.passwordLength, {
     path: ['minNumber'],
     message: 'Number of numericals must be less than the password length'
-  })
+})
 
-export function GeneratePasswordForm() {
-  // 1. Define your form.
-  const genereatePasswordForm = useForm<z.infer<typeof genereatePasswordFormSchema>>({
-    resolver: zodResolver(genereatePasswordFormSchema),
-    defaultValues: {
-      password: "",
-    },
-  })
-  // 2. Define a submit handler.
-  function onGenereate(data: z.infer<typeof genereatePasswordFormSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    data.minNumber = parseInt(data.minNumber.toString());
-    data.passwordLength = parseInt(data.passwordLength.toString());
-    console.log(data)
+  interface GeneratePasswordFormProps {
+    updatePasswordCallback: (data: string) => void; // Callback function for passing data to the parent
+    // setOpenDialog: (value: boolean | ((prevVar: boolean) => boolean)) => void;
+    setOpenDialog : Dispatch<SetStateAction<boolean>>
   }
-  // For password visiblity
-  const [showPassword, setShowPassword] = React.useState(false)
   
-  return (
+const GeneratePasswordForm: React.FC<GeneratePasswordFormProps> = ({updatePasswordCallback,setOpenDialog}) => {
+    // For password visiblity
+    const [showPassword, setShowPassword] = React.useState(false)
+    //
+
+    // 1. Define your form.
+    const genereatePasswordForm = useForm<z.infer<typeof genereatePasswordFormSchema>>({
+        resolver: zodResolver(genereatePasswordFormSchema),
+        defaultValues: {
+            password: "",
+        },
+    })
+    // 2. Define a submit handler.
+    function onGenereate(data: z.infer<typeof genereatePasswordFormSchema>) {
+        // Do something with the form values.This will be type-safe and validated.
+        data.minNumber = parseInt(data.minNumber.toString());
+        data.passwordLength = parseInt(data.passwordLength.toString());
+        console.log(data)
+    }
+
+    //Triggers the callback function when UsePassword Button is trgggered
+    function handleUsePassword(){
+    let generatedPassword = genereatePasswordForm.getValues('password')
+    updatePasswordCallback(generatedPassword)
+    }
+
+    //The HTML elements
+    return(
     <Form {...genereatePasswordForm}>
-      <form onSubmit={genereatePasswordForm.handleSubmit(onGenereate)} className="space-y-6">
-        {/* Password Items Row */}
-        <div className="flex w-full items-end space-x-2 mt-4">
-            {/* Password Field */}
-            <FormField
+        <form onSubmit={genereatePasswordForm.handleSubmit(onGenereate)} className="space-y-6">
+            {/* Password Items Row */}
+            <div className="flex w-full items-end space-x-2 mt-4">
+                {/* Password Field */}
+                <FormField
                 control={genereatePasswordForm.control}
                 name="password"
                 render={({ field }) => (
@@ -74,7 +87,7 @@ export function GeneratePasswordForm() {
                                 </Button>
                             </div>
                             <Button variant={'default'} type="button" size={'icon'} aria-label="Genereate New Password" className="p-2" onClick={genereatePasswordForm.handleSubmit(onGenereate)}>
-                                <RefreshCcw />
+                                <RefreshCcw/>
                             </Button>
                         </div>
                         </FormControl>
@@ -82,9 +95,8 @@ export function GeneratePasswordForm() {
                     </FormItem>
                 )}
             />
-            {/* Genereate Password Trigger */}
-            
-        </div>
+            </div>
+        {/* Genereate Password Trigger */} 
         <div className="flex justify-between px-2 h-2">
             <FormField
                 control={genereatePasswordForm.control}
@@ -139,7 +151,7 @@ export function GeneratePasswordForm() {
                 )}
             />
         </div>
-    
+
         <FormField
             control={genereatePasswordForm.control}
             name="passwordLength"
@@ -156,10 +168,14 @@ export function GeneratePasswordForm() {
             )}
         />
         <div className="flex space-x-4 w-full">
-            <Button type="reset" variant={'outline'} className="w-full">Cancel</Button> 
-            <Button type="button" className="w-full">Use Password</Button>
+            <Button type="reset" variant={'outline'} className="w-full" onClick={() => setOpenDialog(false)}>Cancel</Button> 
+            <Button type="button" className="w-full" onClick={() => {handleUsePassword(); setOpenDialog(false)}}>
+                Use Password
+            </Button>
         </div>
-      </form>
+        </form>
     </Form>
-  )
+    )
 }
+GeneratePasswordForm.displayName = "GeneratePasswordForm"
+export{GeneratePasswordForm}

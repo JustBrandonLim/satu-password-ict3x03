@@ -19,14 +19,20 @@ import { PasswordSection } from "../password-section";
 
 // Define Schemas that are used to call to api
 const RegisterFormSchema = z.object({
-  email: z.string().min(1, {
-    message: "Email is required",
-  }).email('Invalid Email'),
-  password: z.string().min(1, {
-    message: "Password is required"
-  }).min(8, {message: "Password should be at least 8 characters"
-  }).max(64, {message: "Password can not exceed 64 characters"}),
-  confirmPassword: z.string().min(1, "Password confirmation is required")
+  email: z.string({
+    required_error: "Email is required",
+    invalid_type_error: "Email must be a string",
+  }).email('Please enter in a valid email format'),
+  password: z.string({
+    required_error: "Password is required",
+    invalid_type_error: "Password must be a string",
+  })
+  .min(8, {message: "Password should be at least 8 characters"})
+  .max(64, {message: "Password can not exceed 64 characters"}),
+  confirmPassword: z.string({
+    required_error: "Please confirm your password",
+    invalid_type_error: "Email must be a string",
+  })
 }).refine((data) => data.password === data.confirmPassword, {
   path: ['confirmPassword'],
   message: 'Password do not match'
@@ -79,7 +85,7 @@ function RegsiterForm() {
             </FormItem>
           )}
         />
-        <PasswordSection control={registerForm.control}/>
+        <PasswordSection form={registerForm} formSchema={RegisterFormSchema} />
         <Button type="submit" className="w-full">Sign up</Button>
       </form>
       <p className="mt-8 font-medium text-center text-sm pb-5 text-black">
