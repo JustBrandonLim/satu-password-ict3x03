@@ -19,18 +19,14 @@ import { Checkbox } from "@/components/ui/checkbox"
 
 const genereatePasswordFormSchema = z.object({
     password: z.string(),
-    uppercase: z.boolean().optional(),
-    lowercase: z.boolean().optional(),
-    numerical: z.boolean().optional(),
-    symbols: z.boolean().optional(),
-    minNumber: z.coerce.number().min(1, {
-        message: "Minimum Numericals Required"}).lte(64),
-    passwordLength: z.coerce.number().min(8, {
-        message: 'Password length must be at least 8'
-    }).lte(64)}).refine((data) => data.minNumber <= data.passwordLength, {
-    path: ['minNumber'],
-    message: 'Number of numericals must be less than the password length'
-})
+    uppercase: z.boolean(),
+    lowercase: z.boolean(),
+    numerical: z.boolean(),
+    symbols: z.boolean(),
+    passwordLength: z.coerce.number({
+        required_error: "Length of password is required",})
+        .min(8, {message: 'Password length must be at least 8'})
+        .lte(64)})
 
   interface GeneratePasswordFormProps {
     updatePasswordCallback: (data: string) => void; // Callback function for passing data to the parent
@@ -47,13 +43,17 @@ const GeneratePasswordForm: React.FC<GeneratePasswordFormProps> = ({updatePasswo
     const genereatePasswordForm = useForm<z.infer<typeof genereatePasswordFormSchema>>({
         resolver: zodResolver(genereatePasswordFormSchema),
         defaultValues: {
-            password: "",
+            password: "SomeKindaGenereatedPassword",
+            passwordLength: 12,
+            uppercase: false,
+            lowercase: false,
+            numerical: false,
+            symbols: false,
         },
     })
     // 2. Define a submit handler.
     function onGenereate(data: z.infer<typeof genereatePasswordFormSchema>) {
         // Do something with the form values.This will be type-safe and validated.
-        data.minNumber = parseInt(data.minNumber.toString());
         data.passwordLength = parseInt(data.passwordLength.toString());
         console.log(data)
     }
@@ -96,7 +96,7 @@ const GeneratePasswordForm: React.FC<GeneratePasswordFormProps> = ({updatePasswo
                 )}
             />
             </div>
-        {/* Genereate Password Trigger */} 
+        {/* Genereate Password Options */} 
         <div className="flex justify-between px-2 h-2">
             <FormField
                 control={genereatePasswordForm.control}
@@ -104,7 +104,7 @@ const GeneratePasswordForm: React.FC<GeneratePasswordFormProps> = ({updatePasswo
                 render={({ field }) => (
                 <FormItem className="flex items-end space-x-2">
                     <FormControl>
-                    <Checkbox id="Uppercase" />
+                        <Checkbox id="Uppercase" onCheckedChange={field.onChange}/>
                     </FormControl>
                     <FormLabel className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">A-Z</FormLabel>
                     <FormMessage />
@@ -117,7 +117,7 @@ const GeneratePasswordForm: React.FC<GeneratePasswordFormProps> = ({updatePasswo
                 render={({ field }) => (
                 <FormItem className="flex items-end space-x-2">
                     <FormControl>
-                    <Checkbox id="Lowercase" />
+                    <Checkbox id="Lowercase" onCheckedChange={field.onChange}/>
                     </FormControl>
                     <FormLabel className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">a-z</FormLabel>
                     <FormMessage />
@@ -130,7 +130,7 @@ const GeneratePasswordForm: React.FC<GeneratePasswordFormProps> = ({updatePasswo
                 render={({ field }) => (
                 <FormItem className="flex items-end space-x-2">
                     <FormControl>
-                    <Checkbox id="numerical" />
+                    <Checkbox id="numerical" onCheckedChange={field.onChange}/>
                     </FormControl>
                     <FormLabel className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">0-9</FormLabel>
                     <FormMessage />
@@ -143,7 +143,7 @@ const GeneratePasswordForm: React.FC<GeneratePasswordFormProps> = ({updatePasswo
                 render={({ field }) => (
                 <FormItem className="flex items-end space-x-2">
                     <FormControl>
-                    <Checkbox id="symbol" />
+                    <Checkbox id="symbol" onCheckedChange={field.onChange}/>
                     </FormControl>
                     <FormLabel className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Symbols</FormLabel>
                     <FormMessage />
@@ -151,7 +151,7 @@ const GeneratePasswordForm: React.FC<GeneratePasswordFormProps> = ({updatePasswo
                 )}
             />
         </div>
-
+        {/* Genereate Password Length */} 
         <FormField
             control={genereatePasswordForm.control}
             name="passwordLength"
@@ -160,7 +160,7 @@ const GeneratePasswordForm: React.FC<GeneratePasswordFormProps> = ({updatePasswo
                     <FormLabel>Length of password</FormLabel>
                     <FormControl>
                     <div className="flex space-x-8">
-                        <Input min={8} max={64} defaultValue={12} placeholder="Enter number"  {...field} type="number"/>
+                        <Input min={8} max={64} defaultValue={12} placeholder="Enter number"  {...field} type="number" />
                     </div>
                     </FormControl>
                     <FormMessage />

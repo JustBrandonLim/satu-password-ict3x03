@@ -28,21 +28,27 @@ import {
 
 // Define Schemas that are used to call to api
 const LoginFormSchema = z.object({
-  email: z.string().min(1, {
-    message: "Email is required",
-  }).email('Invalid Email'),
-  password: z.string().min(1, {
-    message: "Password is required"
-  }).min(8, {
+  email: z.string({
+    required_error: "Email is required",
+    invalid_type_error: "Email must be a string",
+  })
+  .email('Invalid Email'),
+  password: z.string({
+    required_error: "Password is required",
+    invalid_type_error: "Password must be a string",
+  })
+  .min(8, {
     message: "Password should be at least 8 characters"
   }),
-  rememberEmail: z.boolean().default(true).optional(),
+  rememberEmail: z.boolean().optional(),
 })
 
 const RecoverFormSchema = z.object({
-  email: z.string().min(1, {
-    message: "Email is required"
-  }).email('Invalid Email')
+  email: z.string({
+    required_error: "Email is required",
+    invalid_type_error: "Email must be a string"
+  })
+  .email('Invalid Email')
 })
 
 // The actual component

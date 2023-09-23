@@ -28,7 +28,8 @@ const RegisterFormSchema = z.object({
     invalid_type_error: "Password must be a string",
   })
   .min(8, {message: "Password should be at least 8 characters"})
-  .max(64, {message: "Password can not exceed 64 characters"}),
+  .max(64, {message: "Password can not exceed 64 characters"})
+  .regex(new RegExp(/^\S*$/), "Password cannot contain spaces"),
   confirmPassword: z.string({
     required_error: "Please confirm your password",
     invalid_type_error: "Email must be a string",
