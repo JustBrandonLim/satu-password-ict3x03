@@ -9,6 +9,8 @@ interface RegisterData {
   name: string;
 }
 
+const prisma = new PrismaClient();
+
 export async function POST(nextRequest: NextRequest) {
   try {
     const registerData: RegisterData = await nextRequest.json();
@@ -22,8 +24,6 @@ export async function POST(nextRequest: NextRequest) {
     const masterKey = GenerateRandomKey();
 
     const encryptedMasterKey = EncryptAES(masterKey, wrappingKey);
-
-    const prisma = new PrismaClient();
 
     await prisma.login
       .create({
