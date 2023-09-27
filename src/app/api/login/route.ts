@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
-import { VerifyPassword } from "@libs/crypto-lib";
+import { VerifyPassword, GenerateWrappingKey, DecryptAES } from "@libs/crypto-lib";
+import { DecodeHex } from "@libs/enc-dec-lib";
 import { authenticator } from "otplib";
+import * as jose from "jose";
 
 interface LoginData {
   email: string;
@@ -15,15 +17,34 @@ export async function POST(nextRequest: NextRequest) {
   try {
     const loginData: LoginData = await nextRequest.json();
 
-    const user = await prisma.login.findUniqueOrThrow({
+    const login = await prisma.login.findUniqueOrThrow({
       where: {
         email: loginData.email,
       },
     });
 
-    if (VerifyPassword(loginData.password, user.hashedPassword, user.hashedPasswordSalt)) {
-      if (authenticator.check(loginData.otp, user.totpSecret)) {
-        return NextResponse.json({ message: "Succeeded!" });
+    if (VerifyPassword(loginData.password, login.hashedPassword, login.hashedPasswordSalt)) {
+      if (authenticator.check(loginData.otp, login.totpSecret)) {
+        const user = await prisma.user.findUniqueOrThrow({
+          where: {
+            id: login.id,
+          },
+        });
+
+        const wrappingKey = GenerateWrappingKey(loginData.password, user.wrappingKeySalt);
+
+        const masterKey = DecryptAES(user.encryptedMasterKey, wrappingKey);
+
+        const ejwt = await new jose.EncryptJWT({ email: login.email, masterKey: masterKey })
+          .setProtectedHeader({ alg: "dir", enc: "A256GCM" })
+          .setIssuedAt()
+          .setExpirationTime("1h")
+          .encrypt(DecodeHex(process.env.SECRET_KEY!));
+
+        const nextResponse: NextResponse = NextResponse.json({ message: "Succeeded!" });
+        nextResponse.cookies.set("ejwt", ejwt);
+
+        return nextResponse;
       }
     }
 
