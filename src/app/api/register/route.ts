@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { HashPassword, GenerateWrappingKey, GenerateRandomKey, EncryptAES } from "@libs/crypto-lib";
+import { HashPassword, GenerateNewWrappingKey, GenerateRandomKey, EncryptAES } from "@libs/crypto-lib";
 import { authenticator } from "otplib";
 import { PrismaClient } from "@prisma/client";
 
@@ -19,7 +19,7 @@ export async function POST(nextRequest: NextRequest) {
 
     const totpSecret = authenticator.generateSecret();
 
-    const [wrappingKey, wrappingKeySalt] = GenerateWrappingKey(registerData.password);
+    const [wrappingKey, wrappingKeySalt] = GenerateNewWrappingKey(registerData.password);
 
     const masterKey = GenerateRandomKey();
 

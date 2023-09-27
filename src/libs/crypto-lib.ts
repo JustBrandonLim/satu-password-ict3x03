@@ -33,12 +33,25 @@ export function VerifyPassword(password: string, hashedPassword: string, hashedP
  * @param {string} password The password to generate the wrapping key from
  * @returns {[string, string]} The generated wrapping key with a length of 256 bits and its salt
  */
-export function GenerateWrappingKey(password: string): [string, string] {
+export function GenerateNewWrappingKey(password: string): [string, string] {
   const salt = randomBytes(32);
 
-  const wrappingKey = pbkdf2Sync(password, salt, 15000, 32, "sha512");
+  const wrappingKey = pbkdf2Sync(password, salt, 15000, 32, "sha512"); // to change to 30,000 iterations
 
   return [EncodeHex(wrappingKey), EncodeHex(salt)];
+}
+
+/**
+ * @author JustBrandonLim
+ *
+ * @param {string} password The password to generate the wrapping key from
+ * @param {string} wrappingKeySalt The salt of the wrapping key
+ * @returns {string} The generated wrapping key with a length of 256 bits
+ */
+export function GenerateWrappingKey(password: string, wrappingKeySalt: string): string {
+  const wrappingKey = pbkdf2Sync(password, DecodeHex(wrappingKeySalt), 15000, 32, "sha512"); // to change to 30,000 iterations
+
+  return EncodeHex(wrappingKey);
 }
 
 /**
