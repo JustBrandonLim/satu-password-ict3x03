@@ -8,51 +8,51 @@ datasource db {
 }
 
 model Login {
-    id          Int         @id @default(autoincrement()) @unique
-    email       String      @unique
-    password    String      // hashed password
-    salt        String      // salt of the hashed password
-    token       String
+    id                  Int         @id @default(autoincrement()) @unique
+    email               String      @unique
+    hashedPassword      String      // hashed password
+    hashedPasswordSalt  String      // salt of the hashed password
+    totpSecret          String      // used to generate totp, unecrypted 
 
-    User        User?
+    User                User?
 }
 
 model User {
-    id          Int         @default(autoincrement()) @unique
-    name        String
-    key         String      // key to encrypt/decrypt passwords and notes, encrypted/decrypted with wrapping key
-    salt        String      // salt of the wrapping key
+    id                  Int         @default(autoincrement()) @unique
+    name                String
+    encryptedMasterKey  String      // key to encrypt/decrypt passwords and notes, encrypted/decrypted with wrapping key
+    wrappingKeySalt     String      // salt of the wrapping key
 
-    login       Login       @relation(fields: [loginId], references: [id])
-    loginId     Int         @unique
+    login               Login       @relation(fields: [loginId], references: [id])
+    loginId             Int         @unique
 
     @@id([id, loginId])
 
-    passwords   Password[]
+    passwords           Password[]
 
-    notes       Note[]
+    notes               Note[]
 }
 
 model Password {
-    id          Int         @default(autoincrement()) @unique
-    title       String
-    url         String
-    username    String
-    password    String
+    id                  Int         @default(autoincrement()) @unique
+    title               String
+    url                 String
+    username            String
+    encryptedPassword   String
 
-    user        User        @relation(fields: [userId], references: [id])
-    userId      Int         @unique
+    user                User        @relation(fields: [userId], references: [id])
+    userId              Int         @unique
 
     @@id([id, userId])
 }
 
 model Note {
-    id          Int         @default(autoincrement()) @unique
-    title       String
-    content     String
+    id                  Int         @default(autoincrement()) @unique
+    title               String
+    encryptedContent    String
 
-    user        User        @relation(fields: [userId], references: [id])
-    userId      Int         @unique
+    user                User        @relation(fields: [userId], references: [id])
+    userId              Int         @unique
 
     @@id([id, userId])
 }
