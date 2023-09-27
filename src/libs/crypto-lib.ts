@@ -10,7 +10,7 @@ import { EncodeHex, DecodeHex, EncodeUTF8 } from "@libs/enc-dec-lib";
 export function HashPassword(password: string): [string, string] {
   const salt = randomBytes(32);
 
-  const hashedPassword = pbkdf2Sync(password, salt, 10000, 32, "sha512");
+  const hashedPassword = pbkdf2Sync(password, salt, 30000, 32, "sha512");
 
   return [EncodeHex(hashedPassword), EncodeHex(salt)];
 }
@@ -19,12 +19,12 @@ export function HashPassword(password: string): [string, string] {
  * @author JustBrandonLim
  *
  * @param {string} password The password to verify
- * @param {string} hashedPasswordSalt The salt of the hashed password
  * @param {string} hashedPassword The hashed password to verify against
+ * @param {string} hashedPasswordSalt The salt of the hashed password
  * @returns {boolean} Whether the password is verified
  */
-export function VerifyPassword(password: string, hashedPasswordSalt: string, hashedPassword: string): boolean {
-  return EncodeHex(pbkdf2Sync(password, hashedPasswordSalt, 30000, 32, "SHA512")) === hashedPassword;
+export function VerifyPassword(password: string, hashedPassword: string, hashedPasswordSalt: string): boolean {
+  return EncodeHex(pbkdf2Sync(password, DecodeHex(hashedPasswordSalt), 30000, 32, "sha512")) === hashedPassword;
 }
 
 /**
