@@ -16,8 +16,7 @@ import { Input } from "@components/ui/input";
 import { useForm } from "react-hook-form";
 import React, { Dispatch, SetStateAction } from "react";
 
-const PasswordCardDialogSchema = z
-  .object({
+const PasswordCardDialogSchema = z.object({
     url: z.string({
       required_error: "URL is required",
       invalid_type_error: "URL must be a string",
