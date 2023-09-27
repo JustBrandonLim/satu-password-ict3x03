@@ -26,7 +26,7 @@ import { Progress } from "@components/ui/progress"
 import { Button } from "@components/ui/button"
 import zxcvbn from 'zxcvbn';
 import { Eye, EyeOff, HelpCircleIcon } from "lucide-react"
-import { GeneratePasswordForm } from "./genereate-password-dialog"
+import { GeneratePasswordForm } from "@components/generate-password-dialog"
 import { UseFormReturn } from "react-hook-form"
 import { ZodEffects, ZodObject, ZodString, ZodTypeAny, z } from "zod"
 
@@ -115,11 +115,11 @@ return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         {/* Generate Password Button*/}
-        <Button type="button" variant={'secondary'} className="w-full">Genereate Password</Button>
+        <Button type="button" variant={'secondary'} className="w-full">Generate Password</Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Genereate Password</DialogTitle>
+          <DialogTitle>Generate Password</DialogTitle>
           <DialogDescription>
             <GeneratePasswordForm updatePasswordCallback={updatePasswordField} setOpenDialog={setOpen}/>
           </DialogDescription>
