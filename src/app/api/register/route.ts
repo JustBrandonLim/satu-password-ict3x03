@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { HashPassword, GenerateWrappingKey, GenerateRandomKey, EncryptAES } from "@libs/crypto-lib";
 import { authenticator } from "otplib";
 import { PrismaClient } from "@prisma/client";
-import qrcode from "qrcode";
 
 interface RegisterData {
   email: string;
