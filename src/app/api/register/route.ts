@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
+import { HashPassword, GenerateWrappingKey, GenerateRandomKey, EncryptAES } from "@libs/crypto-lib";
+import { authenticator } from "otplib";
 import { PrismaClient } from "@prisma/client";
-
-import { HashPassword, GenerateWrappingKey, GenerateRandomKey, EncryptAES, DecryptAES } from "@libs/crypto-lib";
+import qrcode from "qrcode";
 
 interface RegisterData {
   email: string;
@@ -15,20 +16,13 @@ export async function POST(nextRequest: NextRequest) {
 
     const [hashedPassword, hashedPasswordSalt] = HashPassword(registerData.password);
 
-    const [generatedWrappingKey, generatedWrappingKeySalt] = GenerateWrappingKey(registerData.password);
+    const totpSecret = authenticator.generateSecret();
 
-    const key = GenerateRandomKey();
+    const [wrappingKey, wrappingKeySalt] = GenerateWrappingKey(registerData.password);
 
-    const encryptedKey = EncryptAES(key, generatedWrappingKey);
+    const masterKey = GenerateRandomKey();
 
-    /*const key = GenerateRandomKey();
-    console.log("key: " + key);
-
-    const encryptedKey = EncryptAES(key, generatedWrappingKey);
-    console.log("encrypted key: " + encryptedKey);
-
-    const decryptedKey = DecryptAES(encryptedKey, generatedWrappingKey);
-    console.log("decrypted key: " + decryptedKey);*/
+    const encryptedMasterKey = EncryptAES(masterKey, wrappingKey);
 
     const prisma = new PrismaClient();
 
@@ -36,23 +30,25 @@ export async function POST(nextRequest: NextRequest) {
       .create({
         data: {
           email: registerData.email,
-          password: hashedPassword,
-          salt: hashedPasswordSalt,
-          token: "test",
+          hashedPassword: hashedPassword,
+          hashedPasswordSalt: hashedPasswordSalt,
+          totpSecret: totpSecret,
         },
       })
       .then(async (loginData) => {
         await prisma.user.create({
           data: {
             name: registerData.name,
-            key: encryptedKey,
-            salt: generatedWrappingKeySalt,
+            encryptedMasterKey: encryptedMasterKey,
+            wrappingKeySalt: wrappingKeySalt,
             loginId: loginData.id,
           },
         });
       });
 
-    return NextResponse.json({ token: "" });
+    const otpUrl = authenticator.keyuri(registerData.name, "SatuPassword", totpSecret);
+
+    return NextResponse.json({ otpUrl: otpUrl });
   } catch {
     return NextResponse.json({ message: "Something went wrong!" });
   }
