@@ -1,9 +1,9 @@
 import Image from "next/image";
 import SatuPassword from "@public/SatuPassword.svg";
-import LoginForm from "@components/login/login-form";
+import RegisterForm from "@components/login/register-form";
 import Footer from "@/components/page-footer";
 
-export default function Login() {
+export default function Register() {
   return (
     <main className="w-full flex flex-col items-center justify-center">
       <div className="grow flex flex-col items-center justify-center">
@@ -17,9 +17,9 @@ export default function Login() {
           />
         </div>
         <p className="my-3 font-normal text-center text-lg pb-5 text-gray-500">
-          Log into your Account
+          Get started with SatuPassword
         </p>
-        <LoginForm/>
+        <RegisterForm />
       </div>
       <Footer/>
     </main>
