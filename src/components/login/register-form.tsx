@@ -16,9 +16,15 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { PasswordSection } from "../password-section";
+import { Toaster } from "../ui/toaster";
+import { useToast } from "../ui/use-toast";
 
 // Define Schemas that are used to call to api
 const RegisterFormSchema = z.object({
+  name: z.string({
+    required_error: "Full name is required",
+    invalid_type_error: "Full name must be a string"
+  }),
   email: z.string({
     required_error: "Email is required",
     invalid_type_error: "Email must be a string",
@@ -43,6 +49,7 @@ const RegisterFormSchema = z.object({
 // The actual component
 function RegsiterForm() {
   const router = useRouter();
+  const { toast } = useToast()
 
   // For Login Form
   const registerForm = useForm<z.infer<typeof RegisterFormSchema>>({
@@ -53,33 +60,61 @@ function RegsiterForm() {
     console.log("Register Form Submitted")
     console.log(data)
     console.log(typeof data)
+    let name = data.name
     let email = data.email
     let password = data.password
 
-    const response = await fetch(`/api/login`, {
+    const response = await fetch(`/api/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password, type: "administrator" }),
+        body: JSON.stringify({ name, email, password, type: "administrator" }),
       });
       const json = await response.json();
   
-      if (!response.ok) {
+      if ((response.ok) && (json.otpUrl!=null))  {
         console.log(json);
+        toast({
+          variant: "default",
+          title: "Success!!",
+          description: json.otpUrl,
+        })
       }
-      if (response.ok) {
-        router.push("/");
+      else{
+        console.log(response)
+        console.log(json);
+        // router.push("/");
+        toast({
+          variant: "destructive",
+          title: "Uh oh! Something went wrong.",
+          description: json.message,
+        })
       }
   }
 
   return (
     <Form {...registerForm}>
       <form onSubmit={registerForm.handleSubmit(onRegister)} className="w-2/3 space-y-6">
+        {/* Full name field */}
+        <FormField
+          control={registerForm.control}
+          name="name"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Full name</FormLabel>
+              <FormControl>
+                <Input placeholder="Enter Full name" type="text" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        {/* Email field */}
         <FormField
           control={registerForm.control}
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Username</FormLabel>
+              <FormLabel>Email</FormLabel>
               <FormControl>
                 <Input placeholder="Enter Email" type="email" {...field} />
               </FormControl>
@@ -87,13 +122,16 @@ function RegsiterForm() {
             </FormItem>
           )}
         />
+        {/* Password fieldsss */}
         <PasswordSection/>
+        {/* Sign up Button */}
         <Button type="submit" className="w-full">Sign up</Button>
       </form>
       <p className="mt-8 font-medium text-center text-sm pb-5 text-black">
         Already have an account?{" "}
         <Link href={"/"} className="text-blue-500 hover:underline">Login</Link>
       </p>
+      <Toaster />
     </Form>
   )
 }

@@ -48,7 +48,7 @@ export async function POST(nextRequest: NextRequest) {
     const otpUrl = authenticator.keyuri(registerData.name, "SatuPassword", totpSecret);
 
     return NextResponse.json({ otpUrl: otpUrl });
-  } catch {
-    return NextResponse.json({ message: "Something went wrong!" });
+  } catch(e) {
+    return NextResponse.json({ message: "Something went wrong! "+e });
   }
 }
