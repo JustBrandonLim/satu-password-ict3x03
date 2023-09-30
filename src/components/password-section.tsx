@@ -41,6 +41,12 @@ const PasswordSection: React.FC = () => {
   // Password Strength Checker Logic: https://github.com/dropbox/zxcvbn 
   const [passwordStrength, setPasswordStrength] = React.useState<number>(0);
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // REMOVE SPACES
+    const inputElement = e.target as HTMLInputElement;
+    inputElement.value = inputElement.value
+    .replace(/\s/g, ""); // Remove spaces
+
+    // Calculate Password Strength
     const enteredPassword = e.target.value;
     const result = zxcvbn(enteredPassword);
     const strength = result.score; // zxcvbn provides a score from 0 to 4

@@ -49,6 +49,12 @@ const LoginFormSchema = z.object({
     invalid_type_error: "Email must be a string",
   }),
   rememberEmail: z.boolean().optional(),
+  otp: z.string({
+    required_error: "OTP is required",
+  }).trim()
+  .length(6, "OTP must have only 6 numbers")
+  .regex(new RegExp("^[0-9]*$"), "OTP can only contain numbers")
+  
 })
 
 const RecoverFormSchema = z.object({
@@ -69,6 +75,22 @@ function LoginForm() {
   const loginForm = useForm<z.infer<typeof LoginFormSchema>>({
     resolver: zodResolver(LoginFormSchema),
   })
+
+  // To handle Password Field, removing spaces
+  const handlePassword = (event: React.FormEvent<HTMLInputElement>) => {
+    const inputElement = event.target as HTMLInputElement;
+    inputElement.value = inputElement.value
+    .replace(/\s/g, ""); // Remove spaces
+  };
+
+  // To handle OTP Field, removing non numerical characters
+  const handleOTP = (event: React.FormEvent<HTMLInputElement>) => {
+    const inputElement = event.target as HTMLInputElement;
+    inputElement.value = inputElement.value
+      .replace(/[^0-9.]/g, "") // Remove non-numeric characters except '.'
+      .replace(/(\..*)\./g, "$1"); // Remove extra '.' characters
+  };
+
   // Login SUBMIT
   const onLogin = async (data: z.infer<typeof LoginFormSchema>) => {
     // For Debugging
@@ -105,6 +127,7 @@ function LoginForm() {
   }
 
   return (
+    // Email field
     <Form {...loginForm}>
       <form onSubmit={loginForm.handleSubmit(onLogin)} className="sm:w-2/3 w-5/6 space-y-6">
         <FormField control={loginForm.control}
@@ -119,6 +142,7 @@ function LoginForm() {
             </FormItem>
           )}
         />
+        {/* Password Field */}
         <FormField control={loginForm.control}
           name="password"
           render={({ field }) => (
@@ -126,7 +150,7 @@ function LoginForm() {
               <FormLabel>Password</FormLabel>
               <FormControl>
                 <div className="relative">
-                  <Input placeholder="Enter Password" type={showPassword?'text':'password'} {...field}/>
+                  <Input placeholder="Enter Password" type={showPassword?'text':'password'} {...field} maxLength={64} onInput={handlePassword}/>
                   <Button variant="ghost" type="button" size='icon' className="absolute right-0 bottom-0" aria-label="Toggle Passowrd Visibility" onClick={() => {setShowPassword(!showPassword)}}>
                     <Eye className="absolute text-slate-400" visibility={showPassword? 'visible':'hidden'}/>
                     <EyeOff className="absolute text-slate-300" visibility={showPassword? 'hidden':'visible'}/>
@@ -137,7 +161,24 @@ function LoginForm() {
             </FormItem>
             )}
           />
-          <div className="flex justify-between px-1 ">
+          {/* OTP Field */}
+          <FormField control={loginForm.control}
+          name="otp"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>OTP</FormLabel>
+              <FormControl>
+                <Input placeholder="Enter OTP" type="text" inputMode="numeric" minLength={6} maxLength={6} onInput={handleOTP} {...field} />
+              </FormControl>
+              <FormDescription className="text-character-secondary">
+                Check your Authenticator app
+              </FormDescription>
+            </FormItem>
+          )}
+        />
+        {/* oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" */}
+          {/* Remember Me Checkbox */}
+          <div className="flex justify-between px-1 pt-4">
             <FormField control={loginForm.control}
             name="rememberEmail"
             render={({ field }) => (
@@ -155,6 +196,7 @@ function LoginForm() {
                 </div>
               </FormItem>
             )}/>
+            {/* Forget and Recover Password Dialog */}
             <Dialog>
               <DialogTrigger className="text-character-secondary text-sm hover:underline">Forgot your password?</DialogTrigger>
                 <DialogContent>
