@@ -18,6 +18,7 @@ import {
 import { PasswordSection } from "../password-section";
 import { Toaster } from "../ui/toaster";
 import { useToast } from "../ui/use-toast";
+import {QRCodeSVG} from 'qrcode.react';
 
 // Define Schemas that are used to call to api
 const RegisterFormSchema = z.object({
@@ -92,7 +93,8 @@ function RegsiterForm() {
   }
 
   return (
-    <Form {...registerForm}>
+    <div className="w-full flex flex-col items-center">
+      <Form {...registerForm}>
       <form onSubmit={registerForm.handleSubmit(onRegister)} className="w-2/3 space-y-6">
         {/* Full name field */}
         <FormField
@@ -131,8 +133,9 @@ function RegsiterForm() {
         Already have an account?{" "}
         <Link href={"/"} className="text-blue-500 hover:underline">Login</Link>
       </p>
-      <Toaster />
     </Form>
+    <Toaster />
+    </div>    
   )
 }
 export default RegsiterForm;
