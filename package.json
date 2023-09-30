@@ -9,9 +9,9 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@prisma/client": "^5.3.1",
     "@heroicons/react": "^2.0.18",
     "@hookform/resolvers": "^3.3.1",
+    "@prisma/client": "5.3.1",
     "@radix-ui/react-checkbox": "^1.0.4",
     "@radix-ui/react-dialog": "^1.0.4",
     "@radix-ui/react-label": "^2.0.2",
@@ -39,10 +39,11 @@
     "typescript": "5.2.2"
   },
   "devDependencies": {
-    "prisma": "^5.3.1",
+    "@types/zxcvbn": "^4.4.2",
     "lucide-react": "^0.279.0",
     "next-themes": "^0.2.1",
     "postcss": "8.4.29",
+    "prisma": "5.3.1",
     "react-hook-form": "^7.46.1",
     "shadcn-ui": "^0.4.0",
     "tailwind-merge": "^1.14.0",

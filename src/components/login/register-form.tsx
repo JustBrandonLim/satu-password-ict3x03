@@ -39,6 +39,7 @@ const RegisterFormSchema = z.object({
   message: 'Password do not match'
 })
 
+
 // The actual component
 function RegsiterForm() {
   const router = useRouter();
@@ -86,7 +87,7 @@ function RegsiterForm() {
             </FormItem>
           )}
         />
-        <PasswordSection form={registerForm} formSchema={RegisterFormSchema} />
+        <PasswordSection/>
         <Button type="submit" className="w-full">Sign up</Button>
       </form>
       <p className="mt-8 font-medium text-center text-sm pb-5 text-black">
