@@ -37,7 +37,13 @@ const genereatePasswordFormSchema = z.object({
 const GeneratePasswordForm: React.FC<GeneratePasswordFormProps> = ({updatePasswordCallback,setOpenDialog}) => {
     // For password visiblity
     const [showPassword, setShowPassword] = React.useState(false)
-    //
+
+    // To handle Password Field, removing spaces
+    const handlePassword = (event: React.FormEvent<HTMLInputElement>) => {
+        const inputElement = event.target as HTMLInputElement;
+        inputElement.value = inputElement.value
+        .replace(/\s/g, ""); // Remove spaces
+    };
 
     // 1. Define your form.
     const genereatePasswordForm = useForm<z.infer<typeof genereatePasswordFormSchema>>({
@@ -80,7 +86,7 @@ const GeneratePasswordForm: React.FC<GeneratePasswordFormProps> = ({updatePasswo
                         <FormControl>
                         <div className="flex w-full space-x-4">
                             <div className="relative w-full">
-                                <Input placeholder="Generate password button ->" type={showPassword?'text':'password'} {...field}/>
+                                <Input placeholder="Generate password button ->" type={showPassword?'text':'password'} {...field} onInput={handlePassword}/>
                                 <Button variant="ghost" type="button" size='icon' className="absolute right-0 bottom-0" aria-label="Toggle Passowrd Visibility" onClick={() => {setShowPassword(!showPassword)}}>
                                     <Eye className="absolute text-slate-400" visibility={showPassword? 'visible':'hidden'}/>
                                     <EyeOff className="absolute text-slate-300" visibility={showPassword? 'hidden':'visible'}/>
