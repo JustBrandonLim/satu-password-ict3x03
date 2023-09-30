@@ -25,6 +25,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
+import React from "react";
+import { Eye, EyeOff } from "lucide-react";
 
 // Define Schemas that are used to call to api
 const LoginFormSchema = z.object({
@@ -54,6 +56,8 @@ const RecoverFormSchema = z.object({
 // The actual component
 function LoginForm() {
   const router = useRouter();
+  // Maintain Password Visibility State
+  const [showPassword, setShowPassword] = React.useState(false)
 
   // For Login Form
   const loginForm = useForm<z.infer<typeof LoginFormSchema>>({
@@ -114,7 +118,13 @@ function LoginForm() {
             <FormItem>
               <FormLabel>Password</FormLabel>
               <FormControl>
-                <Input placeholder="Enter Password" type="password" {...field} />
+                <div className="relative">
+                  <Input placeholder="Enter Password" type={showPassword?'text':'password'} {...field}/>
+                  <Button variant="ghost" type="button" size='icon' className="absolute right-0 bottom-0" aria-label="Toggle Passowrd Visibility" onClick={() => {setShowPassword(!showPassword)}}>
+                    <Eye className="absolute text-slate-400" visibility={showPassword? 'visible':'hidden'}/>
+                    <EyeOff className="absolute text-slate-300" visibility={showPassword? 'hidden':'visible'}/>
+                  </Button>
+                </div>
               </FormControl>
               <FormMessage />
             </FormItem>

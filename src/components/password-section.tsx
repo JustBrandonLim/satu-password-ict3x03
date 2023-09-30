@@ -26,11 +26,12 @@ import { Button } from "@components/ui/button"
 import zxcvbn from 'zxcvbn';
 import { Eye, EyeOff, HelpCircleIcon } from "lucide-react"
 import { GeneratePasswordForm } from "@components/generate-password-dialog"
-import { Controller, useFormContext } from "react-hook-form"
+import { useFormContext } from "react-hook-form"
 
 // The actual component
 const PasswordSection: React.FC = () => {
-  const { register, setValue } = useFormContext() // retrieve all hook methods
+  // Retrieve all hook methods
+  const { register, setValue } = useFormContext()
 
   // Maintain Password Visibility State
   const [showPassword, setShowPassword] = React.useState(false)
@@ -49,7 +50,7 @@ const PasswordSection: React.FC = () => {
   // Callback function to update the Password field in the form schema
   const updatePasswordField = (password: string) => {
     // Update the form schema's password field
-    setValue("password", password);
+    setValue("password", password); 
     //show the password to the user
     setShowPassword(true);
     //trigger the password strength trigger
@@ -70,7 +71,7 @@ const PasswordSection: React.FC = () => {
             <FormLabel>Password</FormLabel>
             <FormControl>
               <div className="relative">
-                <Input placeholder="Enter Password" type={showPassword?'text':'password'} {...field} onInput={handlePasswordChange} onFocus={()=>{console.log(field.value)}}/>
+                <Input placeholder="Enter Password" type={showPassword?'text':'password'} {...field} onInput={handlePasswordChange}/>
                 <Button variant="ghost" type="button" size='icon' className="absolute right-0 bottom-0" aria-label="Toggle Passowrd Visibility" onClick={() => {setShowPassword(!showPassword)}}>
                   <Eye className="absolute text-slate-400" visibility={showPassword? 'visible':'hidden'}/>
                   <EyeOff className="absolute text-slate-300" visibility={showPassword? 'hidden':'visible'}/>
