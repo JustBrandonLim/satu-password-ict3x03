@@ -126,10 +126,7 @@ const PasswordCardDialog: React.FC<PasswordCardDialogProps> = ({
           />
         </div>
         {/* Generate Password Component*/}
-        <PasswordSection
-          form={passwordCardForm}
-          formSchema={PasswordCardDialogSchema}
-        />
+        <PasswordSection/>
         <div className="flex space-x-4 w-full">
           <Button
             type="reset"

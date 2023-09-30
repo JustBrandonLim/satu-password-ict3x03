@@ -43,7 +43,7 @@ const GeneratePasswordForm: React.FC<GeneratePasswordFormProps> = ({updatePasswo
     const genereatePasswordForm = useForm<z.infer<typeof genereatePasswordFormSchema>>({
         resolver: zodResolver(genereatePasswordFormSchema),
         defaultValues: {
-            password: "SomeKindaGenereatedPassword",
+            password: "",
             passwordLength: 12,
             uppercase: false,
             lowercase: false,
