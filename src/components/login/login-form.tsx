@@ -69,6 +69,7 @@ function LoginForm() {
   const loginForm = useForm<z.infer<typeof LoginFormSchema>>({
     resolver: zodResolver(LoginFormSchema),
   })
+  // Login SUBMIT
   const onLogin = async (data: z.infer<typeof LoginFormSchema>) => {
     // For Debugging
     console.log("Login Form Submitted")
@@ -105,7 +106,7 @@ function LoginForm() {
 
   return (
     <Form {...loginForm}>
-      <form onSubmit={loginForm.handleSubmit(onLogin)} className="w-2/3 space-y-6">
+      <form onSubmit={loginForm.handleSubmit(onLogin)} className="sm:w-2/3 w-5/6 space-y-6">
         <FormField control={loginForm.control}
           name="email"
           render={({ field }) => (
