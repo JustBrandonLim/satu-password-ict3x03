@@ -1,35 +1,22 @@
 "use client"
 
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import * as z from "zod"
-import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import Link from "next/link"
-import { Checkbox } from "@/components/ui/checkbox"
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormDescription,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
 import React from "react";
+import { z } from "zod";
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "../ui/form";
+import { Input } from "../ui/input";
+import { Button } from "../ui/button";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff } from "lucide-react";
+import { Checkbox } from "../ui/checkbox";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "../ui/dialog";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { Toaster } from "../ui/toaster";
+import { useToast } from "../ui/use-toast";
 
-// Define Schemas that are used to call to api
-const LoginFormSchema = z.object({
+// Login Form Schemas
+const formSchema = z.object({
   email: z.string({
     required_error: "Email is required",
     invalid_type_error: "Email must be a string",
@@ -44,19 +31,16 @@ const LoginFormSchema = z.object({
   })
   .max(64, {message: "Password can not exceed 64 characters"})
   .regex(new RegExp(/^\S*$/), "Password cannot contain spaces"),
-  confirmPassword: z.string({
-    required_error: "Please confirm your password",
-    invalid_type_error: "Email must be a string",
-  }),
-  rememberEmail: z.boolean().optional(),
   otp: z.string({
     required_error: "OTP is required",
-  }).trim()
-  .length(6, "OTP must have only 6 numbers")
-  .regex(new RegExp("^[0-9]*$"), "OTP can only contain numbers")
-  
+  })
+  .min(6, "OTP must have 6 numbers")
+  .length(6, "OTP must have 6 numbers")
+  .regex(new RegExp("^[0-9]*$"), "OTP can only contain numbers"),
+  rememberEmail: z.boolean().optional(),
 })
 
+// Recover Account Schema
 const RecoverFormSchema = z.object({
   email: z.string({
     required_error: "Email is required",
@@ -65,17 +49,91 @@ const RecoverFormSchema = z.object({
   .email('Invalid Email')
 })
 
-// The actual component
-function LoginForm() {
-  const router = useRouter();
+// MAIN Component Code
+function LoginFormTest() {
+  const router = useRouter(); // Instatiate router for routing to other pages later
+  const { toast } = useToast() // Instatiate Toast for status feedback
+  // Define and Instatiate Login Form
+  const loginForm = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      email: "",
+      rememberEmail: false,
+    },
+  })
+  // Handle login form submit
+  async function onLoginSubmit(data: z.infer<typeof formSchema>) {
+    // Do something with the form values.
+    console.log("Login Form Submitted");
+    console.log(data);
+    let email = data.email;
+    let password = data.password;
+    let otp = data.otp;
+
+    const response = await fetch(`/api/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password, otp, type: "administrator" }),
+    });
+    const json = await response.json();
+
+    // DEBUG RESPONSE
+    console.log("DEBUG")
+    console.log(response)
+    console.log(json)
+    // Catch HTTP Response Errors
+    if (!response.ok) {
+      console.log(response);
+      const responseError = await Response.error();
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: `Request Error: ${response.status} ${response.statusText}, ${responseError.body}`
+      })
+    }
+    // Catch Failed Login Error
+    else if (json.message.includes("NotFoundError")){
+      console.log(json);
+      toast({
+        variant: "destructive",
+        title: "Login Failed",
+        description: `Email does not exist! Route: ${json.message},`
+      })
+    }
+    else if (json.message.includes("Failed!")) {
+      console.log(json);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: `${json.message} Password or OTP Error`
+      })
+      // router.push("/home");
+    }
+    else{
+      console.log(response)
+      console.log(json)
+      toast({
+        variant: "default",
+        title: "Success?",
+        description: `${json.message}`
+      })
+    }
+  }
+
+  // Define and Instatiate RECOVER Form
+  const recoverForm = useForm<z.infer<typeof RecoverFormSchema>>({
+    resolver: zodResolver(RecoverFormSchema),
+  })
+  // Handle RECOVER form submit
+  const onRecover = async (data: z.infer<typeof RecoverFormSchema>) => {
+    // For Debugging
+    console.log("Recover Form Submitted")
+    console.log(data)
+    console.log(typeof data)
+  }
+
   // Maintain Password Visibility State
   const [showPassword, setShowPassword] = React.useState(false)
-
-  // For Login Form
-  const loginForm = useForm<z.infer<typeof LoginFormSchema>>({
-    resolver: zodResolver(LoginFormSchema),
-  })
-
   // To handle Password Field, removing spaces
   const handlePassword = (event: React.FormEvent<HTMLInputElement>) => {
     const inputElement = event.target as HTMLInputElement;
@@ -91,45 +149,11 @@ function LoginForm() {
       .replace(/(\..*)\./g, "$1"); // Remove extra '.' characters
   };
 
-  // Login SUBMIT
-  const onLogin = async (data: z.infer<typeof LoginFormSchema>) => {
-    // For Debugging
-    console.log("Login Form Submitted")
-    console.log(data)
-    console.log(typeof data)
-    let email = data.email
-    let password = data.password
-
-    const response = await fetch(`/api/login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password, type: "administrator" }),
-    });
-    const json = await response.json();
-
-    if (!response.ok) {
-      console.log(json);
-    }
-    if (response.ok) {
-      router.push("/home");
-    }
-  }
-
-  // For Recover Form (in dialog)
-  const recoverForm = useForm<z.infer<typeof RecoverFormSchema>>({
-    resolver: zodResolver(RecoverFormSchema),
-  })
-  const onRecover = async (data: z.infer<typeof RecoverFormSchema>) => {
-    // For Debugging
-    console.log("Recover Form Submitted")
-    console.log(data)
-    console.log(typeof data)
-  }
-
   return (
-    // Email field
-    <Form {...loginForm}>
-      <form onSubmit={loginForm.handleSubmit(onLogin)} className="sm:w-2/3 w-5/6 space-y-6">
+    <div className="sm:w-2/3 w-5/6 ">
+      <Form {...loginForm}>
+      <form onSubmit={loginForm.handleSubmit(onLoginSubmit)} className="space-y-4">
+        {/* Email Field */}
         <FormField control={loginForm.control}
           name="email"
           render={({ field }) => (
@@ -142,8 +166,8 @@ function LoginForm() {
             </FormItem>
           )}
         />
-        {/* Password Field */}
-        <FormField control={loginForm.control}
+         {/* Password Field */}
+         <FormField control={loginForm.control}
           name="password"
           render={({ field }) => (
             <FormItem>
@@ -163,31 +187,28 @@ function LoginForm() {
           />
           {/* OTP Field */}
           <FormField control={loginForm.control}
-          name="otp"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>OTP</FormLabel>
-              <FormControl>
-                <Input placeholder="Enter OTP" type="text" inputMode="numeric" minLength={6} maxLength={6} onInput={handleOTP} {...field} />
-              </FormControl>
-              <FormDescription className="text-character-secondary">
-                Check your Authenticator app
-              </FormDescription>
-            </FormItem>
-          )}
-        />
-        {/* oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" */}
+            name="otp"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>One Time Password (OTP)</FormLabel>
+                <FormControl>
+                  <Input placeholder="Enter OTP" type="text" inputMode="numeric" maxLength={6} onInput={handleOTP}{...field} />
+                </FormControl>
+                <FormDescription className="text-character-secondary">
+                  Check your Authenticator app
+                </FormDescription>
+                <FormMessage />
+              </FormItem> 
+            )}
+          />
           {/* Remember Me Checkbox */}
-          <div className="flex justify-between px-1 pt-4">
+          <div className="flex justify-between px-1 pb-8">
             <FormField control={loginForm.control}
             name="rememberEmail"
             render={({ field }) => (
               <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md">
                 <FormControl>
-                  <Checkbox
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                  />
+                  <Checkbox checked={field.value} onCheckedChange={field.onChange}/>
                 </FormControl>
                 <div className="space-y-1 leading-none">
                   <FormLabel>
@@ -202,12 +223,14 @@ function LoginForm() {
                 <DialogContent>
                   <DialogHeader>
                     <DialogTitle>Recover your account</DialogTitle>
-                    <DialogDescription>
-                      Please enter in your email address that is associated with your account
+                    <DialogDescription className="text-character-secondary">
+                      Please enter in your email address associated with your account
                     </DialogDescription>
                   </DialogHeader>
+                  {/* Recover Form */}
                   <Form {...recoverForm}>
-                    <form onSubmit={recoverForm.handleSubmit(onRecover)} className="w-full space-y-3">
+                    <form className="w-full space-y-3" >
+                      {/* Recover Email Field */}
                       <FormField
                         control={recoverForm.control}
                         name="email"
@@ -221,25 +244,26 @@ function LoginForm() {
                           </FormItem>
                         )}
                       />
-                      <FormDescription>
+                      <FormDescription className="text-character-secondary">
                         A recovery email will be sent if such an account exists
                       </FormDescription> 
-                      <Button type="submit" className="w-full">Recover</Button>
+                      <Button type="button" className="w-full" onClick={recoverForm.handleSubmit(onRecover)}>Recover</Button>
                     </form>
                   </Form>
                 </DialogContent>
             </Dialog>
           </div>
-        <Button type="submit" className="w-full">Login</Button>
+          {/* Login Buttoon */}
+        <Button type="submit" className="w-full">Submit</Button>
       </form>
-      <p className="mt-8 font-medium text-center text-sm pb-5 text-black">
-        New to SatuPassword?{" "}
+      <p className="mt-16 font-medium text-center text-sm pb-5 text-black">
+        New to SatuPassword?{"   "}
         <Link href={"/register"} className="text-blue-500 hover:underline">Sign up</Link>
-        {/* <span className=" text-blue-500 hover:underline"
-          onClick={() => {router.push("/register");}}>{" "}Sign Up{" "}
-        </span> */}
       </p>
     </Form>
+     {/* Submit Status Toast */}
+     <Toaster />
+    </div>
   )
 }
-export default LoginForm;
+export default LoginFormTest;
