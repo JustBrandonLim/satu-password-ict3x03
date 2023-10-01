@@ -1,13 +1,13 @@
 "use client"
 
-import React from "react";
+import React, { useState } from "react";
 import { z } from "zod";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "../ui/form";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { Checkbox } from "../ui/checkbox";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "../ui/dialog";
 import Link from "next/link";
@@ -37,7 +37,7 @@ const formSchema = z.object({
   .min(6, "OTP must have 6 numbers")
   .length(6, "OTP must have 6 numbers")
   .regex(new RegExp("^[0-9]*$"), "OTP can only contain numbers"),
-  rememberEmail: z.boolean().optional(),
+  rememberMe: z.boolean().optional(),
 })
 
 // Recover Account Schema
@@ -53,18 +53,19 @@ const RecoverFormSchema = z.object({
 function LoginFormTest() {
   const router = useRouter(); // Instatiate router for routing to other pages later
   const { toast } = useToast() // Instatiate Toast for status feedback
+  const [isLoading, setIsLoading] = useState(false) //used to maintain loading state
   // Define and Instatiate Login Form
   const loginForm = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      email: "",
-      rememberEmail: false,
+      rememberMe: false,
     },
   })
   // Handle login form submit
   async function onLoginSubmit(data: z.infer<typeof formSchema>) {
     // Do something with the form values.
     console.log("Login Form Submitted");
+    setIsLoading(true)
     console.log(data);
     let email = data.email;
     let password = data.password;
@@ -92,32 +93,33 @@ function LoginFormTest() {
       })
     }
     // Catch Failed Login Error
-    else if (json.message.includes("NotFoundError")){
+    else if (json.message.includes("Something went wrong!")){
       console.log(json);
       toast({
         variant: "destructive",
         title: "Login Failed",
-        description: `Email does not exist! Route: ${json.message},`
+        description: `Error message: ${json.message} Email not found`
       })
     }
-    else if (json.message.includes("Failed!")) {
+    else if (json.message.includes("Failed!")){
       console.log(json);
       toast({
         variant: "destructive",
-        title: "Error",
-        description: `${json.message} Password or OTP Error`
+        title: "Login Failed",
+        description: `Error message: ${json.message} Password or OTP Error`
       })
-      // router.push("/home");
     }
     else{
       console.log(response)
       console.log(json)
       toast({
         variant: "default",
-        title: "Success?",
+        title: "Success!",
         description: `${json.message}`
       })
+      // router.push("/home");
     }
+    setIsLoading(false)
   }
 
   // Define and Instatiate RECOVER Form
@@ -126,10 +128,12 @@ function LoginFormTest() {
   })
   // Handle RECOVER form submit
   const onRecover = async (data: z.infer<typeof RecoverFormSchema>) => {
+    setIsLoading(true)
     // For Debugging
     console.log("Recover Form Submitted")
     console.log(data)
     console.log(typeof data)
+    setTimeout(()=>{setIsLoading(false)}, 1000);
   }
 
   // Maintain Password Visibility State
@@ -158,7 +162,7 @@ function LoginFormTest() {
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Username</FormLabel>
+              <FormLabel>Email</FormLabel>
               <FormControl>
                 <Input placeholder="Enter Email" type="email" {...field} />
               </FormControl>
@@ -204,7 +208,7 @@ function LoginFormTest() {
           {/* Remember Me Checkbox */}
           <div className="flex justify-between px-1 pb-8">
             <FormField control={loginForm.control}
-            name="rememberEmail"
+            name="rememberMe"
             render={({ field }) => (
               <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md">
                 <FormControl>
@@ -247,14 +251,23 @@ function LoginFormTest() {
                       <FormDescription className="text-character-secondary">
                         A recovery email will be sent if such an account exists
                       </FormDescription> 
-                      <Button type="button" className="w-full" onClick={recoverForm.handleSubmit(onRecover)}>Recover</Button>
+                      {/* Revoer Form Submit */}
+                      <Button type="button" className={`w-full ${isLoading ? 'hidden' : ''}`} onClick={recoverForm.handleSubmit(onRecover)}>Recover</Button>
+                      <Button disabled className={`w-full ${isLoading ? '' : 'hidden'}`}>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Please wait
+                      </Button>
                     </form>
                   </Form>
                 </DialogContent>
             </Dialog>
           </div>
           {/* Login Buttoon */}
-        <Button type="submit" className="w-full">Submit</Button>
+        <Button type="submit" className={`w-full ${isLoading ? 'hidden' : ''}`}>Login</Button>
+        <Button disabled className={`w-full ${isLoading ? '' : 'hidden'}`}>
+          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          Please wait
+        </Button>
       </form>
       <p className="mt-16 font-medium text-center text-sm pb-5 text-black">
         New to SatuPassword?{"   "}
