@@ -89,7 +89,7 @@ function RegsiterForm() {
     const response = await fetch(`/api/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, password, type: "administrator" }),
+        body: JSON.stringify({ name, email, password }),
       });
       const json = await response.json();
   
