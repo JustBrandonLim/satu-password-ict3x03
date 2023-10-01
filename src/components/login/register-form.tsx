@@ -81,7 +81,7 @@ function RegsiterForm() {
     console.log("Register Form Submitted")
     setIsLoading(true)
     console.log(data)
-    console.log(typeof data)
+
     let name = data.name
     let email = data.email
     let password = data.password
