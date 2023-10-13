@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
-import { VerifyPassword, GenerateWrappingKey, DecryptAES } from "@libs/crypto-lib";
+import { VerifyPassword, GenerateWrappingKey, DecryptAES, GenerateRandomKey } from "@libs/crypto-lib";
 import { DecodeHex } from "@libs/enc-dec-lib";
 import { authenticator } from "otplib";
-import * as jose from "jose";
+import { EncryptJWT } from "jose";
 
 interface LoginData {
   email: string;
@@ -11,10 +11,10 @@ interface LoginData {
   otp: string;
 }
 
-const prisma = new PrismaClient();
-
 export async function POST(nextRequest: NextRequest) {
   try {
+    const prisma = new PrismaClient();
+
     const loginData: LoginData = await nextRequest.json();
 
     const login = await prisma.login.findUniqueOrThrow({
@@ -35,20 +35,33 @@ export async function POST(nextRequest: NextRequest) {
 
         const masterKey = DecryptAES(user.encryptedMasterKey, wrappingKey);
 
-        const ejwt = await new jose.EncryptJWT({ email: login.email, masterKey: masterKey })
+        const jwtId = GenerateRandomKey();
+
+        await prisma.login.update({
+          where: {
+            email: loginData.email,
+          },
+          data: {
+            jwtId: jwtId,
+          },
+        });
+
+        const encryptedJwt = await new EncryptJWT({ email: login.email, masterKey: masterKey, jwtId: jwtId })
           .setProtectedHeader({ alg: "dir", enc: "A256GCM" })
+          .setIssuer("https://satupassword.com")
+          .setAudience("https://satupassword.com")
           .setIssuedAt()
-          .setExpirationTime("1h")
+          .setExpirationTime("3m")
           .encrypt(DecodeHex(process.env.SECRET_KEY!));
 
-        const nextResponse: NextResponse = NextResponse.json({ message: "Succeeded!" });
-        nextResponse.cookies.set("ejwt", ejwt);
+        const nextResponse: NextResponse = NextResponse.json({ message: "Successful login!" });
+        nextResponse.cookies.set("encryptedjwt", encryptedJwt);
 
         return nextResponse;
       }
     }
 
-    return NextResponse.json({ message: "Failed!" });
+    return NextResponse.json({ message: "Incorrect email, password or token!" });
   } catch {
     return NextResponse.json({ message: "Something went wrong!" });
   }

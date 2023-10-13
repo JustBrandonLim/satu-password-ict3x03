@@ -13,6 +13,7 @@ model Login {
     hashedPassword      String      // hashed password
     hashedPasswordSalt  String      // salt of the hashed password
     totpSecret          String      // used to generate totp, unecrypted 
+    jwtId               String?     // used to prevent replay attacks for JWT
 
     User                User?
 }
