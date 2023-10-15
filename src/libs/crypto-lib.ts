@@ -76,7 +76,7 @@ export function EncryptAES(string: string, key: string | Buffer): string {
 
   const cipher = createCipheriv("aes-256-gcm", typeof key === "string" ? DecodeHex(key as string) : key, iv);
 
-  let encryptedData = cipher.update(string, "utf-8");
+  var encryptedData = cipher.update(string, "utf-8");
   encryptedData = Buffer.concat([encryptedData, cipher.final()]);
 
   const authenticationTag = cipher.getAuthTag();
@@ -103,7 +103,7 @@ export function DecryptAES(string: string, key: string | Buffer): string {
 
   decipher.setAuthTag(authenticationTag);
 
-  let decryptedData = decipher.update(encryptedData);
+  var decryptedData = decipher.update(encryptedData);
   decryptedData = Buffer.concat([decryptedData, decipher.final()]);
 
   return EncodeUTF8(decryptedData);
