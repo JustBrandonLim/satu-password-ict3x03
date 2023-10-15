@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { HashPassword, GenerateNewWrappingKey, GenerateRandomKey, EncryptAES } from "@libs/crypto-lib";
 import { authenticator } from "otplib";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, Prisma } from "@prisma/client";
 
 interface RegisterData {
   email: string;
@@ -9,10 +9,10 @@ interface RegisterData {
   name: string;
 }
 
-const prisma = new PrismaClient();
-
 export async function POST(nextRequest: NextRequest) {
   try {
+    const prisma = new PrismaClient();
+
     const registerData: RegisterData = await nextRequest.json();
 
     const [hashedPassword, hashedPasswordSalt] = HashPassword(registerData.password);
@@ -47,8 +47,12 @@ export async function POST(nextRequest: NextRequest) {
 
     const otpUrl = authenticator.keyuri(registerData.name, "SatuPassword", totpSecret);
 
-    return NextResponse.json({ otpUrl: otpUrl });
-  } catch(e) {
-    return NextResponse.json({ message: "Something went wrong! "+e });
+    return NextResponse.json({ message: "Successful register!", otpUrl: otpUrl });
+  } catch (exception) {
+    if (exception instanceof Prisma.PrismaClientKnownRequestError) {
+      if (exception.code === "P2002") {
+        return NextResponse.json({ message: "Email already exists!" });
+      }
+    } else return NextResponse.json({ message: "Something went wrong!" });
   }
 }
