@@ -21,9 +21,15 @@ export async function GET(nextRequest: NextRequest) {
         },
       });
 
+      const user = await prisma.user.findUniqueOrThrow({
+        where: {
+          loginId: login.id,
+        },
+      });
+
       const passwords = await prisma.password.findMany({
         where: {
-          userId: login.id,
+          userId: user.id,
         },
       });
 

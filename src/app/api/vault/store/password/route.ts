@@ -31,13 +31,19 @@ export async function POST(nextRequest: NextRequest) {
         },
       });
 
+      const user = await prisma.user.findUniqueOrThrow({
+        where: {
+          loginId: login.id,
+        },
+      });
+
       await prisma.password.create({
         data: {
           title: vaultStorePasswordData.title,
           url: vaultStorePasswordData.url,
           username: vaultStorePasswordData.username,
           encryptedPassword: EncryptAES(vaultStorePasswordData.password, payload.masterKey as string),
-          userId: login.id,
+          userId: user.id,
         },
       });
 
@@ -45,7 +51,8 @@ export async function POST(nextRequest: NextRequest) {
     }
 
     return NextResponse.json({ message: "Something went wrong!" }, { status: 400 });
-  } catch {
+  } catch (exception) {
+    console.log(exception);
     return NextResponse.json({ message: "Something went wrong!" }, { status: 500 });
   }
 }

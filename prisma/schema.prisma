@@ -42,7 +42,7 @@ model Password {
     encryptedPassword   String
 
     user                User        @relation(fields: [userId], references: [id])
-    userId              Int         @unique
+    userId              Int         
 
     @@id([id, userId])
 }
@@ -53,7 +53,7 @@ model Note {
     encryptedContent    String
 
     user                User        @relation(fields: [userId], references: [id])
-    userId              Int         @unique
+    userId              Int         
 
     @@id([id, userId])
 }

@@ -29,11 +29,17 @@ export async function POST(nextRequest: NextRequest) {
         },
       });
 
+      const user = await prisma.user.findUniqueOrThrow({
+        where: {
+          loginId: login.id,
+        },
+      });
+
       await prisma.note.create({
         data: {
           title: vaultStoreNoteData.title,
           encryptedContent: EncryptAES(vaultStoreNoteData.content, payload.masterKey as string),
-          userId: login.id,
+          userId: user.id,
         },
       });
 
