@@ -61,8 +61,8 @@ export async function POST(nextRequest: NextRequest) {
       }
     }
 
-    return NextResponse.json({ message: "Incorrect email, password or token!" });
+    return NextResponse.json({ message: "Incorrect email, password or token!" }, { status: 500 });
   } catch {
-    return NextResponse.json({ message: "Something went wrong!" });
+    return NextResponse.json({ message: "Something went wrong!" }, { status: 500 });
   }
 }
