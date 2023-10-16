@@ -54,15 +54,15 @@ export async function POST(nextRequest: NextRequest) {
           .setExpirationTime("3m")
           .encrypt(DecodeHex(process.env.SECRET_KEY!));
 
-        const nextResponse: NextResponse = NextResponse.json({ message: "Successful login!" });
+        const nextResponse: NextResponse = NextResponse.json({ message: "Successful login!" }, { status: 200 });
         nextResponse.cookies.set("encryptedjwt", encryptedJwt);
 
         return nextResponse;
       }
     }
 
-    return NextResponse.json({ message: "Incorrect email, password or token!" });
+    return NextResponse.json({ message: "Incorrect email, password or token!" }, { status: 400 });
   } catch {
-    return NextResponse.json({ message: "Something went wrong!" });
+    return NextResponse.json({ message: "Something went wrong!" }, { status: 500 });
   }
 }

@@ -47,12 +47,12 @@ export async function POST(nextRequest: NextRequest) {
 
     const otpUrl = authenticator.keyuri(registerData.name, "SatuPassword", totpSecret);
 
-    return NextResponse.json({ message: "Successful register!", otpUrl: otpUrl });
+    return NextResponse.json({ message: "Successful register!", otpUrl: otpUrl }, { status: 200 });
   } catch (exception) {
     if (exception instanceof Prisma.PrismaClientKnownRequestError) {
       if (exception.code === "P2002") {
-        return NextResponse.json({ message: "Email already exists!" });
+        return NextResponse.json({ message: "Email already exists!" }, { status: 400 });
       }
-    } else return NextResponse.json({ message: "Something went wrong!" });
+    } else return NextResponse.json({ message: "Something went wrong!" }, { status: 500 });
   }
 }
