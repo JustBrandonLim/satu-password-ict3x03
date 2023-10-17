@@ -10,8 +10,6 @@ export default function Vault() {
   const [noteData, setNoteData] = useState([]);
   const [featureDisplay, setFeatureDisplay] = useState(0);
 
-  const effectRan = useRef(false);
-
   useEffect(() => {
     const FetchPasswordData = async () => {
       const response = await fetch(`api/vault/retrieve/passwords`, {
@@ -28,7 +26,7 @@ export default function Vault() {
       } else {
         console.log(json);
       }
-    }
+    };
 
     const FetchNotesData = async () => {
       const response = await fetch(`api/vault/retrieve/notes`, {
@@ -45,15 +43,15 @@ export default function Vault() {
       } else {
         console.log(json);
       }
-    }
-    if (!effectRan.current) {
-      FetchPasswordData();
-      FetchNotesData();
-    }
-    () => {
-      effectRan.current = true;
     };
-  }, [effectRan.current]);
+
+    const FetchData = async () => {
+      await FetchPasswordData();
+      await FetchNotesData();
+    };
+
+    FetchData();
+  }, []);
 
   const PageDisplay = () => {
     switch (featureDisplay) {
