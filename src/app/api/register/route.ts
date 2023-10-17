@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { HashPassword, GenerateNewWrappingKey, GenerateRandomKey, EncryptAES } from "@libs/crypto-lib";
+import { HashPassword, GenerateNewWrappingKey, GenerateRandomKey, EncryptAES } from "@libs/crypto";
 import { authenticator } from "otplib";
-import { PrismaClient, Prisma } from "@prisma/client";
+import { Prisma } from "@prisma/client";
+import { GetPrismaClient } from "@libs/prisma";
 
 interface RegisterData {
   email: string;
@@ -11,8 +12,6 @@ interface RegisterData {
 
 export async function POST(nextRequest: NextRequest) {
   try {
-    const prisma = new PrismaClient();
-
     const registerData: RegisterData = await nextRequest.json();
 
     const [hashedPassword, hashedPasswordSalt] = HashPassword(registerData.password);
@@ -25,8 +24,8 @@ export async function POST(nextRequest: NextRequest) {
 
     const encryptedMasterKey = EncryptAES(masterKey, wrappingKey);
 
-    await prisma.login
-      .create({
+    await GetPrismaClient()
+      .login.create({
         data: {
           email: registerData.email,
           hashedPassword: hashedPassword,
@@ -35,7 +34,7 @@ export async function POST(nextRequest: NextRequest) {
         },
       })
       .then(async (loginData) => {
-        await prisma.user.create({
+        await GetPrismaClient().user.create({
           data: {
             name: registerData.name,
             encryptedMasterKey: encryptedMasterKey,
@@ -47,7 +46,7 @@ export async function POST(nextRequest: NextRequest) {
 
     const otpUrl = authenticator.keyuri(registerData.name, "SatuPassword", totpSecret);
 
-    return NextResponse.json({ message: "Successful register!", otpUrl: otpUrl }, { status: 200 });
+    return NextResponse.json({ message: "Successful!", otpUrl: otpUrl }, { status: 200 });
   } catch (exception) {
     if (exception instanceof Prisma.PrismaClientKnownRequestError) {
       if (exception.code === "P2002") {

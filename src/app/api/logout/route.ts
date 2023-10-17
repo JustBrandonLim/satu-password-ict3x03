@@ -1,12 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { jwtDecrypt } from "jose";
-import { DecodeHex } from "@libs/enc-dec-lib";
-import { PrismaClient } from "@prisma/client";
+import { DecodeHex } from "@libs/enc-dec";
+import { GetPrismaClient } from "@libs/prisma";
 
 export async function POST(nextRequest: NextRequest) {
   try {
-    const prisma = new PrismaClient();
-
     const encryptedJwt = nextRequest.cookies.get("encryptedjwt")?.value;
 
     if (encryptedJwt !== undefined) {
@@ -15,7 +13,7 @@ export async function POST(nextRequest: NextRequest) {
         audience: "https://satupassword.com",
       });
 
-      await prisma.login.update({
+      await GetPrismaClient().login.update({
         where: {
           email: payload.email as string,
         },
@@ -24,7 +22,7 @@ export async function POST(nextRequest: NextRequest) {
         },
       });
 
-      const nextResponse: NextResponse = NextResponse.json({ message: "Successful logout!" }, { status: 200 });
+      const nextResponse: NextResponse = NextResponse.json({ message: "Successful!" }, { status: 200 });
       nextResponse.cookies.delete("ejwt");
 
       return nextResponse;
