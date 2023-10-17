@@ -16,7 +16,7 @@ interface PasswordCardProps {
     title: string;
     url: string;
     username: string;
-    encrypted_password: string;
+    encryptedPassword: string;
   };
 }
 
@@ -27,7 +27,7 @@ export default function PasswordCard(props: PasswordCardProps) {
   async function fetchPassword() {
     try {
       const response = await fetch(
-        `api/vault/retrieve/password?password=${props.passwordData.encrypted_password}`,
+        `api/vault/retrieve/password?password=${props.passwordData.encryptedPassword}`,
         {
           method: "GET",
           headers: {
@@ -49,6 +49,20 @@ export default function PasswordCard(props: PasswordCardProps) {
     }
   }
 
+  async function MockRetrievePassword() {
+    let encryptedPassword = prompt("Enter encrypted password!");
+
+    const checkResponse = await fetch(`api/vault/retrieve/password?password=${encryptedPassword}`, {
+      method: "GET",
+    });
+
+    if (checkResponse.ok) {
+      alert(JSON.stringify(await checkResponse.json()));
+    }else{
+      alert(checkResponse.status);
+    }
+  }
+
   // Copy text to the clipboard
   async function copyToClipboard(text: string) {
     try {
@@ -60,11 +74,20 @@ export default function PasswordCard(props: PasswordCardProps) {
   }
 
   async function handleCopyPassword() {
-    const decryptedPassword = await fetchPassword();
-    if (decryptedPassword) {
-      copyToClipboard(decryptedPassword);
+    try {
+      const decryptedPassword = await fetchPassword();
+      MockRetrievePassword();
+      // if (decryptedPassword) {
+      //   await copyToClipboard(decryptedPassword);
+      //   alert("Copied to clipboard!");
+      // } else {
+      //   alert("No password to copy.");
+      // }
+    } catch (error) {
+      console.error("Error copying text to the clipboard:", error);
     }
   }
+  
 
   return (
     <div className="flex items-center p-5 m-2 bg-white rounded-md shadow-lg w-full">

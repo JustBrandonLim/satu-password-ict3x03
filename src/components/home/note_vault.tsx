@@ -8,7 +8,7 @@ interface NoteVaultProps {
 interface NoteData {
   id: number,
   title: string,
-  encrypted_password: string,
+  encryptedContent: string,
 }
 
 export default function NoteVault(props: NoteVaultProps) {
