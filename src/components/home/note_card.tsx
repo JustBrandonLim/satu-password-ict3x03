@@ -1,5 +1,8 @@
 import React from "react";
-import { PencilIcon, LockClosedIcon, DocumentDuplicateIcon } from "@heroicons/react/24/outline";
+import {
+  PencilIcon,
+  LockClosedIcon,
+} from "@heroicons/react/24/outline";
 import {
   Dialog,
   DialogContent,
@@ -8,26 +11,25 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { PasswordCardDialog } from "./password-card-dialog";
+import { NoteCardDialog } from "./note-card-dialog";
 
-interface PasswordCardProps {
-  passwordData: {
+interface NoteCardProps {
+  noteData: {
     id: number;
     title: string;
-    url: string;
-    username: string;
     encrypted_password: string;
   };
 }
 
-export default function PasswordCard(props: PasswordCardProps) {
+export default function NoteCard(props: NoteCardProps) {
   const [open, setOpen] = React.useState(false);
+  const [decryptedNote, setDecryptedNote] = React.useState(false);
 
-  // Function to decrypt the password
-  async function fetchPassword() {
+  // Function to decrypt the note
+  async function fetchNote() {
     try {
       const response = await fetch(
-        `api/vault/retrieve/password?password=${props.passwordData.encrypted_password}`,
+        `api/vault/retrieve/note?note=${props.noteData.encrypted_password}`,
         {
           method: "GET",
           headers: {
@@ -38,7 +40,7 @@ export default function PasswordCard(props: PasswordCardProps) {
 
       if (response.ok) {
         const json = await response.json();
-        return json.password; // Return the decrypted password
+        setDecryptedNote(json.note);
       } else {
         throw new Error("Failed to fetch and decrypt the password");
       }
@@ -49,50 +51,29 @@ export default function PasswordCard(props: PasswordCardProps) {
     }
   }
 
-  // Copy text to the clipboard
-  async function copyToClipboard(text: string) {
-    try {
-      await navigator.clipboard.writeText(text);
-      alert("Copied to clipboard!");
-    } catch (error) {
-      console.error("Error copying text to the clipboard:", error);
-    }
-  }
-
-  async function handleCopyPassword() {
-    const decryptedPassword = await fetchPassword();
-    if (decryptedPassword) {
-      copyToClipboard(decryptedPassword);
-    }
-  }
-
   return (
     <div className="flex items-center p-5 m-2 bg-white rounded-md shadow-lg w-full">
       <LockClosedIcon className="w-6 h-6 mr-4" />
       <div className="flex-grow text-left">
-        <h3 className="text-xl font-bold">{props.passwordData.title}</h3>
-        <p>{props.passwordData.username}</p>
+        <h3 className="text-xl font-bold">{props.noteData.title}</h3>
       </div>
-      <button onClick={handleCopyPassword}>
-        <DocumentDuplicateIcon className="w-6 h-6 mr-5" />
-      </button>
       {/* Edit Modal */}
-      {/* Password Card Dialog*/}
+      {/* Note Card Dialog*/}
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
-          {/* Password Card  Button*/}
+          {/* Note Card Button*/}
           <button>
             <PencilIcon className="w-6 h-6 mr-2" />
           </button>
         </DialogTrigger>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Editing {props.passwordData.title}</DialogTitle>
+            <DialogTitle>Editing {props.noteData.title}</DialogTitle>
             <DialogDescription>
-              <PasswordCardDialog
+              <NoteCardDialog
                 open={open}
                 setOpenDialog={setOpen}
-                passwordData={props.passwordData}
+                noteData={props.noteData}
               />
             </DialogDescription>
           </DialogHeader>

@@ -1,22 +1,70 @@
 "use client"; // This is a client component
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import PasswordVault from "@components/home/password_vault";
+import NoteVault from "@components/home/note_vault";
 
 export default function Vault() {
   const [passwordData, setPasswordData] = useState([
-    { id: "1", name: "test" },
-    { id: "2", name: "test2" },
-    { id: "3", name: "test3" },
-    { id: "4", name: "test4" },
-    { id: "1", name: "test" },
-    { id: "2", name: "test2" },
-    { id: "1", name: "test" },
-    { id: "2", name: "test2" },
-    { id: "1", name: "test" },
-    { id: "2", name: "test2" },
+    {
+      id: 1,
+      title: "alford's stash",
+      url: "test.com",
+      username: "alford@gmail.com",
+      encrypted_password: "password",
+    },
+    {
+      id: 2,
+      title: "alford's second stash",
+      url: "test2.com",
+      username: "alford@gmail.com",
+      encrypted_password: "password",
+    },
+  ]);
+
+  const [noteData, setNoteData] = useState([
+    {
+      id: 1,
+      title: "alford's stalking list",
+      encrypted_password: "password",
+    },
   ]);
   const [featureDisplay, setFeatureDisplay] = useState(0);
+
+  async function FetchPasswordData() {
+    const response = await fetch(`api/vault/retrieve/passwords`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    const json = await response.json();
+
+    if (response.ok) {
+      setPasswordData(json);
+    }
+  }
+
+  async function FetchNotesData() {
+    const response = await fetch(`api/vault/retrieve/notes`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    const json = await response.json();
+
+    if (response.ok) {
+      setNoteData(json);
+    }
+  }
+
+  useEffect(() => {
+    FetchPasswordData();
+    FetchNotesData();
+  }, []);
 
   const PageDisplay = () => {
     switch (featureDisplay) {
@@ -25,7 +73,7 @@ export default function Vault() {
         return <PasswordVault passwordData={passwordData} />;
       case 1:
         // Return the component or content for 'Secure Note'
-        return <div>Secure Note Content Here</div>;
+        return <NoteVault noteData={noteData} />;
       default:
         return null;
     }

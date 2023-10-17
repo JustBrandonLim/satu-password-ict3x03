@@ -16,7 +16,7 @@ import { Input } from "@components/ui/input";
 import { useForm } from "react-hook-form";
 import React, { Dispatch, SetStateAction } from "react";
 
-interface PasswordCardDialogProps {
+interface PasswordCardDetailsProps {
   passwordData: {
     id: number;
     title: string;
@@ -28,7 +28,7 @@ interface PasswordCardDialogProps {
   setOpenDialog: Dispatch<SetStateAction<boolean>>;
 }
 
-const PasswordCardDialogSchema = z.object({
+const PasswordCardDetailsSchema = z.object({
   url: z.string({
     required_error: "URL is required",
     invalid_type_error: "URL must be a string",
@@ -54,19 +54,19 @@ const PasswordCardDialogSchema = z.object({
   message: "Passwords do not match",
 });
 
-const PasswordCardDialog: React.FC<PasswordCardDialogProps> = ({
+const PasswordCardDetails: React.FC<PasswordCardDetailsProps> = ({
   setOpenDialog,
   passwordData,
 }) => {
-  const passwordCardForm = useForm<z.infer<typeof PasswordCardDialogSchema>>({
-    resolver: zodResolver(PasswordCardDialogSchema),
+  const passwordCardForm = useForm<z.infer<typeof PasswordCardDetailsSchema>>({
+    resolver: zodResolver(PasswordCardDetailsSchema),
     defaultValues: {
       url: passwordData.url,
       username: passwordData.username,
     },
   });
 
-  const onSavePasswordCard = async (data: z.infer<typeof PasswordCardDialogSchema>) => {
+  const onSavePasswordCard = async (data: z.infer<typeof PasswordCardDetailsSchema>) => {
     // For Debugging
     console.log("Form Submitted");
     console.log(data);
@@ -154,5 +154,5 @@ const PasswordCardDialog: React.FC<PasswordCardDialogProps> = ({
     </Form>
   );
 };
-PasswordCardDialog.displayName = "PasswordCardDialog";
-export { PasswordCardDialog };
+PasswordCardDetails.displayName = "PasswordCardDetails";
+export { PasswordCardDetails };
