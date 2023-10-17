@@ -180,7 +180,7 @@ function RegsiterForm() {
             </DialogDescription>
           </DialogHeader>
             <QRCodeSVG value={QRValue} size={QRWidth} className="w-full p-4"/>   
-            <Button type="button" onClick={() => {router.push("/");}}>I've configured my Authenticator app</Button>         
+            <Button type="button" onClick={() => {router.push("/");}}>I have configured my Authenticator app</Button>         
         </DialogContent>
     </Dialog>
     </div>    
