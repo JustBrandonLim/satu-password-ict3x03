@@ -1,22 +1,21 @@
 import { NextRequest, NextResponse } from "next/server";
 import { jwtDecrypt, EncryptJWT } from "jose";
-import { DecodeHex } from "@libs/enc-dec-lib";
-import { PrismaClient, Prisma } from "@prisma/client";
-import { GenerateRandomKey } from "@libs/crypto-lib";
+import { DecodeHex } from "@libs/enc-dec";
+import { GetPrismaClient } from "@libs/prisma";
+import { Prisma } from "@prisma/client";
+import { GenerateRandomKey } from "@libs/crypto";
 
 export async function GET(nextRequest: NextRequest) {
   try {
     const encryptedJwt = nextRequest.cookies.get("encryptedjwt")?.value;
 
     if (encryptedJwt !== undefined) {
-      const prisma = new PrismaClient();
-
       const { payload, protectedHeader } = await jwtDecrypt(encryptedJwt, DecodeHex(process.env.SECRET_KEY!), {
         issuer: "https://satupassword.com",
         audience: "https://satupassword.com",
       });
 
-      await prisma.login.findUniqueOrThrow({
+      await GetPrismaClient().login.findUniqueOrThrow({
         where: {
           email: payload.email as string,
           jwtId: payload.jwtId as string,
@@ -25,7 +24,7 @@ export async function GET(nextRequest: NextRequest) {
 
       const newJwtId = GenerateRandomKey();
 
-      await prisma.login.update({
+      await GetPrismaClient().login.update({
         where: {
           email: payload.email as string,
         },
@@ -42,7 +41,7 @@ export async function GET(nextRequest: NextRequest) {
         .setExpirationTime("3m")
         .encrypt(DecodeHex(process.env.SECRET_KEY!));
 
-      return NextResponse.json({ message: "Successful check!", newEncryptedJwt: newEncryptedJwt }, { status: 200 });
+      return NextResponse.json({ message: "Successful!", newEncryptedJwt: newEncryptedJwt }, { status: 200 });
     }
 
     return NextResponse.json({ message: "Something went wrong!" }, { status: 400 });

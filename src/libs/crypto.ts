@@ -1,5 +1,5 @@
 import { pbkdf2Sync, randomBytes, createCipheriv, createDecipheriv } from "crypto";
-import { EncodeHex, DecodeHex, EncodeUTF8 } from "@libs/enc-dec-lib";
+import { EncodeHex, DecodeHex, EncodeUTF8 } from "@libs/enc-dec";
 
 /**
  * @author JustBrandonLim
