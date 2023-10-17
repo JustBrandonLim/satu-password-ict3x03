@@ -117,7 +117,7 @@ function LoginFormTest() {
         title: "Success!",
         description: `${json.message}`
       })
-      // router.push("/home");
+      router.push("/home");
     }
     setIsLoading(false)
   }
