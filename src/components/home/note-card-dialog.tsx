@@ -11,16 +11,15 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@components/ui/input";
 import { useForm } from "react-hook-form";
-import React, { Dispatch, SetStateAction } from "react";
+import React, { Dispatch, SetStateAction, useEffect } from "react";
 import { Textarea } from "../ui/textarea";
 
 interface NoteCardDialogProps {
   noteData: {
-    id: number,
-    title: string,
-    encrypted_password: string,
+    id: number;
+    title: string;
+    encrypted_password: string;
   };
   open: boolean;
   setOpenDialog: Dispatch<SetStateAction<boolean>>;
@@ -32,7 +31,6 @@ const NoteCardDialogSchema = z.object({
   }),
 });
 
-
 const NoteCardDialog: React.FC<NoteCardDialogProps> = ({
   setOpenDialog,
   noteData,
@@ -43,6 +41,37 @@ const NoteCardDialog: React.FC<NoteCardDialogProps> = ({
       note: "Type your message here",
     },
   });
+  const [decryptedNote, setDecryptedNote] = React.useState(null);
+
+  // Function to decrypt the note
+  async function fetchNote() {
+    try {
+      const response = await fetch(
+        `api/vault/retrieve/note?note=${noteData.encrypted_password}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (response.ok) {
+        const json = await response.json();
+        setDecryptedNote(json.note);
+      } else {
+        throw new Error("Failed to fetch and decrypt the password");
+      }
+    } catch (error) {
+      // Handle errors
+      console.error("Error fetching password:", error);
+      return null; // Return null in case of an error
+    }
+  }
+
+  useEffect(() => {
+    fetchNote();
+  }, []);
 
   const onSaveNoteCard = async (data: z.infer<typeof NoteCardDialogSchema>) => {
     // For Debugging
@@ -54,53 +83,63 @@ const NoteCardDialog: React.FC<NoteCardDialogProps> = ({
 
   //The HTML elements
   return (
-    <Form {...noteCardForm}>
-      <form
-        onSubmit={noteCardForm.handleSubmit(onSaveNoteCard)}
-        className="space-y-6"
-      >
-        {/* Items Row */}
-        <div className="flex w-full items-end space-x-2 mt-4">
-          {/* Textarea Field */}
-          <FormField
-            control={noteCardForm.control}
-            name="note"
-            render={({ field }) => (
-              <FormItem className="w-full text-left">
-                <FormLabel>Your note</FormLabel>
-                <FormControl>
-                  <div className="flex-col w-full space-x-4">
-                    <div className="relative w-full">
-                      <Textarea placeholder="Type your message here" {...field} />
-                    </div>
-                  </div>
-                </FormControl>
-                <FormMessage className="text-gray-500"> Your note will be encrypted on the servers.</FormMessage> 
-              </FormItem>
-            )}
-          />
-        </div>
-        <div className="flex space-x-4 w-full">
-          <Button
-            type="reset"
-            variant={"outline"}
-            className="w-full"
-            onClick={() => setOpenDialog(false)}
+    <>
+      {decryptedNote != null && (
+        <Form {...noteCardForm}>
+          <form
+            onSubmit={noteCardForm.handleSubmit(onSaveNoteCard)}
+            className="space-y-6"
           >
-            Cancel
-          </Button>
-          <Button
-            type="button"
-            className="w-full"
-            onClick={() => {
-              setOpenDialog(false);
-            }}
-          >
-            Save
-          </Button>
-        </div>
-      </form>
-    </Form>
+            {/* Items Row */}
+            <div className="flex w-full items-end space-x-2 mt-4">
+              {/* Textarea Field */}
+              <FormField
+                control={noteCardForm.control}
+                name="note"
+                render={({ field }) => (
+                  <FormItem className="w-full text-left">
+                    <FormLabel>Your note</FormLabel>
+                    <FormControl>
+                      <div className="flex-col w-full space-x-4">
+                        <div className="relative w-full">
+                          <Textarea
+                            placeholder={decryptedNote}
+                            {...field}
+                          />
+                        </div>
+                      </div>
+                    </FormControl>
+                    <FormMessage className="text-gray-500">
+                      {" "}
+                      Your note will be encrypted on the servers.
+                    </FormMessage>
+                  </FormItem>
+                )}
+              />
+            </div>
+            <div className="flex space-x-4 w-full">
+              <Button
+                type="reset"
+                variant={"outline"}
+                className="w-full"
+                onClick={() => setOpenDialog(false)}
+              >
+                Cancel
+              </Button>
+              <Button
+                type="button"
+                className="w-full"
+                onClick={() => {
+                  setOpenDialog(false);
+                }}
+              >
+                Save
+              </Button>
+            </div>
+          </form>
+        </Form>
+      )}
+    </>
   );
 };
 NoteCardDialog.displayName = "NoteCardDialog";
