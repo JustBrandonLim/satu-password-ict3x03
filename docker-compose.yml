@@ -20,7 +20,7 @@ services:
             - 5432:5432
         networks:
             - satu-network
-    
+
     web:
         container_name: satupassword-node
         build:
@@ -38,6 +38,8 @@ services:
         image: nginx:latest
         ports:
             - 443:443
+        links:
+            - web
         networks:
             - satu-network
         volumes:
@@ -45,3 +47,4 @@ services:
             - ./nginx/fullchain.pem:/etc/nginx/certs/fullchain.pem
             - ./nginx/privkey.pem:/etc/nginx/certs/privkey.pem
             - ./nginx/ssl-params.conf:/etc/nginx/snippets/ssl-params.conf
+            - ./nginx/dhparam.pem:/etc/ssl/certs/dhparam.pem
