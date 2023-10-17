@@ -30,8 +30,8 @@ export async function POST(nextRequest: NextRequest) {
       return nextResponse;
     }
 
-    return NextResponse.json({ message: "Successful logout!" });
+    return NextResponse.json({ message: "Successful logout!" }, { status: 200 });
   } catch {
-    return NextResponse.json({ message: "Something went wrong!" });
+    return NextResponse.json({ message: "Something went wrong!" }, { status: 500 });
   }
 }
