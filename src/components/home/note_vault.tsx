@@ -20,7 +20,7 @@ export default function NoteVault(props: NoteVaultProps) {
             <NoteCard key={data.id} noteData={data} />
           ))
         ) : (
-          <p>No note data available</p>
+          <p className="p-5">No note data available</p>
         )}
       </div>
     </>

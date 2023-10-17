@@ -32,24 +32,19 @@ export default function Vault() {
   const [featureDisplay, setFeatureDisplay] = useState(0);
 
   async function FetchPasswordData() {
-    try {
-      const response = await fetch(`api/vault/retrieve/passwords`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+    const response = await fetch(`api/vault/retrieve/passwords`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
 
-      if (response.ok) {
-        const json = await response.json();
-        setPasswordData(json);
-      } else {
-        throw new Error("Failed to fetch password data");
-      }
-    } catch (error) {
-      // Handle errors
-      console.error("Error fetching password:", error);
-      return null; // Return null in case of an error
+    const json = await response.json();
+
+    if (response.ok) {
+      setPasswordData(json);
+    } else {
+      console.log(json);
     }
   }
 
@@ -65,6 +60,8 @@ export default function Vault() {
 
     if (response.ok) {
       setNoteData(json);
+    } else {
+      console.log(json);
     }
   }
 
