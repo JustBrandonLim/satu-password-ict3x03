@@ -12,7 +12,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
-import React, { Dispatch, SetStateAction, useEffect } from "react";
+import React, { Dispatch, SetStateAction, useEffect, useRef } from "react";
 import { Textarea } from "../ui/textarea";
 
 interface NoteCardDialogProps {
@@ -42,48 +42,40 @@ const NoteCardDialog: React.FC<NoteCardDialogProps> = ({
     },
   });
   const [decryptedNote, setDecryptedNote] = React.useState(null);
-
-  // Function to decrypt the note
-  async function fetchNote() {
-    try {
-      const response = await fetch(
-        `api/vault/retrieve/note?note=${noteData.encryptedContent}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      if (response.ok) {
-        const json = await response.json();
-        setDecryptedNote(json.note);
-      } else {
-        throw new Error("Failed to fetch and decrypt the password");
-      }
-    } catch (error) {
-      // Handle errors
-      console.error("Error fetching password:", error);
-      return null; // Return null in case of an error
-    }
-  }
-
-  async function MockRetrieveNote() {
-
-    const checkResponse = await fetch(`api/vault/retrieve/note?note=${noteData.encryptedContent}`, {
-      method: "GET",
-    });
-
-    if (checkResponse.ok) {
-      alert(JSON.stringify(await checkResponse.json()));
-    }
-  }
-
+  const effectRan = useRef(false);
   useEffect(() => {
-    // fetchNote();
-    MockRetrieveNote();
-  }, []);
+    // Function to decrypt the note
+    async function fetchNote() {
+      try {
+        const response = await fetch(
+          `api/vault/retrieve/note?note=${noteData.encryptedContent}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        if (response.ok) {
+          const json = await response.json();
+          setDecryptedNote(json.note);
+        } else {
+          throw new Error("Failed to fetch and decrypt the password");
+        }
+      } catch (error) {
+        // Handle errors
+        console.error("Error fetching password:", error);
+        return null; // Return null in case of an error
+      }
+    }
+    if (!effectRan.current) {
+      fetchNote();
+    }
+    () => {
+      effectRan.current = true;
+    };
+  }, [effectRan.current]);
 
   const onSaveNoteCard = async (data: z.infer<typeof NoteCardDialogSchema>) => {
     // For Debugging
@@ -114,10 +106,7 @@ const NoteCardDialog: React.FC<NoteCardDialogProps> = ({
                     <FormControl>
                       <div className="flex-col w-full space-x-4">
                         <div className="relative w-full">
-                          <Textarea
-                            placeholder={decryptedNote}
-                            {...field}
-                          />
+                          <Textarea placeholder={decryptedNote} {...field} />
                         </div>
                       </div>
                     </FormControl>
