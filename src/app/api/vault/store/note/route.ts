@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
 import { jwtDecrypt } from "jose";
-import { DecodeHex } from "@libs/enc-dec-lib";
-import { EncryptAES } from "@libs/crypto-lib";
+import { DecodeHex } from "@libs/enc-dec";
+import { EncryptAES } from "@libs/crypto";
+import { GetPrismaClient } from "@libs/prisma";
 
 interface VaultStoreNoteData {
   title: string;
@@ -14,8 +14,6 @@ export async function POST(nextRequest: NextRequest) {
     const encryptedJwt = nextRequest.cookies.get("encryptedjwt")?.value;
 
     if (encryptedJwt !== undefined) {
-      const prisma = new PrismaClient();
-
       const vaultStoreNoteData: VaultStoreNoteData = await nextRequest.json();
 
       const { payload, protectedHeader } = await jwtDecrypt(encryptedJwt, DecodeHex(process.env.SECRET_KEY!), {
@@ -23,19 +21,19 @@ export async function POST(nextRequest: NextRequest) {
         audience: "https://satupassword.com",
       });
 
-      const login = await prisma.login.findUniqueOrThrow({
+      const login = await GetPrismaClient().login.findUniqueOrThrow({
         where: {
           email: payload.email as string,
         },
       });
 
-      const user = await prisma.user.findUniqueOrThrow({
+      const user = await GetPrismaClient().user.findUniqueOrThrow({
         where: {
           loginId: login.id,
         },
       });
 
-      await prisma.note.create({
+      await GetPrismaClient().note.create({
         data: {
           title: vaultStoreNoteData.title,
           encryptedContent: EncryptAES(vaultStoreNoteData.content, payload.masterKey as string),
