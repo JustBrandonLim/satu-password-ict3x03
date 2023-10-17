@@ -1,6 +1,6 @@
 "use client"; // This is a client component
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import PasswordVault from "@components/home/password_vault";
 import NoteVault from "@components/home/note_vault";
 
@@ -10,44 +10,50 @@ export default function Vault() {
   const [noteData, setNoteData] = useState([]);
   const [featureDisplay, setFeatureDisplay] = useState(0);
 
-  async function FetchPasswordData() {
-    const response = await fetch(`api/vault/retrieve/passwords`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-
-    const json = await response.json();
-
-    if (response.ok) {
-      setPasswordData(json.passwords);
-    } else {
-      console.log(json);
-    }
-  }
-
-  async function FetchNotesData() {
-    const response = await fetch(`api/vault/retrieve/notes`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-
-    const json = await response.json();
-
-    if (response.ok) {
-      setNoteData(json.notes);
-    } else {
-      console.log(json);
-    }
-  }
+  const effectRan = useRef(false);
 
   useEffect(() => {
-    FetchPasswordData();
-    FetchNotesData();
-  }, []);
+    const FetchPasswordData = async () => {
+      const response = await fetch(`api/vault/retrieve/passwords`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      const json = await response.json();
+
+      if (response.ok) {
+        setPasswordData(json.passwords);
+      } else {
+        console.log(json);
+      }
+    }
+
+    const FetchNotesData = async () => {
+      const response = await fetch(`api/vault/retrieve/notes`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      const json = await response.json();
+
+      if (response.ok) {
+        setNoteData(json.notes);
+      } else {
+        console.log(json);
+      }
+    }
+    if (!effectRan.current) {
+      FetchPasswordData();
+      FetchNotesData();
+    }
+    () => {
+      effectRan.current = true;
+    };
+  }, [effectRan.current]);
 
   const PageDisplay = () => {
     switch (featureDisplay) {

@@ -49,20 +49,6 @@ export default function PasswordCard(props: PasswordCardProps) {
     }
   }
 
-  async function MockRetrievePassword() {
-    let encryptedPassword = prompt("Enter encrypted password!");
-
-    const checkResponse = await fetch(`api/vault/retrieve/password?password=${encryptedPassword}`, {
-      method: "GET",
-    });
-
-    if (checkResponse.ok) {
-      alert(JSON.stringify(await checkResponse.json()));
-    }else{
-      alert(checkResponse.status);
-    }
-  }
-
   // Copy text to the clipboard
   async function copyToClipboard(text: string) {
     try {
@@ -76,13 +62,12 @@ export default function PasswordCard(props: PasswordCardProps) {
   async function handleCopyPassword() {
     try {
       const decryptedPassword = await fetchPassword();
-      MockRetrievePassword();
-      // if (decryptedPassword) {
-      //   await copyToClipboard(decryptedPassword);
-      //   alert("Copied to clipboard!");
-      // } else {
-      //   alert("No password to copy.");
-      // }
+      if (decryptedPassword) {
+        await copyToClipboard(decryptedPassword);
+        alert("Copied to clipboard!");
+      } else {
+        alert("No password to copy.");
+      }
     } catch (error) {
       console.error("Error copying text to the clipboard:", error);
     }
