@@ -69,7 +69,7 @@ function RegsiterForm() {
     else{
       setQRWidth(width/4)
     }
-  });
+  },[]);
 
   // For Login Form
   const registerForm = useForm<z.infer<typeof RegisterFormSchema>>({
