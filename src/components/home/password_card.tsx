@@ -64,7 +64,6 @@ export default function PasswordCard(props: PasswordCardProps) {
       const decryptedPassword = await fetchPassword();
       if (decryptedPassword) {
         await copyToClipboard(decryptedPassword);
-        alert("Copied to clipboard!");
       } else {
         alert("No password to copy.");
       }
