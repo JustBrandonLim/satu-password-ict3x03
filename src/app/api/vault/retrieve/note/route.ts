@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
 import { jwtDecrypt } from "jose";
-import { DecodeHex } from "@libs/enc-dec-lib";
-import { DecryptAES } from "@libs/crypto-lib";
+import { DecodeHex } from "@libs/enc-dec";
+import { DecryptAES } from "@libs/crypto";
 
 export async function GET(nextRequest: NextRequest) {
   try {
@@ -10,8 +9,6 @@ export async function GET(nextRequest: NextRequest) {
     const vaultRetrieveNoteData = nextRequest.nextUrl.searchParams.get("note");
 
     if (encryptedJwt !== undefined && vaultRetrieveNoteData !== null) {
-      const prisma = new PrismaClient();
-
       const { payload, protectedHeader } = await jwtDecrypt(encryptedJwt, DecodeHex(process.env.SECRET_KEY!), {
         issuer: "https://satupassword.com",
         audience: "https://satupassword.com",
