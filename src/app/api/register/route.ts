@@ -52,6 +52,8 @@ export async function POST(nextRequest: NextRequest) {
       if (exception.code === "P2002") {
         return NextResponse.json({ message: "Email already exists!" }, { status: 400 });
       }
-    } else return NextResponse.json({ message: "Something went wrong!" }, { status: 500 });
+    }
+
+    return NextResponse.json({ message: "Something went wrong!" }, { status: 500 });
   }
 }
