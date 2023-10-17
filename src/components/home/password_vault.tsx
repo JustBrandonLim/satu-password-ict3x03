@@ -22,7 +22,7 @@ export default function PasswordVault(props: PasswordVaultProps) {
             <PasswordCard key={data.id} passwordData={data} />
           ))
         ) : (
-          <p>No password data available</p>
+          <p className="p-5">No password data available</p>
         )}
       </div>
     </>
