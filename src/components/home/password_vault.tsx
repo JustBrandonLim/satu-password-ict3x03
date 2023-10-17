@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import PasswordCard from "@components/home/password_card";
 
 interface PasswordVaultProps {
@@ -6,14 +6,17 @@ interface PasswordVaultProps {
 }
 
 interface PasswordData {
-  id: string;
-  name: string;
+  id: number;
+  title: string;
+  url: string;
+  username: string;
+  encrypted_password: string;
 }
 
 export default function PasswordVault(props: PasswordVaultProps) {
   return (
     <>
-      <div className="flex flex-col overflow-y-auto overflow-x-hidden max-h-96 border-2 border-gray-200 shadow-md sm:rounded-lg">
+      <div className="flex flex-col overflow-y-auto overflow-x-hidden max-h-96 border-2 pr-4 border-gray-200 shadow-md sm:rounded-lg">
         {props.passwordData.map(data => (
           <PasswordCard key={data.id} passwordData={data} />
         ))}
