@@ -1,8 +1,5 @@
-import React from "react";
-import {
-  PencilIcon,
-  LockClosedIcon,
-} from "@heroicons/react/24/outline";
+import React, { useEffect } from "react";
+import { PencilIcon, LockClosedIcon } from "@heroicons/react/24/outline";
 import {
   Dialog,
   DialogContent,
@@ -23,6 +20,34 @@ interface NoteCardProps {
 
 export default function NoteCard(props: NoteCardProps) {
   const [open, setOpen] = React.useState(false);
+  const [decryptedNote, setDecryptedNote] = React.useState({ note: "" });
+
+  // Function to decrypt the note
+  const FetchNoteData = async () => {
+    const response = await fetch(
+      `api/vault/retrieve/note?note=${props.noteData.encryptedContent}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    const json = await response.json();
+
+    if (response.ok) {
+      setDecryptedNote(json);
+    } else {
+      console.log(json);
+    }
+  };
+
+  useEffect(() => {
+    if (decryptedNote.note !== "") {
+      setOpen(true);
+    }
+  }, [decryptedNote]);
 
   return (
     <div className="flex items-center p-5 m-2 bg-white rounded-md shadow-lg w-full">
@@ -30,15 +55,14 @@ export default function NoteCard(props: NoteCardProps) {
       <div className="flex-grow text-left">
         <h3 className="text-xl font-bold">{props.noteData.title}</h3>
       </div>
+
+      {/* Note Card Button*/}
+      <button onClick={() => FetchNoteData()}>
+        <PencilIcon className="w-6 h-6 mr-2" />
+      </button>
       {/* Edit Modal */}
       {/* Note Card Dialog*/}
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogTrigger asChild>
-          {/* Note Card Button*/}
-          <button>
-            <PencilIcon className="w-6 h-6 mr-2" />
-          </button>
-        </DialogTrigger>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Editing {props.noteData.title}</DialogTitle>
@@ -46,7 +70,7 @@ export default function NoteCard(props: NoteCardProps) {
               <NoteCardDialog
                 open={open}
                 setOpenDialog={setOpen}
-                noteData={props.noteData}
+                decryptedNote={decryptedNote}
               />
             </DialogDescription>
           </DialogHeader>
