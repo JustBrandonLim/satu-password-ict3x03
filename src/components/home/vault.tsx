@@ -5,30 +5,9 @@ import PasswordVault from "@components/home/password_vault";
 import NoteVault from "@components/home/note_vault";
 
 export default function Vault() {
-  const [passwordData, setPasswordData] = useState([
-    {
-      id: 1,
-      title: "alford's stash",
-      url: "test.com",
-      username: "alford@gmail.com",
-      encrypted_password: "password",
-    },
-    {
-      id: 2,
-      title: "alford's second stash",
-      url: "test2.com",
-      username: "alford@gmail.com",
-      encrypted_password: "password",
-    },
-  ]);
+  const [passwordData, setPasswordData] = useState([]);
 
-  const [noteData, setNoteData] = useState([
-    {
-      id: 1,
-      title: "alford's stalking list",
-      encrypted_password: "password",
-    },
-  ]);
+  const [noteData, setNoteData] = useState([]);
   const [featureDisplay, setFeatureDisplay] = useState(0);
 
   async function FetchPasswordData() {
@@ -42,7 +21,7 @@ export default function Vault() {
     const json = await response.json();
 
     if (response.ok) {
-      setPasswordData(json);
+      setPasswordData(json.passwords);
     } else {
       console.log(json);
     }
@@ -59,7 +38,7 @@ export default function Vault() {
     const json = await response.json();
 
     if (response.ok) {
-      setNoteData(json);
+      setNoteData(json.notes);
     } else {
       console.log(json);
     }

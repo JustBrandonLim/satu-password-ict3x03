@@ -17,7 +17,7 @@ interface NoteCardProps {
   noteData: {
     id: number;
     title: string;
-    encrypted_password: string;
+    encryptedContent: string;
   };
 }
 

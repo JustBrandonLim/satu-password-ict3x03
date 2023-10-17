@@ -19,7 +19,7 @@ interface NoteCardDialogProps {
   noteData: {
     id: number;
     title: string;
-    encrypted_password: string;
+    encryptedContent: string;
   };
   open: boolean;
   setOpenDialog: Dispatch<SetStateAction<boolean>>;
@@ -47,7 +47,7 @@ const NoteCardDialog: React.FC<NoteCardDialogProps> = ({
   async function fetchNote() {
     try {
       const response = await fetch(
-        `api/vault/retrieve/note?note=${noteData.encrypted_password}`,
+        `api/vault/retrieve/note?note=${noteData.encryptedContent}`,
         {
           method: "GET",
           headers: {
@@ -69,8 +69,20 @@ const NoteCardDialog: React.FC<NoteCardDialogProps> = ({
     }
   }
 
+  async function MockRetrieveNote() {
+
+    const checkResponse = await fetch(`api/vault/retrieve/note?note=${noteData.encryptedContent}`, {
+      method: "GET",
+    });
+
+    if (checkResponse.ok) {
+      alert(JSON.stringify(await checkResponse.json()));
+    }
+  }
+
   useEffect(() => {
-    fetchNote();
+    // fetchNote();
+    MockRetrieveNote();
   }, []);
 
   const onSaveNoteCard = async (data: z.infer<typeof NoteCardDialogSchema>) => {

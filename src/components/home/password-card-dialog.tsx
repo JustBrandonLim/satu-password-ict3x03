@@ -22,7 +22,7 @@ interface PasswordCardDialogProps {
     title: string;
     url: string;
     username: string;
-    encrypted_password: string;
+    encryptedPassword: string;
   };
   open: boolean;
   setOpenDialog: Dispatch<SetStateAction<boolean>>;

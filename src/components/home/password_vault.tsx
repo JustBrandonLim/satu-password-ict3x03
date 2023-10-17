@@ -10,7 +10,7 @@ interface PasswordData {
   title: string;
   url: string;
   username: string;
-  encrypted_password: string;
+  encryptedPassword: string;
 }
 
 export default function PasswordVault(props: PasswordVaultProps) {
