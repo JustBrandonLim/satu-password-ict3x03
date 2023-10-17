@@ -23,33 +23,6 @@ interface NoteCardProps {
 
 export default function NoteCard(props: NoteCardProps) {
   const [open, setOpen] = React.useState(false);
-  const [decryptedNote, setDecryptedNote] = React.useState(false);
-
-  // Function to decrypt the note
-  async function fetchNote() {
-    try {
-      const response = await fetch(
-        `api/vault/retrieve/note?note=${props.noteData.encrypted_password}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      if (response.ok) {
-        const json = await response.json();
-        setDecryptedNote(json.note);
-      } else {
-        throw new Error("Failed to fetch and decrypt the password");
-      }
-    } catch (error) {
-      // Handle errors
-      console.error("Error fetching password:", error);
-      return null; // Return null in case of an error
-    }
-  }
 
   return (
     <div className="flex items-center p-5 m-2 bg-white rounded-md shadow-lg w-full">

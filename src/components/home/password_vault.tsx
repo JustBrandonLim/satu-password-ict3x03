@@ -17,9 +17,13 @@ export default function PasswordVault(props: PasswordVaultProps) {
   return (
     <>
       <div className="flex flex-col overflow-y-auto overflow-x-hidden max-h-96 border-2 pr-4 border-gray-200 shadow-md sm:rounded-lg">
-        {props.passwordData.map(data => (
-          <PasswordCard key={data.id} passwordData={data} />
-        ))}
+        {props.passwordData && Array.isArray(props.passwordData) ? (
+          props.passwordData.map((data) => (
+            <PasswordCard key={data.id} passwordData={data} />
+          ))
+        ) : (
+          <p>No password data available</p>
+        )}
       </div>
     </>
   );

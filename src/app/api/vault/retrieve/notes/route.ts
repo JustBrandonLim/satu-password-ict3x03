@@ -3,7 +3,7 @@ import { jwtDecrypt } from "jose";
 import { DecodeHex } from "@libs/enc-dec";
 import { GetPrismaClient } from "@libs/prisma";
 
-export async function POST(nextRequest: NextRequest) {
+export async function GET(nextRequest: NextRequest) {
   try {
     const encryptedJwt = nextRequest.cookies.get("encryptedjwt")?.value;
 
@@ -13,22 +13,27 @@ export async function POST(nextRequest: NextRequest) {
         audience: "https://satupassword.com",
       });
 
-      await GetPrismaClient().login.update({
+      const login = await GetPrismaClient().login.findUniqueOrThrow({
         where: {
           email: payload.email as string,
         },
-        data: {
-          jwtId: null,
+      });
+
+      const user = await GetPrismaClient().user.findUniqueOrThrow({
+        where: {
+          loginId: login.id,
         },
       });
 
-      const nextResponse: NextResponse = NextResponse.json({ message: "Successful!" }, { status: 200 });
-      nextResponse.cookies.delete("ejwt");
+      const notes = await GetPrismaClient().note.findMany({
+        where: {
+          userId: user.id,
+        },
+      });
 
-      return nextResponse;
+      return NextResponse.json({ message: "Successful!", notes: notes }, { status: 200 });
     }
-
-    return NextResponse.json({ message: "Successful logout!" }, { status: 200 });
+    return NextResponse.json({ message: "Something went wrong!" }, { status: 400 });
   } catch {
     return NextResponse.json({ message: "Something went wrong!" }, { status: 500 });
   }

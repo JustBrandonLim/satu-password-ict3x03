@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
-import { VerifyPassword, GenerateWrappingKey, DecryptAES, GenerateRandomKey } from "@libs/crypto-lib";
-import { DecodeHex } from "@libs/enc-dec-lib";
+import { GetPrismaClient } from "@libs/prisma";
+import { VerifyPassword, GenerateWrappingKey, DecryptAES, GenerateRandomKey } from "@libs/crypto";
+import { DecodeHex } from "@libs/enc-dec";
 import { authenticator } from "otplib";
 import { EncryptJWT } from "jose";
 
@@ -13,11 +13,9 @@ interface LoginData {
 
 export async function POST(nextRequest: NextRequest) {
   try {
-    const prisma = new PrismaClient();
-
     const loginData: LoginData = await nextRequest.json();
 
-    const login = await prisma.login.findUniqueOrThrow({
+    const login = await GetPrismaClient().login.findUniqueOrThrow({
       where: {
         email: loginData.email,
       },
@@ -25,7 +23,7 @@ export async function POST(nextRequest: NextRequest) {
 
     if (VerifyPassword(loginData.password, login.hashedPassword, login.hashedPasswordSalt)) {
       if (authenticator.check(loginData.otp, login.totpSecret)) {
-        const user = await prisma.user.findUniqueOrThrow({
+        const user = await GetPrismaClient().user.findUniqueOrThrow({
           where: {
             id: login.id,
           },
@@ -37,7 +35,7 @@ export async function POST(nextRequest: NextRequest) {
 
         const jwtId = GenerateRandomKey();
 
-        await prisma.login.update({
+        await GetPrismaClient().login.update({
           where: {
             email: loginData.email,
           },
@@ -54,14 +52,14 @@ export async function POST(nextRequest: NextRequest) {
           .setExpirationTime("3m")
           .encrypt(DecodeHex(process.env.SECRET_KEY!));
 
-        const nextResponse: NextResponse = NextResponse.json({ message: "Successful login!" });
+        const nextResponse: NextResponse = NextResponse.json({ message: "Successful!" }, { status: 200 });
         nextResponse.cookies.set("encryptedjwt", encryptedJwt);
 
         return nextResponse;
       }
     }
 
-    return NextResponse.json({ message: "Incorrect email, password or token!" }, { status: 500 });
+    return NextResponse.json({ message: "Incorrect email, password or otp!" }, { status: 400 });
   } catch {
     return NextResponse.json({ message: "Something went wrong!" }, { status: 500 });
   }
