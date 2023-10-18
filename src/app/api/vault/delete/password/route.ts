@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { jwtDecrypt } from "jose";
 import { DecodeHex } from "@libs/enc-dec";
-import { EncryptAES } from "@libs/crypto";
 import { GetPrismaClient } from "@libs/prisma";
 
 interface VaultDeletePasswordData {
