@@ -6,7 +6,6 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { NoteCardDialog } from "./note-card-dialog";
 
@@ -16,6 +15,7 @@ interface NoteCardProps {
     title: string;
     encryptedContent: string;
   };
+  refreshNoteVault: () => void;
 }
 
 export default function NoteCard(props: NoteCardProps) {
@@ -71,6 +71,8 @@ export default function NoteCard(props: NoteCardProps) {
                 open={open}
                 setOpenDialog={setOpen}
                 decryptedNote={decryptedNote}
+                noteData={props.noteData}
+                refreshNoteVault={props.refreshNoteVault}
               />
             </DialogDescription>
           </DialogHeader>

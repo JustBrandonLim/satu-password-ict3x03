@@ -10,41 +10,41 @@ export default function Vault() {
   const [noteData, setNoteData] = useState([]);
   const [featureDisplay, setFeatureDisplay] = useState(0);
 
+  const FetchPasswordData = async () => {
+    const response = await fetch(`api/vault/retrieve/passwords`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    const json = await response.json();
+
+    if (response.ok) {
+      setPasswordData(json.passwords);
+    } else {
+      console.log(json);
+    }
+  };
+
+  const FetchNotesData = async () => {
+    const response = await fetch(`api/vault/retrieve/notes`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    const json = await response.json();
+
+    if (response.ok) {
+      setNoteData(json.notes);
+    } else {
+      console.log(json);
+    }
+  };
+
   useEffect(() => {
-    const FetchPasswordData = async () => {
-      const response = await fetch(`api/vault/retrieve/passwords`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      const json = await response.json();
-
-      if (response.ok) {
-        setPasswordData(json.passwords);
-      } else {
-        console.log(json);
-      }
-    };
-
-    const FetchNotesData = async () => {
-      const response = await fetch(`api/vault/retrieve/notes`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      const json = await response.json();
-
-      if (response.ok) {
-        setNoteData(json.notes);
-      } else {
-        console.log(json);
-      }
-    };
-
     const FetchData = async () => {
       await FetchPasswordData();
       await FetchNotesData();
@@ -53,14 +53,29 @@ export default function Vault() {
     FetchData();
   }, []);
 
+  function refreshPasswordVault() {
+    FetchPasswordData();
+  }
+
+  function refreshNoteVault() {
+    FetchNotesData();
+  }
+
   const PageDisplay = () => {
     switch (featureDisplay) {
       case 0:
         // Return the component or content for 'Password'
-        return <PasswordVault passwordData={passwordData} />;
+        return (
+          <PasswordVault
+            passwordData={passwordData}
+            refreshPasswordVault={refreshPasswordVault}
+          />
+        );
       case 1:
         // Return the component or content for 'Secure Note'
-        return <NoteVault noteData={noteData} />;
+        return (
+          <NoteVault noteData={noteData} refreshNoteVault={refreshNoteVault} />
+        );
       default:
         return null;
     }

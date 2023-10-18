@@ -12,15 +12,21 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
-import React, { Dispatch, SetStateAction, useEffect } from "react";
+import React, { Dispatch, SetStateAction, useState } from "react";
 import { Textarea } from "../ui/textarea";
 
 interface NoteCardDialogProps {
+  noteData: {
+    id: number;
+    title: string;
+    encryptedContent: string;
+  },
   decryptedNote: {
     note: string;
   };
   open: boolean;
   setOpenDialog: Dispatch<SetStateAction<boolean>>;
+  refreshNoteVault: () => void;
 }
 
 const NoteCardDialogSchema = z.object({
@@ -32,79 +38,108 @@ const NoteCardDialogSchema = z.object({
 const NoteCardDialog: React.FC<NoteCardDialogProps> = ({
   setOpenDialog,
   decryptedNote,
+  noteData,
+  refreshNoteVault,
 }) => {
+  const [isFormSubmitted, setIsFormSubmitted] = useState(false); // Track form submission status
   const noteCardForm = useForm<z.infer<typeof NoteCardDialogSchema>>({
     resolver: zodResolver(NoteCardDialogSchema),
   });
 
   const onSaveNoteCard = async (data: z.infer<typeof NoteCardDialogSchema>) => {
-    // For Debugging
-    console.log("Form Submitted");
-    console.log(data);
-    console.log(typeof data);
+    let id = noteData.id;
+    let title = noteData.title;
     let note = data.note;
+    
+
+    async function SaveNote() {
+      const response = await fetch(`api/vault/update/note`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id: id,
+          title: title,
+          content: note,
+        }),
+      });
+
+      if (response.ok) {
+        refreshNoteVault();
+        setIsFormSubmitted(true);
+      }
+      else {
+        setIsFormSubmitted(true);
+      }
+    }
+    SaveNote();
   };
 
   //The HTML elements
   return (
     <>
-      <Form {...noteCardForm}>
-        <form
-          onSubmit={noteCardForm.handleSubmit(onSaveNoteCard)}
-          className="space-y-6"
-        >
-          {/* Items Row */}
-          <div className="flex w-full items-end space-x-2 mt-4">
-            {/* Textarea Field */}
-            <FormField
-              control={noteCardForm.control}
-              name="note"
-              render={({ field }) => (
-                <FormItem className="w-full text-left">
-                  <FormLabel>Your note</FormLabel>
-                  <FormControl>
-                    <div className="flex-col w-full space-x-4">
-                      <div className="relative w-full">
-                        <Textarea
-                          {...field}
-                          defaultValue={
-                            decryptedNote.note !== null
-                              ? decryptedNote.note
-                              : ""
-                          }
-                        />
+      {!isFormSubmitted ? (
+        <Form {...noteCardForm}>
+          <form
+            onSubmit={noteCardForm.handleSubmit(onSaveNoteCard)}
+            className="space-y-6"
+          >
+            {/* Items Row */}
+            <div className="flex w-full items-end space-x-2 mt-4">
+              {/* Textarea Field */}
+              <FormField
+                control={noteCardForm.control}
+                name="note"
+                render={({ field }) => (
+                  <FormItem className="w-full text-left">
+                    <FormLabel>Your note</FormLabel>
+                    <FormControl>
+                      <div className="flex-col w-full space-x-4">
+                        <div className="relative w-full">
+                          <Textarea
+                            {...field}
+                            defaultValue={
+                              decryptedNote.note !== null
+                                ? decryptedNote.note
+                                : ""
+                            }
+                          />
+                        </div>
                       </div>
-                    </div>
-                  </FormControl>
-                  <FormMessage className="text-gray-500">
-                    {" "}
-                    Your note will be encrypted on the servers.
-                  </FormMessage>
-                </FormItem>
-              )}
-            />
-          </div>
-          <div className="flex space-x-4 w-full">
-            <Button
-              type="reset"
-              variant={"outline"}
-              className="w-full"
-              onClick={() => setOpenDialog(false)}
-            >
-              Cancel
-            </Button>
-            <Button
-              type="button"
-              className="w-full"
-              onClick={() => {
-                setOpenDialog(false);
-              }}
-            >
-              Save
-            </Button>
-          </div>
-        </form>
-      </Form>
+                    </FormControl>
+                    <FormMessage className="text-gray-500">
+                      {" "}
+                      Your note will be encrypted on the servers.
+                    </FormMessage>
+                  </FormItem>
+                )}
+              />
+            </div>
+            <div className="flex space-x-4 w-full">
+              <Button
+                type="button"
+                variant={"outline"}
+                className="w-full"
+                onClick={() => setOpenDialog(false)}
+              >
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                className="w-full"
+              >
+                Save
+              </Button>
+            </div>
+          </form>
+        </Form>
+      ) : (
+        // Render a success message
+        <div>
+          <p>Form submitted successfully!</p>
+        </div>
+      )}
     </>
   );
 };
