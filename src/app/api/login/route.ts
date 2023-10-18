@@ -44,7 +44,7 @@ export async function POST(nextRequest: NextRequest) {
           },
         });
 
-        const encryptedJwt = await new EncryptJWT({ email: login.email, masterKey: masterKey, jwtId: jwtId })
+        const encryptedJwt = await new EncryptJWT({ id: login.id, email: login.email, masterKey: masterKey, jwtId: jwtId })
           .setProtectedHeader({ alg: "dir", enc: "A256GCM" })
           .setIssuer("https://satupassword.com")
           .setAudience("https://satupassword.com")

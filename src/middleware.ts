@@ -55,6 +55,7 @@ export async function middleware(nextRequest: NextRequest) {
       }
 
       return NextResponse.redirect(new URL("/", nextRequest.url));
+    case "/api/profile":
     case "/api/vault/retrieve/passwords":
     case "/api/vault/retrieve/password":
     case "/api/vault/retrieve/note":
