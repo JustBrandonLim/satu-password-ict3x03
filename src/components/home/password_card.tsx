@@ -45,7 +45,7 @@ export default function PasswordCard(props: PasswordCardProps) {
     const json = await response.json();
 
     if (response.ok) {
-      console.log(json)
+      console.log(json);
       setDecryptedPassword(json);
     } else {
       console.log(json);
@@ -118,7 +118,7 @@ export default function PasswordCard(props: PasswordCardProps) {
         <DocumentDuplicateIcon className="w-6 h-6 mr-5" />
       </button>
       {/* Password Card  Button*/}
-      <button onClick={()=> FetchPasswordData()}>
+      <button onClick={() => FetchPasswordData()}>
         <PencilIcon className="w-6 h-6 mr-2" />
       </button>
       {/* Edit Modal */}
