@@ -61,6 +61,10 @@ export async function middleware(nextRequest: NextRequest) {
     case "/api/vault/retrieve/notes":
     case "/api/vault/store/password":
     case "/api/vault/store/note":
+    case "/api/vault/update/password":
+    case "/api/vault/update/note":
+    case "/api/vault/delete/password":
+    case "/api/vault/delete/note":
       if (encryptedJwt !== undefined) {
         const checkResponse = await fetch(`${process.env.BASE_URL}/api/check`, {
           method: "GET",

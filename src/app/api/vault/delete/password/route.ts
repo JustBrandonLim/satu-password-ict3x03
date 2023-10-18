@@ -4,11 +4,8 @@ import { DecodeHex } from "@libs/enc-dec";
 import { EncryptAES } from "@libs/crypto";
 import { GetPrismaClient } from "@libs/prisma";
 
-interface VaultStorePasswordData {
-  title: string;
-  url: string;
-  username: string;
-  password: string;
+interface VaultDeletePasswordData {
+  id: number;
 }
 
 export async function POST(nextRequest: NextRequest) {
@@ -16,7 +13,7 @@ export async function POST(nextRequest: NextRequest) {
     const encryptedJwt = nextRequest.cookies.get("encryptedjwt")?.value;
 
     if (encryptedJwt !== undefined) {
-      const vaultStorePasswordData: VaultStorePasswordData = await nextRequest.json();
+      const vaultDeletePasswordData: VaultDeletePasswordData = await nextRequest.json();
 
       const { payload, protectedHeader } = await jwtDecrypt(encryptedJwt, DecodeHex(process.env.SECRET_KEY!), {
         issuer: "https://satupassword.com",
@@ -35,13 +32,9 @@ export async function POST(nextRequest: NextRequest) {
         },
       });
 
-      await GetPrismaClient().password.create({
-        data: {
-          title: vaultStorePasswordData.title,
-          url: vaultStorePasswordData.url,
-          username: vaultStorePasswordData.username,
-          encryptedPassword: EncryptAES(vaultStorePasswordData.password, payload.masterKey as string),
-          userId: user.id,
+      await GetPrismaClient().password.delete({
+        where: {
+          id: vaultDeletePasswordData.id,
         },
       });
 
