@@ -1,12 +1,15 @@
-import React from "react";
-import { PencilIcon, LockClosedIcon, DocumentDuplicateIcon } from "@heroicons/react/24/outline";
+import React, { useEffect } from "react";
+import {
+  PencilIcon,
+  LockClosedIcon,
+  DocumentDuplicateIcon,
+} from "@heroicons/react/24/outline";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { PasswordCardDialog } from "./password-card-dialog";
 
@@ -18,10 +21,42 @@ interface PasswordCardProps {
     username: string;
     encryptedPassword: string;
   };
+  refreshPasswordVault: () => void;
 }
 
 export default function PasswordCard(props: PasswordCardProps) {
   const [open, setOpen] = React.useState(false);
+  const [decryptedPassword, setDecryptedPassword] = React.useState({
+    password: "",
+  });
+
+  // Function to decrypt the note
+  const FetchPasswordData = async () => {
+    const response = await fetch(
+      `api/vault/retrieve/password?password=${props.passwordData.encryptedPassword}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    const json = await response.json();
+
+    if (response.ok) {
+      console.log(json)
+      setDecryptedPassword(json);
+    } else {
+      console.log(json);
+    }
+  };
+
+  useEffect(() => {
+    if (decryptedPassword.password !== "") {
+      setOpen(true);
+    }
+  }, [decryptedPassword]);
 
   // Function to decrypt the password
   async function fetchPassword() {
@@ -71,7 +106,6 @@ export default function PasswordCard(props: PasswordCardProps) {
       console.error("Error copying text to the clipboard:", error);
     }
   }
-  
 
   return (
     <div className="flex items-center p-5 m-2 bg-white rounded-md shadow-lg w-full">
@@ -83,15 +117,13 @@ export default function PasswordCard(props: PasswordCardProps) {
       <button onClick={handleCopyPassword}>
         <DocumentDuplicateIcon className="w-6 h-6 mr-5" />
       </button>
+      {/* Password Card  Button*/}
+      <button onClick={()=> FetchPasswordData()}>
+        <PencilIcon className="w-6 h-6 mr-2" />
+      </button>
       {/* Edit Modal */}
       {/* Password Card Dialog*/}
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogTrigger asChild>
-          {/* Password Card  Button*/}
-          <button>
-            <PencilIcon className="w-6 h-6 mr-2" />
-          </button>
-        </DialogTrigger>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Editing {props.passwordData.title}</DialogTitle>
@@ -100,6 +132,8 @@ export default function PasswordCard(props: PasswordCardProps) {
                 open={open}
                 setOpenDialog={setOpen}
                 passwordData={props.passwordData}
+                decryptedPassword={decryptedPassword}
+                refreshPasswordVault={props.refreshPasswordVault}
               />
             </DialogDescription>
           </DialogHeader>
