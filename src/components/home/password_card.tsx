@@ -12,6 +12,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { PasswordCardDialog } from "./password-card-dialog";
+import { PasswordCardDetails } from "./password-card-details";
 
 interface PasswordCardProps {
   passwordData: {
@@ -25,7 +26,8 @@ interface PasswordCardProps {
 }
 
 export default function PasswordCard(props: PasswordCardProps) {
-  const [open, setOpen] = React.useState(false);
+  const [openDialog, setOpenDialog] = React.useState(false);
+  const [openDetails, setOpenDetails] = React.useState(false);
   const [decryptedPassword, setDecryptedPassword] = React.useState({
     password: "",
   });
@@ -53,8 +55,10 @@ export default function PasswordCard(props: PasswordCardProps) {
   };
 
   useEffect(() => {
-    if (decryptedPassword.password !== "") {
-      setOpen(true);
+    if (decryptedPassword.password !== "" && openDialog === false) {
+      setOpenDialog(true);
+    } else if (decryptedPassword.password !== "" && openDetails === false) {
+      setOpenDetails(true);
     }
   }, [decryptedPassword]);
 
@@ -94,7 +98,12 @@ export default function PasswordCard(props: PasswordCardProps) {
     }
   }
 
-  async function handleCopyPassword() {
+  async function handleCopyPassword(e: React.MouseEvent) {
+    if (e.target !== e.currentTarget) {
+      return;
+    }
+
+    e.stopPropagation();
     try {
       const decryptedPassword = await fetchPassword();
       if (decryptedPassword) {
@@ -107,8 +116,21 @@ export default function PasswordCard(props: PasswordCardProps) {
     }
   }
 
+  function handleFetchPassword(e: React.MouseEvent) {
+    e.stopPropagation();
+    FetchPasswordData();
+  }
+
+  function openPasswordDetails(e: React.MouseEvent) {
+    e.stopPropagation();
+    setOpenDetails(true);
+  }
+
   return (
-    <div className="flex items-center p-5 m-2 bg-white rounded-md shadow-lg w-full">
+    <div
+      className="flex items-center p-5 m-2 bg-white rounded-md shadow-lg w-full"
+      onClick={openPasswordDetails}
+    >
       <LockClosedIcon className="w-6 h-6 mr-4" />
       <div className="flex-grow text-left">
         <h3 className="text-xl font-bold">{props.passwordData.title}</h3>
@@ -118,19 +140,36 @@ export default function PasswordCard(props: PasswordCardProps) {
         <DocumentDuplicateIcon className="w-6 h-6 mr-5" />
       </button>
       {/* Password Card  Button*/}
-      <button onClick={() => FetchPasswordData()}>
+      <button onClick={handleFetchPassword}>
         <PencilIcon className="w-6 h-6 mr-2" />
       </button>
       {/* Edit Modal */}
       {/* Password Card Dialog*/}
-      <Dialog open={open} onOpenChange={setOpen}>
+      <Dialog open={openDialog} onOpenChange={setOpenDialog}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Editing {props.passwordData.title}</DialogTitle>
             <DialogDescription>
               <PasswordCardDialog
-                open={open}
-                setOpenDialog={setOpen}
+                open={openDialog}
+                setOpenDialog={setOpenDialog}
+                passwordData={props.passwordData}
+                decryptedPassword={decryptedPassword}
+                refreshPasswordVault={props.refreshPasswordVault}
+              />
+            </DialogDescription>
+          </DialogHeader>
+        </DialogContent>
+      </Dialog>
+      {/* Password Card Details*/}
+      <Dialog open={openDetails} onOpenChange={setOpenDetails}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{props.passwordData.title}</DialogTitle>
+            <DialogDescription>
+              <PasswordCardDetails
+                open={openDetails}
+                setOpenDetails={setOpenDetails}
                 passwordData={props.passwordData}
                 decryptedPassword={decryptedPassword}
                 refreshPasswordVault={props.refreshPasswordVault}
