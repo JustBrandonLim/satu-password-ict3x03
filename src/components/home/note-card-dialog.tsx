@@ -14,13 +14,14 @@ import {
 import { useForm } from "react-hook-form";
 import React, { Dispatch, SetStateAction, useState } from "react";
 import { Textarea } from "../ui/textarea";
+import { Input } from "../ui/input";
 
 interface NoteCardDialogProps {
   noteData: {
     id: number;
     title: string;
     encryptedContent: string;
-  },
+  };
   decryptedNote: {
     note: string;
   };
@@ -30,6 +31,9 @@ interface NoteCardDialogProps {
 }
 
 const NoteCardDialogSchema = z.object({
+  title: z.string({
+    required_error: "Title is required",
+  }),
   note: z.string({
     required_error: "Note is required",
   }),
@@ -44,13 +48,15 @@ const NoteCardDialog: React.FC<NoteCardDialogProps> = ({
   const [isFormSubmitted, setIsFormSubmitted] = useState(false); // Track form submission status
   const noteCardForm = useForm<z.infer<typeof NoteCardDialogSchema>>({
     resolver: zodResolver(NoteCardDialogSchema),
+    defaultValues: {
+      title: noteData.title,
+    },
   });
 
   const onSaveNoteCard = async (data: z.infer<typeof NoteCardDialogSchema>) => {
     let id = noteData.id;
     let title = noteData.title;
     let note = data.note;
-    
 
     async function SaveNote() {
       const response = await fetch(`api/vault/update/note`, {
@@ -68,8 +74,7 @@ const NoteCardDialog: React.FC<NoteCardDialogProps> = ({
       if (response.ok) {
         refreshNoteVault();
         setIsFormSubmitted(true);
-      }
-      else {
+      } else {
         setIsFormSubmitted(true);
       }
     }
@@ -85,6 +90,31 @@ const NoteCardDialog: React.FC<NoteCardDialogProps> = ({
             onSubmit={noteCardForm.handleSubmit(onSaveNoteCard)}
             className="space-y-6"
           >
+            {/* Title Items Row */}
+            <div className="flex w-full items-end space-x-2 mt-4">
+              {/* Title Field */}
+              <FormField
+                control={noteCardForm.control}
+                name="title"
+                render={({ field }) => (
+                  <FormItem className="w-full text-left">
+                    <FormLabel>Title</FormLabel>
+                    <FormControl>
+                      <div className="flex w-full space-x-4">
+                        <div className="relative w-full">
+                          <Input
+                            placeholder="Input your Title here"
+                            type="title"
+                            {...field}
+                          />
+                        </div>
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
             {/* Items Row */}
             <div className="flex w-full items-end space-x-2 mt-4">
               {/* Textarea Field */}
@@ -125,10 +155,7 @@ const NoteCardDialog: React.FC<NoteCardDialogProps> = ({
               >
                 Cancel
               </Button>
-              <Button
-                type="submit"
-                className="w-full"
-              >
+              <Button type="submit" className="w-full">
                 Save
               </Button>
             </div>
