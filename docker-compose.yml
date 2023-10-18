@@ -1,0 +1,52 @@
+version: '3'
+
+volumes:
+    satu-data:
+
+networks:
+    satu-network:
+
+services:
+    db:
+        container_name: postgres-db
+        image: postgres:latest
+        volumes:
+            - satu-data:/var/lib/postgresql/data
+        environment:
+            POSTGRES_PASSWORD: 7heD1ct@t0r4cc3e5s
+            POSTGRES_USER: postgres
+            POSTGRES_DB: SatuPasswordDB
+        ports:
+            - 5432:5432
+        networks:
+            - satu-network
+
+    web:
+        container_name: satupassword-node
+        build:
+            context: .
+            dockerfile: Dockerfile
+        depends_on:
+            - db
+        ports:
+            - 3000:3000
+        links:
+            - db
+        networks:
+            - satu-network
+
+    reverse-proxy:
+        container_name: nginx-reverse-proxy
+        image: nginx:latest
+        ports:
+            - 443:443
+        links:
+            - web
+        networks:
+            - satu-network
+        volumes:
+            - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+            - ./nginx/fullchain.pem:/etc/nginx/certs/fullchain.pem
+            - ./nginx/privkey.pem:/etc/nginx/certs/privkey.pem
+            - ./nginx/ssl-params.conf:/etc/nginx/snippets/ssl-params.conf
+            - ./nginx/dhparam.pem:/etc/ssl/certs/dhparam.pem
