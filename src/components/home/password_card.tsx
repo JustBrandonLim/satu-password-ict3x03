@@ -3,6 +3,7 @@ import {
   PencilIcon,
   LockClosedIcon,
   DocumentDuplicateIcon,
+  EyeIcon,
 } from "@heroicons/react/24/outline";
 import {
   Dialog,
@@ -13,6 +14,8 @@ import {
 } from "@/components/ui/dialog";
 import { PasswordCardDialog } from "./password-card-dialog";
 import { PasswordCardDetails } from "./password-card-details";
+import { Toaster } from "../ui/toaster";
+import { useToast } from "../ui/use-toast";
 
 interface PasswordCardProps {
   passwordData: {
@@ -28,9 +31,11 @@ interface PasswordCardProps {
 export default function PasswordCard(props: PasswordCardProps) {
   const [openDialog, setOpenDialog] = React.useState(false);
   const [openDetails, setOpenDetails] = React.useState(false);
+  const [selectedModal, setSelectedModal] = React.useState("");
   const [decryptedPassword, setDecryptedPassword] = React.useState({
     password: "",
   });
+  const { toast } = useToast() // Instatiate Toast for status feedback
 
   // Function to decrypt the note
   const FetchPasswordData = async () => {
@@ -47,7 +52,6 @@ export default function PasswordCard(props: PasswordCardProps) {
     const json = await response.json();
 
     if (response.ok) {
-      console.log(json);
       setDecryptedPassword(json);
     } else {
       console.log(json);
@@ -55,9 +59,9 @@ export default function PasswordCard(props: PasswordCardProps) {
   };
 
   useEffect(() => {
-    if (decryptedPassword.password !== "" && openDialog === false) {
+    if (decryptedPassword.password !== "" && selectedModal === "dialog") {
       setOpenDialog(true);
-    } else if (decryptedPassword.password !== "" && openDetails === false) {
+    } else if (decryptedPassword.password !== "" && selectedModal === "details") {
       setOpenDetails(true);
     }
   }, [decryptedPassword]);
@@ -92,55 +96,60 @@ export default function PasswordCard(props: PasswordCardProps) {
   async function copyToClipboard(text: string) {
     try {
       await navigator.clipboard.writeText(text);
-      alert("Copied to clipboard!");
+      toast({
+        variant: "default",
+        title: "Password Copied!",
+        description: `Password successfully copied to the clipboard!`
+      })
     } catch (error) {
       console.error("Error copying text to the clipboard:", error);
     }
   }
 
-  async function handleCopyPassword(e: React.MouseEvent) {
-    if (e.target !== e.currentTarget) {
-      return;
-    }
-
-    e.stopPropagation();
+  async function handleCopyPassword() {
     try {
       const decryptedPassword = await fetchPassword();
       if (decryptedPassword) {
         await copyToClipboard(decryptedPassword);
       } else {
-        alert("No password to copy.");
+        toast({
+          variant: "destructive",
+          title: "Password copy failed",
+          description: `No password to copy!`
+        })
       }
     } catch (error) {
       console.error("Error copying text to the clipboard:", error);
     }
   }
 
-  function handleFetchPassword(e: React.MouseEvent) {
-    e.stopPropagation();
+  function openPasswordDialog() {
+    setSelectedModal("dialog");
     FetchPasswordData();
   }
 
-  function openPasswordDetails(e: React.MouseEvent) {
-    e.stopPropagation();
-    setOpenDetails(true);
+  function openPasswordDetails() {
+    setSelectedModal("details");
+    FetchPasswordData();
   }
 
   return (
     <div
       className="flex items-center p-5 m-2 bg-white rounded-md shadow-lg w-full"
-      onClick={openPasswordDetails}
     >
       <LockClosedIcon className="w-6 h-6 mr-4" />
       <div className="flex-grow text-left">
         <h3 className="text-xl font-bold">{props.passwordData.title}</h3>
         <p>{props.passwordData.username}</p>
       </div>
+      <button onClick={openPasswordDetails}>
+        <EyeIcon className="w-6 h-6 mr-5" />
+      </button>
       <button onClick={handleCopyPassword}>
         <DocumentDuplicateIcon className="w-6 h-6 mr-5" />
       </button>
       {/* Password Card  Button*/}
-      <button onClick={handleFetchPassword}>
+      <button onClick={openPasswordDialog}>
         <PencilIcon className="w-6 h-6 mr-2" />
       </button>
       {/* Edit Modal */}
@@ -178,6 +187,7 @@ export default function PasswordCard(props: PasswordCardProps) {
           </DialogHeader>
         </DialogContent>
       </Dialog>
+      <Toaster />
     </div>
   );
 }
