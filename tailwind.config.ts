@@ -22,6 +22,7 @@ const config: Config = {
         'character-primary': '#000000D9',
         'character-secondary': '#00000073',
         'character-disabledOrPlaceholder': '#00000040',
+        'character-inverse': '#FFFFFF',
       },
     },
   },
