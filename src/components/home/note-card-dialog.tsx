@@ -46,6 +46,7 @@ const NoteCardDialog: React.FC<NoteCardDialogProps> = ({
   refreshNoteVault,
 }) => {
   const [isFormSubmitted, setIsFormSubmitted] = useState(false); // Track form submission status
+  const [formSubmissionStatus, setFormSubmissionStatus] = useState(""); // Track result of submitted form status
   const noteCardForm = useForm<z.infer<typeof NoteCardDialogSchema>>({
     resolver: zodResolver(NoteCardDialogSchema),
     defaultValues: {
@@ -74,12 +75,38 @@ const NoteCardDialog: React.FC<NoteCardDialogProps> = ({
       if (response.ok) {
         refreshNoteVault();
         setIsFormSubmitted(true);
+        setFormSubmissionStatus("Note has been updated successfully!");
       } else {
         setIsFormSubmitted(true);
+        setFormSubmissionStatus("Error! Note could not be updated!");
       }
     }
     SaveNote();
   };
+
+  function handleDeleteNote() {
+    async function DeleteNote() {
+      const response = await fetch(`api/vault/delete/note`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id: noteData.id,
+        }),
+      });
+
+      if (response.ok) {
+        refreshNoteVault();
+        setIsFormSubmitted(true);
+        setFormSubmissionStatus("Note has been deleted successfully!");
+      } else {
+        setIsFormSubmitted(true);
+        setFormSubmissionStatus("Error! Note could not be deleted!");
+      }
+    }
+    DeleteNote();
+  }
 
   //The HTML elements
   return (
@@ -146,25 +173,37 @@ const NoteCardDialog: React.FC<NoteCardDialogProps> = ({
                 )}
               />
             </div>
-            <div className="flex space-x-4 w-full">
-              <Button
-                type="button"
-                variant={"outline"}
-                className="w-full"
-                onClick={() => setOpenDialog(false)}
-              >
-                Cancel
-              </Button>
-              <Button type="submit" className="w-full">
-                Save
-              </Button>
+            <div className="flex space-x-4 justify-between w-full">
+              <div>
+                <Button
+                  type="button"
+                  className="w-full"
+                  variant={"destructive"}
+                  onClick={() => handleDeleteNote()}
+                >
+                  Delete
+                </Button>
+              </div>
+              <div className="flex space-x-4">
+                <Button
+                  type="button"
+                  variant={"outline"}
+                  className="w-full"
+                  onClick={() => setOpenDialog(false)}
+                >
+                  Cancel
+                </Button>
+                <Button type="submit" className="w-full">
+                  Save
+                </Button>
+              </div>
             </div>
           </form>
         </Form>
       ) : (
         // Render a success message
         <div>
-          <p>Form submitted successfully!</p>
+          <p>{formSubmissionStatus}</p>
         </div>
       )}
     </>
