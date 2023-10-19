@@ -68,6 +68,7 @@ const PasswordCardDialog: React.FC<PasswordCardDialogProps> = ({
   refreshPasswordVault,
 }) => {
   const [isFormSubmitted, setIsFormSubmitted] = useState(false); // Track form submission status
+  const [formSubmissionStatus, setFormSubmissionStatus] = useState(""); // Track result of submitted form status
   const passwordCardForm = useForm<z.infer<typeof PasswordCardDialogSchema>>({
     resolver: zodResolver(PasswordCardDialogSchema),
     defaultValues: {
@@ -105,8 +106,10 @@ const PasswordCardDialog: React.FC<PasswordCardDialogProps> = ({
       if (response.ok) {
         refreshPasswordVault();
         setIsFormSubmitted(true);
+        setFormSubmissionStatus("Password card has been updated successfully!");
       } else {
         setIsFormSubmitted(true);
+        setFormSubmissionStatus("Error! Password card could not be updated!");
       }
     }
     SavePassword();
@@ -216,7 +219,7 @@ const PasswordCardDialog: React.FC<PasswordCardDialogProps> = ({
       ) : (
         // Render a success message
         <div>
-          <p>Form submitted successfully!</p>
+          <p>{formSubmissionStatus}</p>
         </div>
       )}
     </>

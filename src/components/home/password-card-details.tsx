@@ -55,7 +55,8 @@ const PasswordCardDetails: React.FC<PasswordCardDetailsProps> = ({
   decryptedPassword,
   refreshPasswordVault,
 }) => {
-  const [isFormSubmitted, setIsFormSubmitted] = useState(false); // Track form submission status
+  const [isFormSubmitted, setIsFormSubmitted] = useState(false); // Track if form has been submitted
+  const [formSubmissionStatus, setFormSubmissionStatus] = useState(""); // Track result of submitted form status
   const passwordCardForm = useForm<z.infer<typeof PasswordCardDetailsSchema>>({
     resolver: zodResolver(PasswordCardDetailsSchema),
     defaultValues: {
@@ -92,8 +93,10 @@ const PasswordCardDetails: React.FC<PasswordCardDetailsProps> = ({
       if (response.ok) {
         refreshPasswordVault();
         setIsFormSubmitted(true);
+        setFormSubmissionStatus("Password card has been updated successfully!");
       } else {
         setIsFormSubmitted(true);
+        setFormSubmissionStatus("Error! Password card could not be updated!");
       }
     }
     SavePassword();
@@ -114,8 +117,10 @@ const PasswordCardDetails: React.FC<PasswordCardDetailsProps> = ({
       if (response.ok) {
         refreshPasswordVault();
         setIsFormSubmitted(true);
+        setFormSubmissionStatus("Password card has been deleted successfully!");
       } else {
         setIsFormSubmitted(true);
+        setFormSubmissionStatus("Error! Password card could not be deleted!");
       }
     }
     DeletePassword();
@@ -124,7 +129,7 @@ const PasswordCardDetails: React.FC<PasswordCardDetailsProps> = ({
   //The HTML elements
   return (
     <>
-      {!isFormSubmitted && (
+      {!isFormSubmitted ? (
         <Form {...passwordCardForm}>
           <form
             onSubmit={passwordCardForm.handleSubmit(onSavePasswordCard)}
@@ -228,6 +233,11 @@ const PasswordCardDetails: React.FC<PasswordCardDetailsProps> = ({
             </div>
           </form>
         </Form>
+      ) : (
+        // Render a success message
+        <div>
+          <p>{formSubmissionStatus}</p>
+        </div>
       )}
     </>
   );
