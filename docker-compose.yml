@@ -1,52 +1,54 @@
-version: '3'
+version: "3"
 
 volumes:
-    satu-data:
+  satu-password-postgresdb-data:
+  satu-password-jenkins-data:
 
 networks:
-    satu-network:
+  satu-password-network:
 
 services:
-    db:
-        container_name: postgres-db
-        image: postgres:latest
-        volumes:
-            - satu-data:/var/lib/postgresql/data
-        environment:
-            POSTGRES_PASSWORD: 7heD1ct@t0r4cc3e5s
-            POSTGRES_USER: postgres
-            POSTGRES_DB: SatuPasswordDB
-        ports:
-            - 5432:5432
-        networks:
-            - satu-network
+  postgresdb:
+    container_name: postgresdb
+    image: postgres:latest
+    volumes:
+      - satu-password-postgresdb-data:/var/lib/postgresql/data
+    environment_file:
+      - ./secrets/postgresdb/.env
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - 5432:5432
+    networks:
+      - satu-password-network
 
-    web:
-        container_name: satupassword-node
-        build:
-            context: .
-            dockerfile: Dockerfile
-        depends_on:
-            - db
-        ports:
-            - 3000:3000
-        links:
-            - db
-        networks:
-            - satu-network
+  nginx:
+    container_name: nginx
+    image: nginx:latest
+    ports:
+      - 443:443
+    networks:
+      - satu-password-network
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/ssl-params.conf:/etc/nginx/snippets/ssl-params.conf
 
-    reverse-proxy:
-        container_name: nginx-reverse-proxy
-        image: nginx:latest
-        ports:
-            - 443:443
-        links:
-            - web
-        networks:
-            - satu-network
-        volumes:
-            - ./nginx/nginx.conf:/etc/nginx/nginx.conf
-            - ./nginx/fullchain.pem:/etc/nginx/certs/fullchain.pem
-            - ./nginx/privkey.pem:/etc/nginx/certs/privkey.pem
-            - ./nginx/ssl-params.conf:/etc/nginx/snippets/ssl-params.conf
-            - ./nginx/dhparam.pem:/etc/ssl/certs/dhparam.pem
+      - ./secrets/nginx/fullchain.pem:/etc/nginx/certs/fullchain.pem
+      - ./secrets/nginx/privkey.pem:/etc/nginx/certs/privkey.pem
+
+      - ./secrets/nginx/dhparam.pem:/etc/ssl/certs/dhparam.pem
+
+  jenkins:
+    container_name: jenkins
+    image: jenkins/jenkins:latest
+    ports:
+      - 8080:8080
+      - 3000:3000
+      - 50000:50000
+    networks:
+      - satu-password-network
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - satu-password-jenkins-data:/var/jenkins_home
