@@ -8,7 +8,7 @@ RUN yarn
 
 COPY . .
 
-COPY secrets/webapp/.env .env
+COPY ./.env .env
 
 CMD [ "ls -lah" ]
 
