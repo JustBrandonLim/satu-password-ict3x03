@@ -6,7 +6,8 @@ pipeline {
             steps {
                 echo "Cleaning up..."
                 dir("/var/jenkins_home/workspace/satu-password") {
-                    sh 'cp -r /secrets .'
+                    sh 'cp -r /tmp/postgresdb .'
+                    sh 'cp -r /tmp/.env .'
                     sh 'docker compose down webapp'
                 }
             }
