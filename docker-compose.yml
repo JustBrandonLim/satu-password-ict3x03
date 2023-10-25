@@ -46,7 +46,6 @@ services:
     image: "jenkins:latest"
     ports:
       - 8080:8080
-      - 3000:3000
       - 50000:50000
     networks:
       - satu-password-network
