@@ -48,8 +48,6 @@ services:
     networks:
       - satu-password-network
     volumes:
-      - ./jenkins/Jenkinsfile:/var/jenkins_home/Jenkinsfile
-
       - /var/run/docker.sock:/var/run/docker.sock
         
       - satu-password-jenkins-data:/var/jenkins_home
