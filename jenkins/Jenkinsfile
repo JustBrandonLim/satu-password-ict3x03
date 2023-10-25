@@ -12,6 +12,7 @@ pipeline {
             steps {
                 echo 'Building...'
                 dir("/var/jenkins_home/workspace/satu-password") {
+                    sh 'cp -r /secrets .'
                     sh 'docker compose build webapp'
                 }
             }
