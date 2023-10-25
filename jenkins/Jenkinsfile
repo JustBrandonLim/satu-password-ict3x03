@@ -2,10 +2,16 @@ pipeline {
     agent any
 
     stages {
+        stage('Clean Up') {
+            steps {
+                echo "Cleaning up..."
+                sh 'docker stop webapp'
+            }
+        }
         stage('Build') {
             steps {
-                echo 'Building..'
-                sh 'docker compose build'
+                echo 'Building...'
+                sh 'docker build -t webapp'
                 //dir('webapp') 
                     //sh 'docker build -t satu-password:latest .'
                 //}
@@ -13,13 +19,13 @@ pipeline {
         }
         stage('Test') {
             steps {
-                echo 'Testing..'
+                echo 'Testing...'
             }
         }
         stage('Deploy') {
             steps {
-                echo 'Deploying....'
-                sh 'docker compose up -d'
+                echo 'Deploying...'
+                sh 'docker start webapp'
                 //sh 'docker run -d --rm --name satu-password --network satu-password_satu-password-network -p 3000:3000 satu-password:latest'
             }
         }
