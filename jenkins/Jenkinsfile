@@ -5,7 +5,7 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Building..'
-                sh 'docker-compose build'
+                sh 'docker compose build'
                 //dir('webapp') 
                     //sh 'docker build -t satu-password:latest .'
                 //}
@@ -19,7 +19,7 @@ pipeline {
         stage('Deploy') {
             steps {
                 echo 'Deploying....'
-                sh 'docker-compose up -d'
+                sh 'docker compose up -d'
                 //sh 'docker run -d --rm --name satu-password --network satu-password_satu-password-network -p 3000:3000 satu-password:latest'
             }
         }
