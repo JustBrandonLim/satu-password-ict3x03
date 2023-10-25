@@ -8,8 +8,6 @@ RUN yarn
 
 COPY . .
 
-COPY ./.env .env
-
 ENV HOST 0.0.0.0
 ENV PORT=3000
 
