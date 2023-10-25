@@ -43,7 +43,6 @@ services:
       - jenkins
     depends_on:
       - jenkins
-      - webapp
 
   webapp:
     container_name: webapp
