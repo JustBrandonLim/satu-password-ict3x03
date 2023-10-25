@@ -5,19 +5,13 @@ pipeline {
         stage('Clean Up') {
             steps {
                 echo "Cleaning up..."
-                dir("/var/jenkins_home/workspace/satu-password") {
-                    sh 'cp -r /tmp/postgres.env .'
-                    sh 'cp -r /tmp/.env .'
-                    sh 'docker compose down webapp'
-                }
+                sh 'docker compose down webapp'
             }
         }
         stage('Build') {
             steps {
                 echo 'Building...'
-                dir("/var/jenkins_home/workspace/satu-password") {
-                    sh 'docker compose build webapp'
-                }
+                sh 'docker compose build webapp'
             }
         }
         stage('Test') {
