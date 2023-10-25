@@ -5,8 +5,9 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Building..'
-                sh 'cd ../webapp'
-                sh 'docker image build -t satu-password:latest'
+                dir("webapp") {
+                    sh 'docker image build -t satu-password:latest'
+                }
             }
         }
         stage('Test') {
