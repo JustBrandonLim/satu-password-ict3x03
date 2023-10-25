@@ -6,24 +6,14 @@ pipeline {
             steps {
                 echo "Cleaning up..."
                 sh 'docker compose down webapp'
-                // sh 'docker stop webapp'
-                // sh 'docker rm webapp'
-                // sh 'docker rmi webapp:latest'
             }
         }
         stage('Build') {
             steps {
                 echo 'Building...'
-                sh '''
-                pwd
-                ls -lah
-                ls -lah secrets
-                ls -lah secrets/webapp
-                cat secrets/webapp/.env
-                '''
-                echo 'checks done'
-                sh 'docker compose build webapp'
-                // sh 'docker build -t webapp:latest ./webapp/'
+                dir("/var/jenkins_home/workspace/satu-password") {
+                    sh 'docker compose build webapp'
+                }
             }
         }
         stage('Test') {
@@ -36,7 +26,6 @@ pipeline {
                 echo 'Deploying...'
                 sh 'docker compose up webapp -d'
                 sh 'docker exec webapp yarn prisma db push'
-                // sh 'docker run -d --name webapp --network satu-password-network -p 3000:3000 webapp:latest'
             }
         }
     }
