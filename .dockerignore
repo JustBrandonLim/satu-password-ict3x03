@@ -1,5 +1,8 @@
 node_modules
 nginx
+webapp
+.idea
+.vscode
 .git
 .gitignore
 .next
