@@ -35,6 +35,8 @@ services:
       - ./secrets/nginx/privkey.pem:/etc/nginx/certs/privkey.pem
 
       - ./secrets/nginx/dhparam.pem:/etc/ssl/certs/dhparam.pem
+    links:
+      - jenkins
 
   jenkins:
     container_name: jenkins
@@ -46,5 +48,8 @@ services:
     networks:
       - satu-password-network
     volumes:
+      - ./jenkins/Jenkinsfile:/var/jenkins_home/Jenkinsfile
+
       - /var/run/docker.sock:/var/run/docker.sock
+        
       - satu-password-jenkins-data:/var/jenkins_home
