@@ -5,15 +5,17 @@ pipeline {
         stage('Clean Up') {
             steps {
                 echo "Cleaning up..."
-                sh 'docker stop webapp'
-                sh 'docker rm webapp'
-                sh 'docker rmi webapp:latest'
+                sh 'docker compose down webapp'
+                // sh 'docker stop webapp'
+                // sh 'docker rm webapp'
+                // sh 'docker rmi webapp:latest'
             }
         }
         stage('Build') {
             steps {
                 echo 'Building...'
-                sh 'docker build -t webapp:latest ./webapp/'
+                sh 'docker compose build webapp'
+                // sh 'docker build -t webapp:latest ./webapp/'
             }
         }
         stage('Test') {
@@ -24,7 +26,8 @@ pipeline {
         stage('Deploy') {
             steps {
                 echo 'Deploying...'
-                sh 'docker run -d --name webapp --network satu-password-network -p 3000:3000 webapp:latest'
+                sh 'sh 'docker compose up webapp''
+                // sh 'docker run -d --name webapp --network satu-password-network -p 3000:3000 webapp:latest'
             }
         }
     }
