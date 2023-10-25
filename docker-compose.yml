@@ -60,7 +60,6 @@ services:
       - satu-password-network
     volumes:
       - ./secrets/webapp/.env:/app/.env
-      - ./secrets:/app/secrets
 
   jenkins:
     container_name: jenkins
@@ -77,4 +76,3 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
 
       - satu-password-jenkins-data:/var/jenkins_home
-      - ./secrets:/var/jenkins_home/workspace/satu-password/secrets
