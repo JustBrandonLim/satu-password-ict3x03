@@ -18,7 +18,7 @@ pipeline {
         stage('Deploy') {
             steps {
                 echo 'Deploying....'
-                sh 'docker run -d --rm --name satu-password --network satu-password-network -p 3000:3000 satu-password:latest'
+                sh 'docker run -d --rm --name satu-password --network satu-password_satu-password-network -p 3000:3000 satu-password:latest'
             }
         }
     }
