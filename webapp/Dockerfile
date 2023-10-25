@@ -8,8 +8,6 @@ RUN yarn
 
 COPY . .
 
-COPY secrets/webapp/.env .
-
 CMD [ "ls -lah" ]
 
 ENV HOST 0.0.0.0
