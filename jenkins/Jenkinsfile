@@ -6,7 +6,7 @@ pipeline {
             steps {
                 echo 'Building..'
                 dir("webapp") {
-                    sh 'docker image build -t satu-password:latest'
+                    sh 'docker build -t satu-password:latest'
                 }
             }
         }
