@@ -46,23 +46,6 @@ services:
     depends_on:
       - jenkins
 
-  webapp:
-    container_name: webapp
-    build:
-      context: ./webapp/
-      dockerfile: Dockerfile
-    image: "webapp:latest"
-    ports:
-      - 3000:3000
-    depends_on:
-      - postgresdb
-    links:
-      - postgresdb
-    networks:
-      - satu-password-network
-    volumes:
-      - satu-password-env-data:/env
-
   jenkins:
     container_name: jenkins
     build:
@@ -78,4 +61,21 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
 
       - satu-password-jenkins-data:/var/jenkins_home
+      - satu-password-env-data:/env
+
+  webapp:
+    container_name: webapp
+    build:
+      context: ./webapp/
+      dockerfile: Dockerfile
+    image: "webapp:latest"
+    ports:
+      - 3000:3000
+    depends_on:
+      - postgresdb
+    links:
+      - postgresdb
+    networks:
+      - satu-password-network
+    volumes:
       - satu-password-env-data:/env
