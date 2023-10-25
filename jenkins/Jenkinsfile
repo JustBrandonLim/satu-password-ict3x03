@@ -5,14 +5,16 @@ pipeline {
         stage('Clean Up') {
             steps {
                 echo "Cleaning up..."
-                sh 'docker compose down webapp'
+                dir("/var/jenkins_home/workspace/satu-password") {
+                    sh 'cp -r /secrets .'
+                    sh 'docker compose down webapp'
+                }
             }
         }
         stage('Build') {
             steps {
                 echo 'Building...'
                 dir("/var/jenkins_home/workspace/satu-password") {
-                    sh 'cp -r /secrets .'
                     sh 'docker compose build webapp'
                 }
             }
