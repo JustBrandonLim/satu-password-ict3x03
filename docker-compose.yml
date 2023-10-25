@@ -3,6 +3,8 @@ version: "3"
 volumes:
   satu-password-postgresdb-data:
     name: satu-password-postgresdb-data
+  satu-password-env-data:
+    name: satu-password-env-data
   satu-password-jenkins-data:
     name: satu-password-jenkins-data
 
@@ -59,7 +61,7 @@ services:
     networks:
       - satu-password-network
     volumes:
-      - ./.env:/app/.env
+      - satu-password-env-data:/env
 
   jenkins:
     container_name: jenkins
@@ -76,3 +78,4 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
 
       - satu-password-jenkins-data:/var/jenkins_home
+      - satu-password-env-data:/env

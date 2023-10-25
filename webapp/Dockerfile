@@ -1,5 +1,9 @@
 FROM node:16.20.2-alpine
 
+WORKDIR /env
+
+COPY ./.env /app
+
 WORKDIR /app
 
 COPY package*.json ./
