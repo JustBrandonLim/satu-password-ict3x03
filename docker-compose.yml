@@ -58,8 +58,6 @@ services:
       - postgresdb
     networks:
       - satu-password-network
-    volumes:
-      - /secrets/webapp/.env:/app/.env
 
   jenkins:
     container_name: jenkins
