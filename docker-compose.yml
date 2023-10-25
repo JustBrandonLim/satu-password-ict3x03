@@ -59,7 +59,7 @@ services:
     networks:
       - satu-password-network
     volumes:
-      - ./secrets/webapp/.env:/app/.env
+      - /secrets/webapp/.env:/app/.env
 
   jenkins:
     container_name: jenkins
