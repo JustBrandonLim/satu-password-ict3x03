@@ -11,4 +11,6 @@ RUN apt-get update  -qq \
     && apt-get -y install docker-ce
 RUN usermod -aG docker jenkins
 
-COPY ./.env /.env
+WORKDIR /var/jenkins_home/workspace/satu-password
+COPY ./postgresdb .
+COPY ./.env .
