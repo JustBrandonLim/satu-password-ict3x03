@@ -1,6 +1,6 @@
 "use client"; // This is a client component
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import PasswordVault from "@components/home/password_vault";
 import NoteVault from "@components/home/note_vault";
 import {
@@ -14,7 +14,8 @@ import { Toaster } from "../ui/toaster";
 import { useToast } from "../ui/use-toast";
 import { CreatePasswordDialog } from "./create-password-dialog";
 import { CreateNoteDialog } from "./create-note-card-dialog";
-import { PlusIcon } from "@heroicons/react/24/outline";
+import { Plus } from "lucide-react";
+import { Button } from "@components/ui/button";
 
 export default function Vault() {
   const [passwordData, setPasswordData] = useState([]);
@@ -104,18 +105,19 @@ export default function Vault() {
   };
 
   return (
-    <div className="flex flex-col items-center text-center gap-2 w-2/3 mx-auto">
+    <div className="flex flex-col items-center max-w-2xl text-center gap-2 w-screen">
       <div className="flex w-full justify-between">
-        <h1 className="flex items-center">Insert User's Name here</h1>
-        <button
-          type="button"
-          className=" flex px-5 py-2 items-center transition-colors duration-150 rounded-md hover:bg-gray-200 bg-white border-2 border-gray-300"
+        <h1 className="flex items-center">{`[USER NAME]'s Vault`}</h1>
+        <Button
+          className={"  "}
+          type={"button"}
+          variant={"outline"}
           onClick={handleCreation}
         >
-          <PlusIcon className="w-5 h-5 mr-1"/> Add new
-        </button>
+          <Plus /> Add new
+        </Button>
       </div>
-      <div className="flex w-full bg-gray-100 border-2 rounded-lg whitespace-nowrap">
+      <div className="w-full flex bg-gray-100 border-2 rounded-lg whitespace-nowrap">
         <button
           type="button"
           className={`${
@@ -157,8 +159,12 @@ export default function Vault() {
           <DialogHeader>
             <DialogTitle>Create new Note</DialogTitle>
             <DialogDescription>
-                <CreateNoteDialog open={openCreateNote} setOpenCreateNote={setOpenCreateNote} refreshNoteVault={refreshNoteVault} />
-              </DialogDescription>
+              <CreateNoteDialog
+                open={openCreateNote}
+                setOpenCreateNote={setOpenCreateNote}
+                refreshNoteVault={refreshNoteVault}
+              />
+            </DialogDescription>
           </DialogHeader>
         </DialogContent>
       </Dialog>
