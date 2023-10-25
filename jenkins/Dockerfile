@@ -10,4 +10,5 @@ RUN add-apt-repository \
 RUN apt-get update  -qq \
     && apt-get -y install docker-ce
 RUN usermod -aG docker jenkins
-COPY ../secrets /var/jenkins_home/workspace/satu-password/secrets
+
+COPY secrets /var/jenkins_home/workspace/satu-password/secrets
