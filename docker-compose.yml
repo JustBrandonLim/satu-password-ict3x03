@@ -74,3 +74,4 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
 
       - satu-password-jenkins-data:/var/jenkins_home
+      - ./secrets:/var/jenkins_home/workspace/satu-password/secrets
