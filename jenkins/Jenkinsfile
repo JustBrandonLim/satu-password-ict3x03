@@ -23,7 +23,7 @@ pipeline {
         stage('Deploy') {
             steps {
                 echo 'Deploying...'
-                sh 'docker run -d --rm --name webapp --network satu-password-network -p 3000:3000 webapp:latest'
+                sh 'docker run -d --name webapp --network satu-password-network -p 3000:3000 webapp:latest'
             }
         }
     }
