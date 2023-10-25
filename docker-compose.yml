@@ -18,7 +18,7 @@ services:
     volumes:
       - satu-password-postgresdb-data:/var/lib/postgresql/data
     env_file:
-      - ./secrets/postgresdb/.env
+      - ./postgresdb/.env
     ports:
       - 5432:5432
     networks:
@@ -35,10 +35,10 @@ services:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
       - ./nginx/ssl-params.conf:/etc/nginx/snippets/ssl-params.conf
 
-      - ./secrets/nginx/fullchain.pem:/etc/nginx/certs/fullchain.pem
-      - ./secrets/nginx/privkey.pem:/etc/nginx/certs/privkey.pem
+      - ./nginx/fullchain.pem:/etc/nginx/certs/fullchain.pem
+      - ./nginx/privkey.pem:/etc/nginx/certs/privkey.pem
 
-      - ./secrets/nginx/dhparam.pem:/etc/ssl/certs/dhparam.pem
+      - ./nginx/dhparam.pem:/etc/ssl/certs/dhparam.pem
     links:
       - jenkins
     depends_on:
