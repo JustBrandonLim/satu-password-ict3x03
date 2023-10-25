@@ -13,7 +13,7 @@ services:
     image: postgres:latest
     volumes:
       - satu-password-postgresdb-data:/var/lib/postgresql/data
-    environment_file:
+    env_file:
       - ./secrets/postgresdb/.env
     environment:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
