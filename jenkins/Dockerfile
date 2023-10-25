@@ -11,4 +11,4 @@ RUN apt-get update  -qq \
     && apt-get -y install docker-ce
 RUN usermod -aG docker jenkins
 
-COPY secrets /secrets
+COPY /secrets /secrets
