@@ -5,6 +5,8 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Building..'
+                sh 'cd ../webapp'
+                sh 'docker image build -t satu-password:latest'
             }
         }
         stage('Test') {
@@ -15,6 +17,7 @@ pipeline {
         stage('Deploy') {
             steps {
                 echo 'Deploying....'
+                sh 'docker run -d --rm --name satu-password -p 3000:3000 satu-password:latest'
             }
         }
     }
