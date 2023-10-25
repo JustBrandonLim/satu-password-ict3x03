@@ -3,12 +3,12 @@ import Footer from "@components/page-footer";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <>
-      <main className="flex flex-col min-h-screen grow bg-[#F1F5F9]">
+    <div className={"h-screen flex flex-col"}>
+      <main className="grow flex flex-col">
         <Navbar />
         {children}
       </main>
       <Footer />
-    </>
+    </div>
   );
 }
