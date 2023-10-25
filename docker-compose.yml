@@ -40,7 +40,9 @@ services:
 
   jenkins:
     container_name: jenkins
-    image: jenkins/jenkins:latest
+    build:
+      context: ./jenkins/
+      dockerfile: Dockerfile
     ports:
       - 8080:8080
       - 3000:3000
@@ -49,5 +51,5 @@ services:
       - satu-password-network
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-        
+
       - satu-password-jenkins-data:/var/jenkins_home
