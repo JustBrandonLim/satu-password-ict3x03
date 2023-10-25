@@ -37,6 +37,24 @@ services:
       - ./secrets/nginx/dhparam.pem:/etc/ssl/certs/dhparam.pem
     links:
       - jenkins
+    depends_on:
+      - jenkins
+      - webapp
+
+  webapp:
+    container_name: webapp
+    build:
+      context: ./webapp/
+      dockerfiler: Dockerfile
+    image: "webapp:latest"
+    ports:
+      - 3000:3000
+    depends_on:
+      - postgresdb
+    links:
+      - postgresdb
+    networks:
+      - satu-password-network
 
   jenkins:
     container_name: jenkins
