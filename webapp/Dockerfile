@@ -10,8 +10,6 @@ COPY . .
 
 COPY ./.env .env
 
-CMD [ "ls -lah" ]
-
 ENV HOST 0.0.0.0
 ENV PORT=3000
 

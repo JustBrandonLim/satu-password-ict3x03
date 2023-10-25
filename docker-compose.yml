@@ -18,7 +18,7 @@ services:
     volumes:
       - satu-password-postgresdb-data:/var/lib/postgresql/data
     env_file:
-      - ./postgresdb/.env
+      - ./postgres.env
     ports:
       - 5432:5432
     networks:

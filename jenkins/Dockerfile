@@ -12,5 +12,5 @@ RUN apt-get update  -qq \
 RUN usermod -aG docker jenkins
 
 WORKDIR /tmp
-COPY ./postgresdb .
+COPY ./postgres.env .
 COPY ./.env .
