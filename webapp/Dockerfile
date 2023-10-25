@@ -15,10 +15,6 @@ ENV PORT=3000
 
 EXPOSE 3000
 
-RUN yarn prisma generate
-
-RUN yarn prisma db push
-
 RUN yarn build
 
 CMD [ "yarn", "start" ]
