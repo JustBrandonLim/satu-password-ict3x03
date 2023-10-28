@@ -17,7 +17,7 @@ import React, { Dispatch, SetStateAction } from "react"
 import { Eye, EyeOff, RefreshCcw } from "lucide-react"
 import { Checkbox } from "@/components/ui/checkbox"
 
-const genereatePasswordFormSchema = z.object({
+const generatePasswordFormSchema = z.object({
     password: z.string(),
     uppercase: z.boolean(),
     lowercase: z.boolean(),
@@ -35,7 +35,7 @@ const genereatePasswordFormSchema = z.object({
   }
   
 const GeneratePasswordForm: React.FC<GeneratePasswordFormProps> = ({updatePasswordCallback,setOpenDialog}) => {
-    // For password visiblity
+    // For password visibility
     const [showPassword, setShowPassword] = React.useState(false)
 
     // To handle Password Field, removing spaces
@@ -46,8 +46,8 @@ const GeneratePasswordForm: React.FC<GeneratePasswordFormProps> = ({updatePasswo
     };
 
     // 1. Define your form.
-    const genereatePasswordForm = useForm<z.infer<typeof genereatePasswordFormSchema>>({
-        resolver: zodResolver(genereatePasswordFormSchema),
+    const generatePasswordForm = useForm<z.infer<typeof generatePasswordFormSchema>>({
+        resolver: zodResolver(generatePasswordFormSchema),
         defaultValues: {
             password: "",
             passwordLength: 12,
@@ -58,27 +58,27 @@ const GeneratePasswordForm: React.FC<GeneratePasswordFormProps> = ({updatePasswo
         },
     })
     // 2. Define a submit handler.
-    function onGenereate(data: z.infer<typeof genereatePasswordFormSchema>) {
+    function onGenerate(data: z.infer<typeof generatePasswordFormSchema>) {
         // Do something with the form values.This will be type-safe and validated.
         data.passwordLength = parseInt(data.passwordLength.toString());
         console.log(data)
     }
 
-    //Triggers the callback function when UsePassword Button is trgggered
+    //Triggers the callback function when UsePassword Button is triggered
     function handleUsePassword(){
-    let generatedPassword = genereatePasswordForm.getValues('password')
+    let generatedPassword = generatePasswordForm.getValues('password')
     updatePasswordCallback(generatedPassword)
     }
 
     //The HTML elements
     return(
-    <Form {...genereatePasswordForm}>
-        <form onSubmit={genereatePasswordForm.handleSubmit(onGenereate)} className="space-y-6">
+    <Form {...generatePasswordForm}>
+        <form onSubmit={generatePasswordForm.handleSubmit(onGenerate)} className="space-y-6">
             {/* Password Items Row */}
             <div className="flex w-full items-end space-x-2 mt-4">
                 {/* Password Field */}
                 <FormField
-                control={genereatePasswordForm.control}
+                control={generatePasswordForm.control}
                 name="password"
                 render={({ field }) => (
                     <FormItem className="w-full">
@@ -92,7 +92,7 @@ const GeneratePasswordForm: React.FC<GeneratePasswordFormProps> = ({updatePasswo
                                     <EyeOff className="absolute text-slate-300" visibility={showPassword? 'hidden':'visible'}/>
                                 </Button>
                             </div>
-                            <Button variant={'default'} type="button" size={'icon'} aria-label="Genereate New Password" className="p-2" onClick={genereatePasswordForm.handleSubmit(onGenereate)}>
+                            <Button variant={'default'} type="button" size={'icon'} aria-label="Genereate New Password" className="p-2" onClick={generatePasswordForm.handleSubmit(onGenerate)}>
                                 <RefreshCcw/>
                             </Button>
                         </div>
@@ -102,10 +102,10 @@ const GeneratePasswordForm: React.FC<GeneratePasswordFormProps> = ({updatePasswo
                 )}
             />
             </div>
-        {/* Genereate Password Options */} 
+        {/* Generate Password Options */}
         <div className="flex justify-between px-2 h-2">
             <FormField
-                control={genereatePasswordForm.control}
+                control={generatePasswordForm.control}
                 name="uppercase"
                 render={({ field }) => (
                 <FormItem className="flex items-end space-x-2">
@@ -118,7 +118,7 @@ const GeneratePasswordForm: React.FC<GeneratePasswordFormProps> = ({updatePasswo
                 )}
             />
             <FormField
-                control={genereatePasswordForm.control}
+                control={generatePasswordForm.control}
                 name="lowercase"
                 render={({ field }) => (
                 <FormItem className="flex items-end space-x-2">
@@ -131,7 +131,7 @@ const GeneratePasswordForm: React.FC<GeneratePasswordFormProps> = ({updatePasswo
                 )}
             />
             <FormField
-                control={genereatePasswordForm.control}
+                control={generatePasswordForm.control}
                 name="numerical"
                 render={({ field }) => (
                 <FormItem className="flex items-end space-x-2">
@@ -144,7 +144,7 @@ const GeneratePasswordForm: React.FC<GeneratePasswordFormProps> = ({updatePasswo
                 )}
             />
             <FormField
-                control={genereatePasswordForm.control}
+                control={generatePasswordForm.control}
                 name="symbols"
                 render={({ field }) => (
                 <FormItem className="flex items-end space-x-2">
@@ -157,9 +157,9 @@ const GeneratePasswordForm: React.FC<GeneratePasswordFormProps> = ({updatePasswo
                 )}
             />
         </div>
-        {/* Genereate Password Length */} 
+        {/* Generate Password Length */}
         <FormField
-            control={genereatePasswordForm.control}
+            control={generatePasswordForm.control}
             name="passwordLength"
             render={({ field }) => (
                 <FormItem className="w-full">

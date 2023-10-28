@@ -30,9 +30,7 @@ export async function POST(nextRequest: NextRequest) {
         });
 
         const wrappingKey = GenerateWrappingKey(loginData.password, user.wrappingKeySalt);
-
         const masterKey = DecryptAES(user.encryptedMasterKey, wrappingKey);
-
         const jwtId = GenerateRandomKey();
 
         await GetPrismaClient().login.update({
