@@ -38,7 +38,11 @@ export default function Vault() {
     if (response.ok) {
       setPasswordData(json.passwords);
     } else {
-      console.log(json);
+      toast({
+        variant: "destructive",
+        title: "Unable to fetch password data",
+        description: `Error ${response.status}: ${json.message}`
+      })
     }
   };
 
@@ -55,7 +59,11 @@ export default function Vault() {
     if (response.ok) {
       setNoteData(json.notes);
     } else {
-      console.log(json);
+      toast({
+        variant: "destructive",
+        title: "Unable to fetch note data",
+        description: `Error ${response.status}: ${json.message}`
+      })
     }
   };
 
@@ -106,8 +114,8 @@ export default function Vault() {
 
   return (
     <div className="flex flex-col items-center max-w-2xl text-center gap-2 w-screen">
-      <div className="flex w-full justify-between">
-        <h1 className="flex items-center">{`[USER NAME]'s Vault`}</h1>
+      <div className="flex w-full justify-end">
+        {/* <h1 className="flex items-center">{`[USER NAME]'s Vault`}</h1> */}
         <Button
           className={"  "}
           type={"button"}
@@ -137,7 +145,24 @@ export default function Vault() {
           Secure Note
         </button>
       </div>
-      <div className="w-full">{PageDisplay()}</div>
+      {featureDisplay === 0 && passwordData.length === 0 ? (
+        <div className="flex flex-col items-center justify-center w-full h-96">
+          <h1 className="font-semibold text-xl">No password data found</h1>
+          <p className="text-gray-500">
+            Click on + Add New to add a new Password
+          </p>
+        </div>
+      ) : featureDisplay === 1 && noteData.length === 0 ? (
+        <div className="flex flex-col items-center justify-center w-full h-96">
+          <h1 className="font-semibold text-xl">No note data found</h1>
+          <p className="text-gray-500">
+            Click on + Add New to add a new Secure Note
+          </p>
+        </div>
+      ) : (
+        <div className="w-full">{PageDisplay()}</div>
+      )}
+
       {/* Create Password Modal*/}
       <Dialog open={openCreatePassword} onOpenChange={setOpenCreatePassword}>
         <DialogContent>
