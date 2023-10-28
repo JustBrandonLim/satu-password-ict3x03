@@ -8,6 +8,8 @@ RUN yarn
 
 COPY . .
 
+CMD [ "cp /env/.env /app" ]
+
 ENV HOST 0.0.0.0
 ENV PORT=3000
 

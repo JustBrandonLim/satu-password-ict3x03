@@ -3,6 +3,8 @@ version: "3"
 volumes:
   satu-password-postgresdb-data:
     name: satu-password-postgresdb-data
+  satu-password-env-data:
+    name: satu-password-env-data
   satu-password-jenkins-data:
     name: satu-password-jenkins-data
 
@@ -18,7 +20,7 @@ services:
     volumes:
       - satu-password-postgresdb-data:/var/lib/postgresql/data
     env_file:
-      - ./secrets/postgresdb/.env
+      - ./postgres.env
     ports:
       - 5432:5432
     networks:
@@ -35,31 +37,14 @@ services:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
       - ./nginx/ssl-params.conf:/etc/nginx/snippets/ssl-params.conf
 
-      - ./secrets/nginx/fullchain.pem:/etc/nginx/certs/fullchain.pem
-      - ./secrets/nginx/privkey.pem:/etc/nginx/certs/privkey.pem
+      - ./nginx/fullchain.pem:/etc/nginx/certs/fullchain.pem
+      - ./nginx/privkey.pem:/etc/nginx/certs/privkey.pem
 
-      - ./secrets/nginx/dhparam.pem:/etc/ssl/certs/dhparam.pem
+      - ./nginx/dhparam.pem:/etc/ssl/certs/dhparam.pem
     links:
       - jenkins
     depends_on:
       - jenkins
-
-  webapp:
-    container_name: webapp
-    build:
-      context: ./webapp/
-      dockerfile: Dockerfile
-    image: "webapp:latest"
-    ports:
-      - 3000:3000
-    depends_on:
-      - postgresdb
-    links:
-      - postgresdb
-    networks:
-      - satu-password-network
-    volumes:
-      - ./secrets/webapp/.env:/app/.env
 
   jenkins:
     container_name: jenkins
@@ -76,4 +61,21 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
 
       - satu-password-jenkins-data:/var/jenkins_home
-      - ./secrets:/var/jenkins_home/workspace/satu-password/secrets
+      - satu-password-env-data:/env
+
+  webapp:
+    container_name: webapp
+    build:
+      context: ./webapp/
+      dockerfile: Dockerfile
+    image: "webapp:latest"
+    ports:
+      - 3000:3000
+    depends_on:
+      - postgresdb
+    links:
+      - postgresdb
+    networks:
+      - satu-password-network
+    volumes:
+      - satu-password-env-data:/env

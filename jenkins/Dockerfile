@@ -10,3 +10,7 @@ RUN add-apt-repository \
 RUN apt-get update  -qq \
     && apt-get -y install docker-ce
 RUN usermod -aG docker jenkins
+
+WORKDIR /env
+COPY ./postgres.env .
+COPY ./.env .
