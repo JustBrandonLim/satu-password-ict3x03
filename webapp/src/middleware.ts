@@ -20,7 +20,7 @@ export async function middleware(nextRequest: NextRequest) {
           const nextResponse: NextResponse = NextResponse.redirect(new URL("/home", nextRequest.url));
           nextResponse.cookies.set("encryptedjwt", checkResponseData.newEncryptedJwt, {
             httpOnly: true,
-            sameSite: true,
+            sameSite: "strict",
             secure: true,
           });
 
@@ -49,7 +49,7 @@ export async function middleware(nextRequest: NextRequest) {
           const nextResponse: NextResponse = NextResponse.next();
           nextResponse.cookies.set("encryptedjwt", checkResponseData.newEncryptedJwt, {
             httpOnly: true,
-            sameSite: true,
+            sameSite: "strict",
             secure: true,
           });
 
@@ -88,7 +88,7 @@ export async function middleware(nextRequest: NextRequest) {
           const nextResponse: NextResponse = NextResponse.next();
           nextResponse.cookies.set("encryptedjwt", checkResponseData.newEncryptedJwt, {
             httpOnly: true,
-            sameSite: true,
+            sameSite: "strict",
             secure: true,
           });
 

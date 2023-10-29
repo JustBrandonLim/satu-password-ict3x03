@@ -55,7 +55,7 @@ export async function POST(nextRequest: NextRequest) {
         const nextResponse: NextResponse = NextResponse.json({ message: "Successful!" }, { status: 200 });
         nextResponse.cookies.set("encryptedjwt", encryptedJwt, {
           httpOnly: true,
-          sameSite: true,
+          sameSite: "strict",
           secure: true,
         });
 
