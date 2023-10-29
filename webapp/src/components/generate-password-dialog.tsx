@@ -74,7 +74,7 @@ const GeneratePasswordForm: React.FC<GeneratePasswordFormProps> = ({updatePasswo
     return(
     <Form {...generatePasswordForm}>
         <form onSubmit={generatePasswordForm.handleSubmit(onGenerate)} className="space-y-6">
-            {/* Password Items Row */}
+             {/*Password Items Row*/}
             <div className="flex w-full items-end space-x-2 mt-4">
                 {/* Password Field */}
                 <FormField
@@ -87,12 +87,12 @@ const GeneratePasswordForm: React.FC<GeneratePasswordFormProps> = ({updatePasswo
                         <div className="flex w-full space-x-4">
                             <div className="relative w-full">
                                 <Input placeholder="Generate password button ->" type={showPassword?'text':'password'} {...field} onInput={handlePassword}/>
-                                <Button variant="ghost" type="button" size='icon' className="absolute right-0 bottom-0" aria-label="Toggle Passowrd Visibility" onClick={() => {setShowPassword(!showPassword)}}>
+                                <Button variant="ghost" type="button" size='icon' className="absolute right-0 bottom-0" aria-label="Toggle Password Visibility" onClick={() => {setShowPassword(!showPassword)}}>
                                     <Eye className="absolute text-slate-400" visibility={showPassword? 'visible':'hidden'}/>
                                     <EyeOff className="absolute text-slate-300" visibility={showPassword? 'hidden':'visible'}/>
                                 </Button>
                             </div>
-                            <Button variant={'default'} type="button" size={'icon'} aria-label="Genereate New Password" className="p-2" onClick={generatePasswordForm.handleSubmit(onGenerate)}>
+                            <Button variant={'default'} type="button" size={'icon'} aria-label="Generate New Password" className="p-2" onClick={generatePasswordForm.handleSubmit(onGenerate)}>
                                 <RefreshCcw/>
                             </Button>
                         </div>
@@ -102,7 +102,7 @@ const GeneratePasswordForm: React.FC<GeneratePasswordFormProps> = ({updatePasswo
                 )}
             />
             </div>
-        {/* Generate Password Options */}
+         {/*Generate Password Options*/}
         <div className="flex justify-between px-2 h-2">
             <FormField
                 control={generatePasswordForm.control}
@@ -166,7 +166,7 @@ const GeneratePasswordForm: React.FC<GeneratePasswordFormProps> = ({updatePasswo
                     <FormLabel>Length of password</FormLabel>
                     <FormControl>
                     <div className="flex space-x-8">
-                        <Input min={8} max={64} defaultValue={12} placeholder="Enter number"  {...field} type="number" />
+                        <Input min={8} max={64} placeholder="Enter number"  {...field} type="number" />
                     </div>
                     </FormControl>
                     <FormMessage />
@@ -174,7 +174,7 @@ const GeneratePasswordForm: React.FC<GeneratePasswordFormProps> = ({updatePasswo
             )}
         />
         <div className="flex space-x-4 w-full">
-            <Button type="reset" variant={'outline'} className="w-full" onClick={() => setOpenDialog(false)}>Cancel</Button> 
+            <Button type="reset" variant={'outline'} className="w-full" onClick={() => setOpenDialog(false)}>Cancel</Button>
             <Button type="button" className="w-full" onClick={() => {handleUsePassword(); setOpenDialog(false)}}>
                 Use Password
             </Button>
