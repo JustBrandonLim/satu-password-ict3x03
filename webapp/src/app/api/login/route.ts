@@ -53,7 +53,11 @@ export async function POST(nextRequest: NextRequest) {
           .encrypt(DecodeHex(process.env.SECRET_KEY!));
 
         const nextResponse: NextResponse = NextResponse.json({ message: "Successful!" }, { status: 200 });
-        nextResponse.cookies.set("encryptedjwt", encryptedJwt);
+        nextResponse.cookies.set("encryptedjwt", encryptedJwt, {
+          httpOnly: true,
+          sameSite: true,
+          secure: true,
+        });
 
         return nextResponse;
       }

@@ -18,7 +18,11 @@ export async function middleware(nextRequest: NextRequest) {
           const checkResponseData = await checkResponse.json();
 
           const nextResponse: NextResponse = NextResponse.redirect(new URL("/home", nextRequest.url));
-          nextResponse.cookies.set("encryptedjwt", checkResponseData.newEncryptedJwt);
+          nextResponse.cookies.set("encryptedjwt", checkResponseData.newEncryptedJwt, {
+            httpOnly: true,
+            sameSite: true,
+            secure: true,
+          });
 
           return nextResponse;
         } else {
@@ -43,7 +47,11 @@ export async function middleware(nextRequest: NextRequest) {
           const checkResponseData = await checkResponse.json();
 
           const nextResponse: NextResponse = NextResponse.next();
-          nextResponse.cookies.set("encryptedjwt", checkResponseData.newEncryptedJwt);
+          nextResponse.cookies.set("encryptedjwt", checkResponseData.newEncryptedJwt, {
+            httpOnly: true,
+            sameSite: true,
+            secure: true,
+          });
 
           return nextResponse;
         } else {
@@ -78,7 +86,11 @@ export async function middleware(nextRequest: NextRequest) {
           const checkResponseData = await checkResponse.json();
 
           const nextResponse: NextResponse = NextResponse.next();
-          nextResponse.cookies.set("encryptedjwt", checkResponseData.newEncryptedJwt);
+          nextResponse.cookies.set("encryptedjwt", checkResponseData.newEncryptedJwt, {
+            httpOnly: true,
+            sameSite: true,
+            secure: true,
+          });
 
           return nextResponse;
         } else {
