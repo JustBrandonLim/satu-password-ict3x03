@@ -21,7 +21,7 @@ export default function Vault() {
   const [passwordData, setPasswordData] = useState([]);
   const [noteData, setNoteData] = useState([]);
   const [featureDisplay, setFeatureDisplay] = useState(0);
-  const { toast } = useToast(); // Instatiate Toast for status feedback
+  const { toast } = useToast(); // Instantiate Toast for status feedback
   const [openCreatePassword, setOpenCreatePassword] = useState(false);
   const [openCreateNote, setOpenCreateNote] = useState(false);
 

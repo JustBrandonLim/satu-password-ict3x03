@@ -61,14 +61,19 @@ export default function Profile() {
 
     // Fetch the data from the API on component mount
     useEffect(() => {
-        async function fetchData() {
+        const abortController = new AbortController();
+
+        console.log("UseEffect")
+        const fetchData = async () => {
             let json = undefined;
             try{
                 const response = await fetch(`/api/profile`, {
                     method: "GET",
                     headers: { "Content-Type": "application/json" },
+                    signal: abortController.signal,
                 });
                 json = await response.json();
+
                 console.log(json)
             }
             catch (error) {
@@ -78,10 +83,13 @@ export default function Profile() {
                 setData(json);
             } else {
                 console.log("Failed to fetch data")
-                throw new Error("Failed to fetch data");
             } // Update the state with the fetched data
         }
-        fetchData().then(r => console.log(r));
+        fetchData().then(() => console.log("Fetched data"));
+        // Cleanup function to abort fetch when component unmounts
+        return () => {
+            abortController.abort();
+        };
     }, []); // The empty dependency array ensures the effect runs once on component mount
 
     return (
@@ -93,7 +101,7 @@ export default function Profile() {
                     <div className="w-full max-w-md gap-1.5">
                         <Label htmlFor="fullName">Full Name</Label>
                         <div className={"flex space-x-4"}>
-                            {/* Fullname field*/}
+                            {/* Full name field*/}
                             <Input value={data.name} readOnly type="text" id="fullName" placeholder="Failed to fetch full name" />
                             <Button onClick={()=>{CopyButton(data.name)}} variant="outline" size="icon" className={"text-character-secondary"}>
                                 <Copy className="h-4 w-4" />

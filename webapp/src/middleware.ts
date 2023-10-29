@@ -6,15 +6,14 @@ export async function middleware(nextRequest: NextRequest) {
   switch (nextRequest.nextUrl.pathname) {
     case "/":
     case "/register":
+    case "/??":
       if (encryptedJwt !== undefined) {
-        console.log("the base url:" + process.env.BASE_URL)
         const checkResponse = await fetch(`${process.env.BASE_URL}/api/check`, {
           method: "GET",
           headers: {
             Cookie: nextRequest.cookies.toString(),
           },
         });
-        console.log("test 2")
 
         if (checkResponse.ok) {
           const checkResponseData = await checkResponse.json();
