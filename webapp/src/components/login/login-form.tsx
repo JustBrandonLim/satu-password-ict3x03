@@ -112,6 +112,9 @@ function LoginForm() {
   // Define and Instantiate RECOVER Form
   const recoverForm = useForm<z.infer<typeof RecoverFormSchema>>({
     resolver: zodResolver(RecoverFormSchema),
+    defaultValues: {
+        email: "",
+    }
   })
   // Handle RECOVER form submit
   const onRecover = async (data: z.infer<typeof RecoverFormSchema>) => {
