@@ -3,8 +3,8 @@
 import React, { useState } from "react";
 import { z } from "zod";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "../ui/form";
-import { Input } from "../ui/input";
-import { Button } from "../ui/button";
+import { Input } from "@components/ui/input";
+import { Button } from "@components/ui/button";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
@@ -12,8 +12,8 @@ import { Checkbox } from "../ui/checkbox";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "../ui/dialog";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Toaster } from "../ui/toaster";
-import { useToast } from "../ui/use-toast";
+import { Toaster } from "@components/ui/toaster";
+import { useToast } from "@components/ui/use-toast";
 
 // Login Form Schemas
 const formSchema = z.object({

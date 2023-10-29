@@ -17,6 +17,7 @@ export function GeneratePassword(uppercase: boolean, lowercase: boolean, numeric
 
   let generatedPassword = "";
 
+
   // generate a random number based on the length of passoword that the user requested.
   while (generatedPassword.length < passwordLength) {
     let randomNumber = Math.floor(Math.random() * characters.length);
@@ -30,7 +31,6 @@ export function GeneratePassword(uppercase: boolean, lowercase: boolean, numeric
   if (numerical) patternStr += "(?=.*\\d)";
   if (symbol) patternStr += "(?=.*[-+_!@#$%^&*()])";
   patternStr += ".+$";
-
 
   let pattern = new RegExp(patternStr);
 

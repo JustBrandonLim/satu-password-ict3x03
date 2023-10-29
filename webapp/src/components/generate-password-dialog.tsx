@@ -16,6 +16,7 @@ import { useForm } from "react-hook-form"
 import React, { Dispatch, SetStateAction } from "react"
 import { Eye, EyeOff, RefreshCcw } from "lucide-react"
 import { Checkbox } from "@/components/ui/checkbox"
+import { useToast} from "@components/ui/use-toast";
 
 const generatePasswordFormSchema = z.object({
     password: z.string(),
@@ -30,13 +31,13 @@ const generatePasswordFormSchema = z.object({
 
   interface GeneratePasswordFormProps {
     updatePasswordCallback: (data: string) => void; // Callback function for passing data to the parent
-    // setOpenDialog: (value: boolean | ((prevVar: boolean) => boolean)) => void;
     setOpenDialog : Dispatch<SetStateAction<boolean>>
   }
   
 const GeneratePasswordForm: React.FC<GeneratePasswordFormProps> = ({updatePasswordCallback,setOpenDialog}) => {
     // For password visibility
     const [showPassword, setShowPassword] = React.useState(false)
+    const { toast } = useToast() // Instantiate Toast for status feedback
 
     // To handle Password Field, removing spaces
     const handlePassword = (event: React.FormEvent<HTMLInputElement>) => {
@@ -58,11 +59,55 @@ const GeneratePasswordForm: React.FC<GeneratePasswordFormProps> = ({updatePasswo
         },
     })
     // 2. Define a submit handler.
-    function onGenerate(data: z.infer<typeof generatePasswordFormSchema>) {
-        // Do something with the form values.This will be type-safe and validated.
-        data.passwordLength = parseInt(data.passwordLength.toString());
+    async function onGenerate(data: z.infer<typeof generatePasswordFormSchema>) {
         console.log(data)
+        // Declare Variables to be submitted on post request
+        let passwordLength = data.passwordLength
+        let uppercase = data.uppercase
+        let lowercase = data.lowercase
+        let numerical = data.numerical
+        let symbols = data.symbols
+
+        try {
+            const response = await Promise.race([
+                fetch(`/api/password`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ passwordLength, uppercase, lowercase, numerical, symbols }),
+                }),
+                new Promise((_, reject) =>
+                    setTimeout(() => reject(new Error('Request timed out')), 5000)
+                )
+            ]) as Response;
+
+            const json = await response.json();
+
+            if (!response.ok) {
+                console.log(response);
+                toast({
+                    variant: "destructive",
+                    title: "Error",
+                    description: `Request Error: ${response.status} ${response.statusText}, ${json.message}`
+                })
+            } else {
+                console.log(json)
+                toast({
+                    variant: "default",
+                    title: "Success!",
+                    description: `Password generated successfully`
+                })
+                generatePasswordForm.setValue('password', json.password)
+            }
+        } catch (error: any) {
+            console.error(error);
+            toast({
+                variant: "destructive",
+                title: "Error",
+                description: `An error occurred: ${error.message}`
+            });
+        }
     }
+
 
     //Triggers the callback function when UsePassword Button is triggered
     function handleUsePassword(){
