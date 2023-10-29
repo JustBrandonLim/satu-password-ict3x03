@@ -28,12 +28,18 @@ export async function POST(nextRequest: NextRequest) {
     const symbols = generatePasswordReqData.symbols;
     const passwordLength = generatePasswordReqData.passwordLength;
 
+    // Ensure that at least one of the parameters is true. If not, return an error.
+    if (!uppercase && !lowercase && !numerical && !symbols) {
+        return NextResponse.json({ message: "Please select at least one of the options!" }, { status: 400 });
+    }
+
     return NextResponse.json({ message: "Successful!", password: GeneratePassword(
         uppercase,
         lowercase,
         numerical,
         symbols,
         passwordLength) }, { status: 200 });
+    // return NextResponse.json({ message: "API Call Successful!"}, { status: 200 });
   } catch {
     return NextResponse.json({ message: "Something went wrong!" }, { status: 500 });
   }

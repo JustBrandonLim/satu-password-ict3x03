@@ -3,11 +3,11 @@
 import {Separator} from "@components/ui/separator";
 import React, {useEffect, useState} from "react";
 import {Input} from "@components/ui/input";
-import { Label } from "@/components/ui/label"
+import {Label} from "@/components/ui/label"
 import {Button} from "@components/ui/button";
-import { useToast } from "@/components/ui/use-toast"
+import {useToast} from "@/components/ui/use-toast"
 import {Toaster} from "@components/ui/toaster";
-import {Eye, EyeOff, Copy} from "lucide-react";
+import {Copy} from "lucide-react";
 import {
     AlertDialog,
     AlertDialogAction,
@@ -33,7 +33,6 @@ export default function Profile() {
     const {toast} = useToast();
     // Dialog open UseState
     const [open, setOpen] = React.useState(false)
-    const [showPassword, setShowPassword] = React.useState(false)
     const [data, setData] = useState({
         email: "",
         password: "",
