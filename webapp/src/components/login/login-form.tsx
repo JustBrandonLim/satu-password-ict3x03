@@ -58,7 +58,10 @@ function LoginForm() {
   const loginForm = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      rememberMe: false,
+        email: "",
+        password: "",
+        otp: "",
+        rememberMe: false,
     },
   })
   // Handle login form submit
