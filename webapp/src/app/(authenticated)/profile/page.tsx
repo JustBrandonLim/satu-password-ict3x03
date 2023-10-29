@@ -70,13 +70,9 @@ export default function Profile() {
                     headers: { "Content-Type": "application/json" },
                     signal: abortController.signal,
                 });
-
-                // if (!response.ok) {
-                //     throw new Error(`HTTP error! status: ${response.status}`);
-                // }
-
                 const json = await response.json();
-                setData(json);
+                console.log(json.profile)
+                setData(json.profile)
             } catch (error: any) {
                 if (error.name === 'AbortError') {
                     console.log('Fetch aborted');
@@ -118,23 +114,7 @@ export default function Profile() {
                             </Button>
                         </div>
                     </div>
-                    <div className="w-full max-w-md gap-1.5">
-                        <Label htmlFor="password">Password</Label>
-                        <div className={"flex space-x-4"}>
-                            <div className={"relative w-full"}>
-                                {/* Password field*/}
-                                <Input defaultValue={data.password} id='password' placeholder="Failed to fetch password" readOnly type={showPassword?'text':'password'} maxLength={64} />
-                                {/* Visibility Toggle Button*/}
-                                <Button variant="ghost" type="button" size='icon' className="absolute right-0 bottom-0" aria-label="Toggle Passowrd Visibility" onClick={() => {setShowPassword(!showPassword)}}>
-                                    <Eye className="absolute text-slate-400" visibility={showPassword? 'visible':'hidden'}/>
-                                    <EyeOff className="absolute text-slate-300" visibility={showPassword? 'hidden':'visible'}/>
-                                </Button>
-                            </div>
-                            <Button onClick={()=>{CopyButton((data.password))}} variant="outline" size="icon" className={"text-character-secondary"}>
-                                <Copy className="h-4 w-4" />
-                            </Button>
-                        </div>
-                    </div>
+
                     <div>
                         <Dialog open={open} onOpenChange={setOpen}>
                             <DialogTrigger asChild>

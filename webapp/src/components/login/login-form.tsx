@@ -50,11 +50,11 @@ const RecoverFormSchema = z.object({
 })
 
 // MAIN Component Code
-function LoginFormTest() {
-  const router = useRouter(); // Instatiate router for routing to other pages later
-  const { toast } = useToast() // Instatiate Toast for status feedback
+function LoginForm() {
+  const router = useRouter(); // Instantiate router for routing to other pages later
+  const { toast } = useToast() // Instantiate Toast for status feedback
   const [isLoading, setIsLoading] = useState(false) //used to maintain loading state
-  // Define and Instatiate Login Form
+  // Define and Instantiate Login Form
   const loginForm = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -85,28 +85,11 @@ function LoginFormTest() {
     // Catch HTTP Response Errors
     if (!response.ok) {
       console.log(response);
-      const responseError = await Response.error();
+      const responseError = Response.error();
       toast({
         variant: "destructive",
         title: "Error",
         description: `Request Error: ${response.status} ${response.statusText}, ${responseError.body}`
-      })
-    }
-    // Catch Failed Login Error
-    else if (json.message.includes("Something went wrong!")){
-      console.log(json);
-      toast({
-        variant: "destructive",
-        title: "Login Failed",
-        description: `Error message: ${json.message} Email not found`
-      })
-    }
-    else if (json.message.includes("Failed!")){
-      console.log(json);
-      toast({
-        variant: "destructive",
-        title: "Login Failed",
-        description: `Error message: ${json.message} Password or OTP Error`
       })
     }
     else{
@@ -118,11 +101,12 @@ function LoginFormTest() {
         description: `${json.message}`
       })
       router.push("/home");
+        router.refresh()
     }
     setIsLoading(false)
   }
 
-  // Define and Instatiate RECOVER Form
+  // Define and Instantiate RECOVER Form
   const recoverForm = useForm<z.infer<typeof RecoverFormSchema>>({
     resolver: zodResolver(RecoverFormSchema),
   })
@@ -145,7 +129,7 @@ function LoginFormTest() {
     .replace(/\s/g, ""); // Remove spaces
   };
 
-  // To handle OTP Field, removing non numerical characters
+  // To handle OTP Field, removing non-numerical characters
   const handleOTP = (event: React.FormEvent<HTMLInputElement>) => {
     const inputElement = event.target as HTMLInputElement;
     inputElement.value = inputElement.value
@@ -251,7 +235,7 @@ function LoginFormTest() {
                       <FormDescription className="text-character-secondary">
                         A recovery email will be sent if such an account exists
                       </FormDescription> 
-                      {/* Revoer Form Submit */}
+                      {/* Revere Form Submit */}
                       <Button type="button" className={`w-full ${isLoading ? 'hidden' : ''}`} onClick={recoverForm.handleSubmit(onRecover)}>Recover</Button>
                       <Button disabled className={`w-full ${isLoading ? '' : 'hidden'}`}>
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -262,7 +246,7 @@ function LoginFormTest() {
                 </DialogContent>
             </Dialog>
           </div>
-          {/* Login Buttoon */}
+          {/* Login Button */}
         <Button type="submit" className={`w-full ${isLoading ? 'hidden' : ''}`}>Login</Button>
         <Button disabled className={`w-full ${isLoading ? '' : 'hidden'}`}>
           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -279,4 +263,4 @@ function LoginFormTest() {
     </div>
   )
 }
-export default LoginFormTest;
+export default LoginForm;

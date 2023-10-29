@@ -70,7 +70,7 @@ export default function Navbar() {
             }}
           >
             <UserCog className="mr-2 h-4 w-4" />
-            <span>Edit Profile</span>
+            <span>Profile</span>
           </DropdownMenuItem>
           <DropdownMenuItem onClick={logout}>
             <LogOut className="mr-2 h-4 w-4" />

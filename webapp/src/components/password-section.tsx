@@ -1,3 +1,5 @@
+// noinspection SpellCheckingInspection
+
 import { Input } from "@/components/ui/input"
 import * as React from "react"
 import {
@@ -29,10 +31,9 @@ import { GeneratePasswordForm } from "@components/generate-password-dialog"
 import { useFormContext } from "react-hook-form"
 
 // The actual component
-const PasswordSection: React.FC = () => {
+function PasswordSection(){
   // Retrieve all hook methods
   const { register, setValue } = useFormContext()
-
   // Maintain Password Visibility State
   const [showPassword, setShowPassword] = React.useState(false)
   // Dialog open UseState
@@ -56,7 +57,7 @@ const PasswordSection: React.FC = () => {
   // Callback function to update the Password field in the form schema
   const updatePasswordField = (password: string) => {
     // Update the form schema's password field
-    setValue("password", password); 
+    setValue("password", password);
     //show the password to the user
     setShowPassword(true);
     //trigger the password strength trigger
@@ -66,11 +67,10 @@ const PasswordSection: React.FC = () => {
   };
 
   return (
-    <div>
+    <>
       {/* Password Field*/}
-      <FormField
-        {...register("password")}
-        name="password"
+      <FormField {...register("password")}
+        // name="password"
         render={
           ({ field }) => (
           <FormItem>
@@ -140,7 +140,7 @@ const PasswordSection: React.FC = () => {
         </FormItem>
         )}
       />
-    </div>
+    </>
   )
 }
 PasswordSection.displayName = "PasswordSection"
