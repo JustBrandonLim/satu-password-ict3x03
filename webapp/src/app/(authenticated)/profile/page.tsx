@@ -63,28 +63,28 @@ export default function Profile() {
     useEffect(() => {
         const abortController = new AbortController();
 
-        console.log("UseEffect")
         const fetchData = async () => {
-            let json = undefined;
-            try{
+            try {
                 const response = await fetch(`/api/profile`, {
                     method: "GET",
                     headers: { "Content-Type": "application/json" },
                     signal: abortController.signal,
                 });
-                json = await response.json();
 
-                console.log(json)
-            }
-            catch (error) {
-                console.error('Error fetching data:', error);
-            }
-            if (json !== undefined) {
+                // if (!response.ok) {
+                //     throw new Error(`HTTP error! status: ${response.status}`);
+                // }
+
+                const json = await response.json();
                 setData(json);
-            } else {
-                console.log("Failed to fetch data")
-            } // Update the state with the fetched data
-        }
+            } catch (error: any) {
+                if (error.name === 'AbortError') {
+                    console.log('Fetch aborted');
+                } else {
+                    console.error('Error fetching data:', error);
+                }
+            }
+        };
         fetchData().then(() => console.log("Fetched data"));
         // Cleanup function to abort fetch when component unmounts
         return () => {
@@ -102,7 +102,7 @@ export default function Profile() {
                         <Label htmlFor="fullName">Full Name</Label>
                         <div className={"flex space-x-4"}>
                             {/* Full name field*/}
-                            <Input value={data.name} readOnly type="text" id="fullName" placeholder="Failed to fetch full name" />
+                            <Input defaultValue={data.name} readOnly type="text" id="fullName" placeholder="Failed to fetch full name" />
                             <Button onClick={()=>{CopyButton(data.name)}} variant="outline" size="icon" className={"text-character-secondary"}>
                                 <Copy className="h-4 w-4" />
                             </Button>
@@ -112,7 +112,7 @@ export default function Profile() {
                         <Label htmlFor="email">Email</Label>
                         <div className={"flex space-x-4"}>
                             {/* Email field*/}
-                            <Input value={data.email} readOnly type="email" id="email" placeholder="Failed to fetch email" />
+                            <Input defaultValue={data.email} readOnly type="email" id="email" placeholder="Failed to fetch email" />
                             <Button onClick={()=>{CopyButton(data.email)}} variant="outline" size="icon" className={"text-character-secondary"}>
                                 <Copy className="h-4 w-4" />
                             </Button>
@@ -123,7 +123,7 @@ export default function Profile() {
                         <div className={"flex space-x-4"}>
                             <div className={"relative w-full"}>
                                 {/* Password field*/}
-                                <Input value={data.password} id='password' placeholder="Failed to fetch password" readOnly type={showPassword?'text':'password'} maxLength={64} />
+                                <Input defaultValue={data.password} id='password' placeholder="Failed to fetch password" readOnly type={showPassword?'text':'password'} maxLength={64} />
                                 {/* Visibility Toggle Button*/}
                                 <Button variant="ghost" type="button" size='icon' className="absolute right-0 bottom-0" aria-label="Toggle Passowrd Visibility" onClick={() => {setShowPassword(!showPassword)}}>
                                     <Eye className="absolute text-slate-400" visibility={showPassword? 'visible':'hidden'}/>
