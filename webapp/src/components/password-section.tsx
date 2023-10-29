@@ -118,9 +118,9 @@ function PasswordSection(){
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Generate Password</DialogTitle>
-            <DialogDescription>
               <GeneratePasswordForm updatePasswordCallback={updatePasswordField} setOpenDialog={setOpen}/>
-            </DialogDescription>
+              {/*<DialogDescription>*/}
+              {/*</DialogDescription>*/}
           </DialogHeader>
         </DialogContent>
       </Dialog>
