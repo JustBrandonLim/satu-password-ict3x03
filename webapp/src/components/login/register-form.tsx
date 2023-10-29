@@ -50,7 +50,7 @@ const RegisterFormSchema = z.object({
 })
 
 // The actual component
-function RegsiterForm() {
+function RegisterForm() {
   const router = useRouter();
   const { toast } = useToast()
   const [showQR, setShowQR] = useState(false)
@@ -62,7 +62,7 @@ function RegsiterForm() {
     // browser code
     const portrait = window.matchMedia("(orientation: portrait)").matches;
     const hasWindow = typeof window !== 'undefined';
-    var width = hasWindow ? window.innerWidth : Number()
+    const width = hasWindow ? window.innerWidth : Number()
     if (portrait){
       setQRWidth(width/2)
     }
@@ -74,6 +74,12 @@ function RegsiterForm() {
   // For Login Form
   const registerForm = useForm<z.infer<typeof RegisterFormSchema>>({
     resolver: zodResolver(RegisterFormSchema),
+    defaultValues: {
+      name: '',
+      email: '',
+      password: '',
+      confirmPassword: '',
+    }
   })
   
   const onRegister = async (data: z.infer<typeof RegisterFormSchema>) => {
@@ -148,7 +154,7 @@ function RegsiterForm() {
             </FormItem>
           )}
         />
-        {/* Password fieldsss */}
+        {/* Password fields */}
         <PasswordSection/>
         {/* Sign up Button */}
         <Button type="submit" className={`w-full ${isLoading ? 'hidden' : ''}`}>Sign up</Button>
@@ -167,23 +173,21 @@ function RegsiterForm() {
     {/* QR Code Dialog */}
     <Dialog open={showQR} onOpenChange={setShowQR}>
       <DialogTrigger asChild className="">
-        <Button type="button">DEBUGGIN ONLY: Open QR</Button>
+        <Button type="button">DEBUGGING ONLY: Open QR</Button>
       </DialogTrigger>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>2FA: DO NOT CLOSE OR REFRESH</DialogTitle>
             <DialogDescription className="text-character-secondary">
-              <text>
               You will <span className="font-black">NOT</span> be able to log in if you lose it. <br/>
               <span className="font-black">Scan</span> the <span className="font-black">QR Code</span> with your preferred Authenticator app.
-              </text>
             </DialogDescription>
           </DialogHeader>
-            <QRCodeSVG value={QRValue} size={QRWidth} className="w-full p-4"/>   
-            <Button type="button" onClick={() => {router.push("/");}}>I have configured my Authenticator app</Button>         
+            <QRCodeSVG value={QRValue} size={QRWidth} className="w-full p-4"/>
+            <Button type="button" onClick={() => {router.push("/");}}>I have configured my Authenticator app</Button>
         </DialogContent>
     </Dialog>
     </div>    
   )
 }
-export default RegsiterForm;
+export default RegisterForm;
