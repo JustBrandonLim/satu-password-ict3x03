@@ -113,16 +113,12 @@ export default function Vault() {
   };
 
   return (
-    <div className="flex flex-col items-center max-w-2xl text-center gap-2 w-screen">
+    <div className="flex flex-col items-center max-w-2xl gap-2 w-screen">
       <div className="flex w-full justify-end">
         {/* <h1 className="flex items-center">{`[USER NAME]'s Vault`}</h1> */}
-        <Button
-          className={"  "}
-          type={"button"}
-          variant={"outline"}
-          onClick={handleCreation}
-        >
-          <Plus /> Add new
+        <Button type={"button"} variant={"outline"} onClick={handleCreation}>
+          <Plus/>
+          Add new
         </Button>
       </div>
       <div className="w-full flex bg-gray-100 border-2 rounded-lg whitespace-nowrap">

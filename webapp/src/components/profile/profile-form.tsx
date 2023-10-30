@@ -82,12 +82,12 @@ function EditProfileForm({ data, setOpenDialog }: ProfileFormProps) {
         });
         const json = await response.json();
 
-        if ((response.ok) && (json.otpUrl!=null))  {
+        if ((response.ok))  {
             setIsLoading(false)
             console.log(json);
             toast({
                 variant: "default",
-                title: "Success!!",
+                title: "Success!",
             })
         }
         else{
