@@ -33,24 +33,19 @@ export default function Navbar() {
   return (
     <nav className="w-screen h-16 bg-slate-900 flex items-center justify-between px-8 sm:px-16 lg:px-[10%]">
       {/*Left Icon*/}
-      <Link href="/home">
+      <Button variant={"link"} onClick={()=>{router.push('/home')}}>
         <div className="flex items-center">
           <Image
             src={SatuPassword}
             alt="SatuPassword Logo"
             width={70}
             priority
-            className="m-6"
-          />
-          <p
-            className="text-xl font-bold text-white"
-            style={{ fontFamily: "Inika, sans-serif" }}
-          >
+            className="m-4"/>
+          <p className="text-xl font-bold text-white" style={{ fontFamily: "Inika, sans-serif" }}>
             SatuPassword
           </p>
         </div>
-      </Link>
-      {/*Right Action Buttons*/}
+      </Button>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button
