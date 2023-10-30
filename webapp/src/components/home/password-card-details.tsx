@@ -244,7 +244,7 @@ const PasswordCardDetails: React.FC<PasswordCardDetailsProps> = ({
                   Cancel
                 </Button>
                 <Button type="submit" className="w-full">
-                  Edit
+                  Save
                 </Button>
               </div>
             </div>
