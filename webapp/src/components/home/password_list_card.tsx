@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import {Copy, Pencil, Eye, FileLock2} from "lucide-react";
 import {
   Dialog,
@@ -7,8 +7,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { PasswordCardDialog } from "./password-card-dialog";
-import { PasswordCardDetails } from "./password-card-details";
+import { PasswordViewEditCard } from "./password-view-edit-dialog";
 import { Toaster } from "../ui/toaster";
 import { useToast } from "../ui/use-toast";
 import {Button} from "@components/ui/button";
@@ -25,12 +24,9 @@ interface PasswordCardProps {
 }
 
 export default function PasswordCard(props: PasswordCardProps) {
+  const [dialogViewMode, setDialogViewMode] = React.useState(false)
   const [openDialog, setOpenDialog] = React.useState(false);
-  const [openDetails, setOpenDetails] = React.useState(false);
-  const [selectedModal, setSelectedModal] = React.useState("");
-  const [decryptedPassword, setDecryptedPassword] = React.useState({
-    password: "",
-  });
+  const [decryptedPassword, setDecryptedPassword] = React.useState({password: "",});
   const { toast } = useToast() // Instantiate Toast for status feedback
 
   // Function to decrypt the note
@@ -44,9 +40,7 @@ export default function PasswordCard(props: PasswordCardProps) {
         },
       }
     );
-
     const json = await response.json();
-
     if (response.ok) {
       setDecryptedPassword(json);
     } else {
@@ -54,13 +48,6 @@ export default function PasswordCard(props: PasswordCardProps) {
     }
   };
 
-  useEffect(() => {
-    if (decryptedPassword.password !== "" && selectedModal === "dialog") {
-      setOpenDialog(true);
-    } else if (decryptedPassword.password !== "" && selectedModal === "details") {
-      setOpenDetails(true);
-    }
-  }, [decryptedPassword]);
 
   // Function to decrypt the password
   async function fetchPassword() {
@@ -119,11 +106,6 @@ export default function PasswordCard(props: PasswordCardProps) {
     }
   }
 
-  function openPasswordDetails() {
-    setSelectedModal("details");
-    FetchPasswordData().then(() => console.log("Password data fetched!"));
-  }
-
   return (
     <div className="flex items-center p-5 m-2 bg-white rounded-md shadow-lg w-full">
       <FileLock2 className="mr-4" />
@@ -133,42 +115,42 @@ export default function PasswordCard(props: PasswordCardProps) {
       </div>
       {/* Right Action Buttons for Password List Cards*/}
       <div className={"flex space-x-1 text-character-secondary"}>
-        <Button onClick={openPasswordDetails} size={"icon"} variant={"ghost"}>
+        <Button
+          onClick={()=>{
+            FetchPasswordData().then(() => {
+              setDialogViewMode(true)
+              setOpenDialog(true)
+            })
+          }}
+          size={"icon"}
+          variant={"ghost"}>
           <Eye/>
         </Button>
-        <Button onClick={openPasswordDetails} size={"icon"} variant={"ghost"}>
+        <Button
+            onClick={()=>{
+              FetchPasswordData().then(() => {
+                setDialogViewMode(false)
+                setOpenDialog(true)
+              })
+            }}
+            size={"icon"}
+            variant={"ghost"}>
           <Pencil/>
         </Button>
         <Button onClick={handleCopyPassword} size={"icon"} variant={"ghost"}>
           <Copy/>
         </Button>
       </div>
-      {/* Password Card Dialog*/}
-      <Dialog open={openDialog} onOpenChange={setOpenDialog}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Editing {props.passwordData.title}</DialogTitle>
-            <DialogDescription>
-              <PasswordCardDialog
-                open={openDialog}
-                setOpenDialog={setOpenDialog}
-                passwordData={props.passwordData}
-                decryptedPassword={decryptedPassword}
-                refreshPasswordVault={props.refreshPasswordVault}
-              />
-            </DialogDescription>
-          </DialogHeader>
-        </DialogContent>
-      </Dialog>
       {/* Password Card Details*/}
-      <Dialog open={openDetails} onOpenChange={setOpenDetails}>
+      <Dialog open={openDialog} onOpenChange={setOpenDialog}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>{props.passwordData.title}</DialogTitle>
             <DialogDescription>
-              <PasswordCardDetails
-                open={openDetails}
-                setOpenDetails={setOpenDetails}
+              <PasswordViewEditCard
+                viewMode={dialogViewMode}
+                open={openDialog}
+                setOpenDetails={setOpenDialog}
                 passwordData={props.passwordData}
                 decryptedPassword={decryptedPassword}
                 refreshPasswordVault={props.refreshPasswordVault}
