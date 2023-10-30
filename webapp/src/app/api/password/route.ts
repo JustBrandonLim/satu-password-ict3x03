@@ -30,7 +30,7 @@ export async function POST(nextRequest: NextRequest) {
 
     // Ensure that at least one of the parameters is true. If not, return an error.
     if (!uppercase && !lowercase && !numerical && !symbols) {
-        return NextResponse.json({ message: "Please select at least one of the options!" }, { status: 400 });
+        return NextResponse.json({ message: "Please check at least one of the options!" }, { status: 400 });
     }
 
     return NextResponse.json({ message: "Successful!", password: GeneratePassword(

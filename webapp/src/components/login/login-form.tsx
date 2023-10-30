@@ -168,7 +168,7 @@ function LoginForm() {
               <FormLabel>Password</FormLabel>
               <FormControl>
                 <div className="relative">
-                  <Input placeholder="Enter Password" type={showPassword?'text':'password'} {...field} maxLength={64} onInput={handlePassword}/>
+                  <Input className={"pr-10"} placeholder="Enter Password" type={showPassword?'text':'password'} {...field} maxLength={64} onInput={handlePassword}/>
                   <Button variant="ghost" type="button" size='icon' className="absolute right-0 bottom-0" aria-label="Toggle Passowrd Visibility" onClick={() => {setShowPassword(!showPassword)}}>
                     <Eye className="absolute text-slate-400" visibility={showPassword? 'visible':'hidden'}/>
                     <EyeOff className="absolute text-slate-300" visibility={showPassword? 'hidden':'visible'}/>
