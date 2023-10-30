@@ -44,13 +44,8 @@ export async function middleware(nextRequest: NextRequest) {
           },
         });
 
-        console.log("checking response from api/check");
-        console.log(await checkResponse.status);
-
         if (checkResponse.ok) {
-          console.log("before json()");
           const checkResponseData = await checkResponse.json();
-          console.log("after json()");
 
           const nextResponse: NextResponse = NextResponse.next();
           nextResponse.cookies.set("encryptedjwt", checkResponseData.newEncryptedJwt, {
@@ -72,7 +67,7 @@ export async function middleware(nextRequest: NextRequest) {
       }
 
       return NextResponse.redirect(new URL("/", nextRequest.url));
-    /*case "/api/profile":
+    case "/api/profile":
     case "/api/vault/retrieve/passwords":
     case "/api/vault/retrieve/password":
     case "/api/vault/retrieve/note":
@@ -110,7 +105,7 @@ export async function middleware(nextRequest: NextRequest) {
         }
       }
 
-      return NextResponse.json({ message: "Something went wrong!" }, { status: 400 });*/
+      return NextResponse.json({ message: "Something went wrong!" }, { status: 400 });
   }
 
   return NextResponse.next();
