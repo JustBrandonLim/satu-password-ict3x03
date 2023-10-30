@@ -18,7 +18,8 @@ import {
 import { PasswordSection } from "../password-section";
 import { Toaster } from "../ui/toaster";
 import { useToast } from "../ui/use-toast";
-import { Loader2 } from "lucide-react";
+import {Eye, EyeOff, Loader2} from "lucide-react";
+import * as React from "react";
 
 interface ProfileFormProps {
     data: {
@@ -39,6 +40,11 @@ const ProfileFormSchema = z.object({
         required_error: "Email is required",
         invalid_type_error: "Email must be a string",
     }).email('Please enter in a valid email format'),
+    oldPassword: z.string({
+        required_error: "Please enter your old password",
+    }).min(8, {message: "Password should be at least 8 characters"})
+    .max(64, {message: "Password can not exceed 64 characters"})
+    .regex(new RegExp(/^\S*$/), "Password cannot contain spaces"),
     password: z.string({
         required_error: "Password is required",
         invalid_type_error: "Password must be a string",
@@ -57,9 +63,9 @@ const ProfileFormSchema = z.object({
 
 // The actual component. Pass in data prop to prefill the form
 function EditProfileForm({ data, setOpenDialog }: ProfileFormProps) {
-    const router = useRouter();
     const { toast } = useToast()
     const [isLoading, setIsLoading] = useState(false)
+    const [showPassword, setShowPassword] = React.useState(false)
 
     // For Login Form
     const editProfileForm = useForm<z.infer<typeof ProfileFormSchema>>({
@@ -71,10 +77,17 @@ function EditProfileForm({ data, setOpenDialog }: ProfileFormProps) {
         }
     })
 
+    const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        // REMOVE SPACES
+        const inputElement = e.target as HTMLInputElement;
+        inputElement.value = inputElement.value
+            .replace(/\s/g, ""); // Remove spaces
+    };
+
     const onSubmit = async (data: z.infer<typeof ProfileFormSchema>) => {
-        let name = data.name
-        let email = data.email
-        let password = data.password
+        let name: string = data.name
+        let email: string = data.email
+        let password: string = data.password
 
         const response = await fetch(`/api/profile`, {
             method: "POST",
@@ -153,7 +166,6 @@ function EditProfileForm({ data, setOpenDialog }: ProfileFormProps) {
             </Form>
             {/* Submit Status Toast */}
             <Toaster />
-            {/* QR Code Dialog */}
         </div>
     )
 }
