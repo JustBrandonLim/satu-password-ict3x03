@@ -56,7 +56,7 @@ const NoteCardDialog: React.FC<NoteCardDialogProps> = ({
 
   const onSaveNoteCard = async (data: z.infer<typeof NoteCardDialogSchema>) => {
     let id = noteData.id;
-    let title = noteData.title;
+    let title = data.title;
     let note = data.note;
 
     async function SaveNote() {
