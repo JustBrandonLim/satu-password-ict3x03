@@ -25,7 +25,7 @@ export async function POST(nextRequest: NextRequest) {
       if (authenticator.check(loginData.otp, login.totpSecret)) {
         const user = await GetPrismaClient().user.findUniqueOrThrow({
           where: {
-            id: login.id,
+            loginId: login.id,
           },
         });
 
@@ -51,7 +51,11 @@ export async function POST(nextRequest: NextRequest) {
           .encrypt(DecodeHex(process.env.SECRET_KEY!));
 
         const nextResponse: NextResponse = NextResponse.json({ message: "Successful!" }, { status: 200 });
-        nextResponse.cookies.set("encryptedjwt", encryptedJwt);
+        nextResponse.cookies.set("encryptedjwt", encryptedJwt, {
+          httpOnly: true,
+          sameSite: "strict",
+          secure: true,
+        });
 
         return nextResponse;
       }

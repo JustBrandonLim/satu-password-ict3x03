@@ -1,4 +1,4 @@
-FROM node:16.20.2-alpine
+FROM node:20.9.0-alpine
 
 WORKDIR /app
 
@@ -7,8 +7,6 @@ COPY package*.json ./
 RUN yarn 
 
 COPY . .
-
-CMD [ "cp /env/.env /app" ]
 
 ENV HOST 0.0.0.0
 ENV PORT=3000

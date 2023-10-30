@@ -33,7 +33,7 @@ export async function GET(nextRequest: NextRequest) {
         },
       });
 
-      const newEncryptedJwt = await new EncryptJWT({ email: payload.email, masterKey: payload.masterKey, jwtId: newJwtId })
+      const newEncryptedJwt = await new EncryptJWT({ id: payload.id, email: payload.email, masterKey: payload.masterKey, jwtId: newJwtId })
         .setProtectedHeader({ alg: "dir", enc: "A256GCM" })
         .setIssuer("https://satupassword.com")
         .setAudience("https://satupassword.com")
