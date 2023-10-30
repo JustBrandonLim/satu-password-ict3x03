@@ -25,9 +25,11 @@ export async function POST(nextRequest: NextRequest) {
       if (authenticator.check(loginData.otp, login.totpSecret)) {
         const user = await GetPrismaClient().user.findUniqueOrThrow({
           where: {
-            id: login.id,
+            loginId: login.id,
           },
         });
+
+        console.log(user);
 
         const wrappingKey = GenerateWrappingKey(loginData.password, user.wrappingKeySalt);
 

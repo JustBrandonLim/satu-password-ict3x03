@@ -21,13 +21,13 @@ export async function POST(nextRequest: NextRequest) {
     if (authenticator.check(resetData.otp, login.totpSecret)) {
       const user = await GetPrismaClient().user.findUniqueOrThrow({
         where: {
-          id: login.id,
+          loginId: login.id,
         },
       });
 
       await GetPrismaClient().login.delete({
         where: {
-          id: login.id,
+          email: resetData.email,
         },
       });
 
