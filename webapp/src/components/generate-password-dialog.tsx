@@ -16,6 +16,7 @@ import { useForm } from "react-hook-form"
 import React, { Dispatch, SetStateAction } from "react"
 import { Eye, EyeOff, RefreshCcw } from "lucide-react"
 import { Checkbox } from "@/components/ui/checkbox"
+import { useToast} from "@components/ui/use-toast";
 
 const generatePasswordFormSchema = z.object({
     password: z.string(),
@@ -30,13 +31,13 @@ const generatePasswordFormSchema = z.object({
 
   interface GeneratePasswordFormProps {
     updatePasswordCallback: (data: string) => void; // Callback function for passing data to the parent
-    // setOpenDialog: (value: boolean | ((prevVar: boolean) => boolean)) => void;
     setOpenDialog : Dispatch<SetStateAction<boolean>>
   }
   
 const GeneratePasswordForm: React.FC<GeneratePasswordFormProps> = ({updatePasswordCallback,setOpenDialog}) => {
     // For password visibility
     const [showPassword, setShowPassword] = React.useState(false)
+    const { toast } = useToast() // Instantiate Toast for status feedback
 
     // To handle Password Field, removing spaces
     const handlePassword = (event: React.FormEvent<HTMLInputElement>) => {
@@ -58,11 +59,55 @@ const GeneratePasswordForm: React.FC<GeneratePasswordFormProps> = ({updatePasswo
         },
     })
     // 2. Define a submit handler.
-    function onGenerate(data: z.infer<typeof generatePasswordFormSchema>) {
-        // Do something with the form values.This will be type-safe and validated.
-        data.passwordLength = parseInt(data.passwordLength.toString());
+    async function onGenerate(data: z.infer<typeof generatePasswordFormSchema>) {
         console.log(data)
+        // Declare Variables to be submitted on post request
+        let passwordLength = data.passwordLength
+        let uppercase = data.uppercase
+        let lowercase = data.lowercase
+        let numerical = data.numerical
+        let symbols = data.symbols
+
+        try {
+            const response = await Promise.race([
+                fetch(`/api/password`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ passwordLength, uppercase, lowercase, numerical, symbols }),
+                }),
+                new Promise((_, reject) =>
+                    setTimeout(() => reject(new Error('Request timed out')), 5000)
+                )
+            ]) as Response;
+
+            const json = await response.json();
+
+            if (!response.ok) {
+                console.log(response);
+                toast({
+                    variant: "destructive",
+                    title: "Error",
+                    description: `Request Error: ${response.status} ${response.statusText}, ${json.message}`
+                })
+            } else {
+                console.log(json)
+                toast({
+                    variant: "default",
+                    title: "Success!",
+                    description: `Password generated successfully`
+                })
+                generatePasswordForm.setValue('password', json.password)
+            }
+        } catch (error: any) {
+            console.error(error);
+            toast({
+                variant: "destructive",
+                title: "Error",
+                description: `An error occurred: ${error.message}`
+            });
+        }
     }
+
 
     //Triggers the callback function when UsePassword Button is triggered
     function handleUsePassword(){
@@ -74,7 +119,7 @@ const GeneratePasswordForm: React.FC<GeneratePasswordFormProps> = ({updatePasswo
     return(
     <Form {...generatePasswordForm}>
         <form onSubmit={generatePasswordForm.handleSubmit(onGenerate)} className="space-y-6">
-            {/* Password Items Row */}
+             {/*Password Items Row*/}
             <div className="flex w-full items-end space-x-2 mt-4">
                 {/* Password Field */}
                 <FormField
@@ -87,12 +132,12 @@ const GeneratePasswordForm: React.FC<GeneratePasswordFormProps> = ({updatePasswo
                         <div className="flex w-full space-x-4">
                             <div className="relative w-full">
                                 <Input placeholder="Generate password button ->" type={showPassword?'text':'password'} {...field} onInput={handlePassword}/>
-                                <Button variant="ghost" type="button" size='icon' className="absolute right-0 bottom-0" aria-label="Toggle Passowrd Visibility" onClick={() => {setShowPassword(!showPassword)}}>
+                                <Button variant="ghost" type="button" size='icon' className="absolute right-0 bottom-0" aria-label="Toggle Password Visibility" onClick={() => {setShowPassword(!showPassword)}}>
                                     <Eye className="absolute text-slate-400" visibility={showPassword? 'visible':'hidden'}/>
                                     <EyeOff className="absolute text-slate-300" visibility={showPassword? 'hidden':'visible'}/>
                                 </Button>
                             </div>
-                            <Button variant={'default'} type="button" size={'icon'} aria-label="Genereate New Password" className="p-2" onClick={generatePasswordForm.handleSubmit(onGenerate)}>
+                            <Button variant={'default'} type="button" size={'icon'} aria-label="Generate New Password" className="p-2" onClick={generatePasswordForm.handleSubmit(onGenerate)}>
                                 <RefreshCcw/>
                             </Button>
                         </div>
@@ -102,7 +147,7 @@ const GeneratePasswordForm: React.FC<GeneratePasswordFormProps> = ({updatePasswo
                 )}
             />
             </div>
-        {/* Generate Password Options */}
+         {/*Generate Password Options*/}
         <div className="flex justify-between px-2 h-2">
             <FormField
                 control={generatePasswordForm.control}
@@ -166,7 +211,7 @@ const GeneratePasswordForm: React.FC<GeneratePasswordFormProps> = ({updatePasswo
                     <FormLabel>Length of password</FormLabel>
                     <FormControl>
                     <div className="flex space-x-8">
-                        <Input min={8} max={64} defaultValue={12} placeholder="Enter number"  {...field} type="number" />
+                        <Input min={8} max={64} placeholder="Enter number"  {...field} type="number" />
                     </div>
                     </FormControl>
                     <FormMessage />
@@ -174,7 +219,7 @@ const GeneratePasswordForm: React.FC<GeneratePasswordFormProps> = ({updatePasswo
             )}
         />
         <div className="flex space-x-4 w-full">
-            <Button type="reset" variant={'outline'} className="w-full" onClick={() => setOpenDialog(false)}>Cancel</Button> 
+            <Button type="reset" variant={'outline'} className="w-full" onClick={() => setOpenDialog(false)}>Cancel</Button>
             <Button type="button" className="w-full" onClick={() => {handleUsePassword(); setOpenDialog(false)}}>
                 Use Password
             </Button>
