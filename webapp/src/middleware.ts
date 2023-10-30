@@ -44,10 +44,13 @@ export async function middleware(nextRequest: NextRequest) {
           },
         });
 
-        console.log(await checkResponse.json());
+        console.log("checking response from api/check");
+        console.log(await checkResponse.status);
 
         if (checkResponse.ok) {
+          console.log("before json()");
           const checkResponseData = await checkResponse.json();
+          console.log("after json()");
 
           const nextResponse: NextResponse = NextResponse.next();
           nextResponse.cookies.set("encryptedjwt", checkResponseData.newEncryptedJwt, {
