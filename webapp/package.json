@@ -56,6 +56,8 @@
     "tailwindcss-animate": "^1.0.7",
     "typescript": "5.2.2",
     "zod": "^3.22.2",
-    "zxcvbn": "^4.4.2"
+    "zxcvbn": "^4.4.2",
+    "@types/winston": "^2.4.4",
+    "winston": "^3.11.0"
   }
 }
