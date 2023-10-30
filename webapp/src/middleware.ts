@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 export async function middleware(nextRequest: NextRequest) {
-  /*const encryptedJwt = nextRequest.cookies.get("encryptedjwt")?.value;
+  const encryptedJwt = nextRequest.cookies.get("encryptedjwt")?.value;
 
   switch (nextRequest.nextUrl.pathname) {
     case "/":
@@ -36,12 +36,15 @@ export async function middleware(nextRequest: NextRequest) {
       return NextResponse.next();
     case "/home":
       if (encryptedJwt !== undefined) {
+        console.log("going to /home");
         const checkResponse = await fetch(`${process.env.BASE_URL}/api/check`, {
           method: "GET",
           headers: {
             Cookie: nextRequest.cookies.toString(),
           },
         });
+
+        console.log(await checkResponse.json());
 
         if (checkResponse.ok) {
           const checkResponseData = await checkResponse.json();
@@ -53,8 +56,11 @@ export async function middleware(nextRequest: NextRequest) {
             secure: true,
           });
 
+          console.log("valid check going to /home");
+
           return nextResponse;
         } else {
+          console.log("invalid check going to /home");
           const nextResponse: NextResponse = NextResponse.redirect(new URL("/", nextRequest.url));
           nextResponse.cookies.delete("encryptedjwt");
 
@@ -102,7 +108,7 @@ export async function middleware(nextRequest: NextRequest) {
       }
 
       return NextResponse.json({ message: "Something went wrong!" }, { status: 400 });
-  }*/
+  }
 
   return NextResponse.next();
 }
