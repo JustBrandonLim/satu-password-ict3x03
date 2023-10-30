@@ -186,8 +186,8 @@ const NoteCardDialog: React.FC<NoteCardDialogProps> = ({
               <div>
                 <Button
                   type="button"
-                  className="w-full"
-                  variant={"destructive"}
+                  className="w-full text-red-500"
+                  variant={"link"}
                   onClick={() => handleDeleteNote()}
                 >
                   Delete
