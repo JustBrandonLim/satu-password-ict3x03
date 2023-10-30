@@ -30,8 +30,14 @@ import { Eye, EyeOff, HelpCircleIcon } from "lucide-react"
 import { GeneratePasswordForm } from "@components/generate-password-dialog"
 import { useFormContext } from "react-hook-form"
 
+// Declare Password Section Props
+interface PasswordSectionProps {
+    // Optional Variable used to show/hide the Confirm Password Field, default to true
+    ShowConfirmPasswordField?: boolean
+}
+
 // The actual component
-function PasswordSection(){
+function PasswordSection({ ShowConfirmPasswordField = true }: PasswordSectionProps) {
   // Retrieve all hook methods
   const { setValue } = useFormContext()
   // Maintain Password Visibility State
@@ -125,11 +131,11 @@ function PasswordSection(){
         </DialogContent>
       </Dialog>
       
-      {/* Confirm Password Field*/}
+      {/* Confirm Password Field that only displays if showConfirmPasswordField is TRUE*/}
       <FormField
         name="confirmPassword"
         render={({ field }) => (
-        <FormItem className="mt-4">
+        <FormItem className={`mt-4 ${ShowConfirmPasswordField ? 'block' : 'hidden'}`}>
           <FormLabel>Confirm Password</FormLabel>
           <FormControl>
             <Input placeholder="Re-enter Password" type="password" {...field} ref={null}/>

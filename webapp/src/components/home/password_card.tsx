@@ -1,10 +1,5 @@
 import React, { useEffect } from "react";
-import {
-  PencilIcon,
-  LockClosedIcon,
-  DocumentDuplicateIcon,
-  EyeIcon,
-} from "@heroicons/react/24/outline";
+import {Copy, Pencil, Eye, FileLock2} from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -16,6 +11,7 @@ import { PasswordCardDialog } from "./password-card-dialog";
 import { PasswordCardDetails } from "./password-card-details";
 import { Toaster } from "../ui/toaster";
 import { useToast } from "../ui/use-toast";
+import {Button} from "@components/ui/button";
 
 interface PasswordCardProps {
   passwordData: {
@@ -35,7 +31,7 @@ export default function PasswordCard(props: PasswordCardProps) {
   const [decryptedPassword, setDecryptedPassword] = React.useState({
     password: "",
   });
-  const { toast } = useToast() // Instatiate Toast for status feedback
+  const { toast } = useToast() // Instantiate Toast for status feedback
 
   // Function to decrypt the note
   const FetchPasswordData = async () => {
@@ -137,21 +133,23 @@ export default function PasswordCard(props: PasswordCardProps) {
     <div
       className="flex items-center p-5 m-2 bg-white rounded-md shadow-lg w-full"
     >
-      <LockClosedIcon className="w-6 h-6 mr-4" />
+      <FileLock2 className="mr-4" />
       <div className="flex-grow text-left">
-        <h3 className="text-xl font-bold">{props.passwordData.title}</h3>
-        <p>{props.passwordData.username}</p>
+        <h2 className="text-lg font-medium">{props.passwordData.title}</h2>
+        <p className={"text-sm text-character-secondary"}>{props.passwordData.username}</p>
       </div>
-      <button onClick={openPasswordDetails}>
-        <EyeIcon className="w-6 h-6 mr-5" />
-      </button>
-      <button onClick={handleCopyPassword}>
-        <DocumentDuplicateIcon className="w-6 h-6 mr-5" />
-      </button>
-      {/* Password Card  Button*/}
-      <button onClick={openPasswordDialog}>
-        <PencilIcon className="w-6 h-6 mr-2" />
-      </button>
+      {/* Right Action Buttons for Password List Cards*/}
+      <div className={"flex space-x-1 text-character-secondary"}>
+        <Button onClick={openPasswordDetails} size={"icon"} variant={"ghost"}>
+          <Eye/>
+        </Button>
+        <Button onClick={handleCopyPassword} size={"icon"} variant={"ghost"}>
+          <Copy/>
+        </Button>
+        <Button onClick={openPasswordDetails} size={"icon"} variant={"ghost"}>
+          <Pencil/>
+        </Button>
+      </div>
       {/* Edit Modal */}
       {/* Password Card Dialog*/}
       <Dialog open={openDialog} onOpenChange={setOpenDialog}>

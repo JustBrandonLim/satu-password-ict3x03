@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { PencilIcon, LockClosedIcon } from "@heroicons/react/24/outline";
+import { ScrollText, Pencil } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -8,6 +8,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { NoteCardDialog } from "./note-card-dialog";
+import {Button} from "@components/ui/button";
 
 interface NoteCardProps {
   noteData: {
@@ -51,15 +52,15 @@ export default function NoteCard(props: NoteCardProps) {
 
   return (
     <div className="flex items-center p-5 m-2 bg-white rounded-md shadow-lg w-full">
-      <LockClosedIcon className="w-6 h-6 mr-4" />
+      <ScrollText className={"mr-4"}/>
       <div className="flex-grow text-left">
-        <h3 className="text-xl font-bold">{props.noteData.title}</h3>
+        <h3 className="text-lg font-medium">{props.noteData.title}</h3>
       </div>
 
       {/* Note Card Button*/}
-      <button onClick={() => FetchNoteData()}>
-        <PencilIcon className="w-6 h-6 mr-2" />
-      </button>
+      <Button onClick={FetchNoteData} size={"icon"} variant={"ghost"}>
+        <Pencil className={"text-character-secondary"}/>
+      </Button>
       {/* Edit Modal */}
       {/* Note Card Dialog*/}
       <Dialog open={open} onOpenChange={setOpen}>
