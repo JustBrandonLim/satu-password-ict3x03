@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 export async function middleware(nextRequest: NextRequest) {
   const encryptedJwt = nextRequest.cookies.get("encryptedjwt")?.value;
 
+  /*
   switch (nextRequest.nextUrl.pathname) {
     case "/":
     case "/register":
@@ -108,7 +109,9 @@ export async function middleware(nextRequest: NextRequest) {
       }
 
       return NextResponse.json({ message: "Something went wrong!" }, { status: 400 });
-  }
+  }*/
+
+  console.log(`${process.env.BASE_URL}`);
 
   return NextResponse.next();
 }

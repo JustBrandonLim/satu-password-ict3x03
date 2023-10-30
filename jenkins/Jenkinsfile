@@ -30,6 +30,8 @@ pipeline {
             steps {
                 echo 'Deploying...'
                 sh 'docker compose up webapp -d'
+                sh 'docker exec webapp cp /env/.env /app'
+                sh 'docker exec webapp yarn prisma db push'
             }
         }
     }
