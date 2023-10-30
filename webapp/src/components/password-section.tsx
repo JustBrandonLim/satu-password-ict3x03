@@ -1,3 +1,5 @@
+// noinspection SpellCheckingInspection
+
 import { Input } from "@/components/ui/input"
 import * as React from "react"
 import {
@@ -28,11 +30,16 @@ import { Eye, EyeOff, HelpCircleIcon } from "lucide-react"
 import { GeneratePasswordForm } from "@components/generate-password-dialog"
 import { useFormContext } from "react-hook-form"
 
-// The actual component
-const PasswordSection: React.FC = () => {
-  // Retrieve all hook methods
-  const { register, setValue } = useFormContext()
+// Declare Password Section Props
+interface PasswordSectionProps {
+    // Optional Variable used to show/hide the Confirm Password Field, default to true
+    ShowConfirmPasswordField?: boolean
+}
 
+// The actual component
+function PasswordSection({ ShowConfirmPasswordField = true }: PasswordSectionProps) {
+  // Retrieve all hook methods
+  const { setValue } = useFormContext()
   // Maintain Password Visibility State
   const [showPassword, setShowPassword] = React.useState(false)
   // Dialog open UseState
@@ -56,7 +63,7 @@ const PasswordSection: React.FC = () => {
   // Callback function to update the Password field in the form schema
   const updatePasswordField = (password: string) => {
     // Update the form schema's password field
-    setValue("password", password); 
+    setValue("password", password);
     //show the password to the user
     setShowPassword(true);
     //trigger the password strength trigger
@@ -66,29 +73,27 @@ const PasswordSection: React.FC = () => {
   };
 
   return (
-    <div>
+    <>
       {/* Password Field*/}
       <FormField
-        {...register("password")}
-        name="password"
-        render={
-          ({ field }) => (
-          <FormItem>
-            <FormLabel>Password</FormLabel>
-            <FormControl>
-              <div className="relative">
-                <Input placeholder="Enter Password" type={showPassword?'text':'password'} {...field} onInput={handlePasswordChange}/>
-                <Button variant="ghost" type="button" size='icon' className="absolute right-0 bottom-0" aria-label="Toggle Passowrd Visibility" onClick={() => {setShowPassword(!showPassword)}}>
-                  <Eye className="absolute text-slate-400" visibility={showPassword? 'visible':'hidden'}/>
-                  <EyeOff className="absolute text-slate-300" visibility={showPassword? 'hidden':'visible'}/>
-                </Button>
-              </div>
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
+          name="password"
+          render={({ field }) => (
+              <FormItem>
+                <FormLabel>Password</FormLabel>
+                <FormControl>
+                  <div className="relative">
+                    <Input placeholder="Enter Password" type={showPassword?'text':'password'} {...field} onInput={handlePasswordChange}/>
+                    <Button variant="ghost" type="button" size='icon' className="absolute right-0 bottom-0" aria-label="Toggle Passowrd Visibility" onClick={() => {setShowPassword(!showPassword)}}>
+                      <Eye className="absolute text-slate-400" visibility={showPassword? 'visible':'hidden'}/>
+                      <EyeOff className="absolute text-slate-300" visibility={showPassword? 'hidden':'visible'}/>
+                    </Button>
+                  </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+          )}
       />
-      
+
       {/* Password Strength Checker*/}
       <div className="flex justify-center items-center space-x-4 my-2 mr-1">
         <label className="text-sm text-character-secondary">Strength</label>
@@ -119,28 +124,27 @@ const PasswordSection: React.FC = () => {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Generate Password</DialogTitle>
-            <DialogDescription>
               <GeneratePasswordForm updatePasswordCallback={updatePasswordField} setOpenDialog={setOpen}/>
-            </DialogDescription>
+              {/*<DialogDescription>*/}
+              {/*</DialogDescription>*/}
           </DialogHeader>
         </DialogContent>
       </Dialog>
       
-      {/* Confirm Password Field*/}
+      {/* Confirm Password Field that only displays if showConfirmPasswordField is TRUE*/}
       <FormField
-        {...register("confirmPassword")}
         name="confirmPassword"
         render={({ field }) => (
-        <FormItem className="mt-4">
+        <FormItem className={`mt-4 ${ShowConfirmPasswordField ? 'block' : 'hidden'}`}>
           <FormLabel>Confirm Password</FormLabel>
           <FormControl>
-            <Input placeholder="Re-enter Password" type="password" {...field} />
+            <Input placeholder="Re-enter Password" type="password" {...field} ref={null}/>
           </FormControl>
           <FormMessage />
         </FormItem>
         )}
       />
-    </div>
+    </>
   )
 }
 PasswordSection.displayName = "PasswordSection"

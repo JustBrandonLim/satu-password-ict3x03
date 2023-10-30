@@ -12,6 +12,8 @@ import {
 import { Input } from "@components/ui/input";
 import { useForm } from "react-hook-form";
 import React, { Dispatch, SetStateAction, useState } from "react";
+import {toast} from "@components/ui/use-toast";
+import {Eye, EyeOff} from "lucide-react";
 
 interface PasswordCardDetailsProps {
   passwordData: {
@@ -55,6 +57,7 @@ const PasswordCardDetails: React.FC<PasswordCardDetailsProps> = ({
   decryptedPassword,
   refreshPasswordVault,
 }) => {
+  const [showPassword, setShowPassword] = React.useState(false); // Show password state
   const [isFormSubmitted, setIsFormSubmitted] = useState(false); // Track if form has been submitted
   const [formSubmissionStatus, setFormSubmissionStatus] = useState(""); // Track result of submitted form status
   const passwordCardForm = useForm<z.infer<typeof PasswordCardDetailsSchema>>({
@@ -65,6 +68,13 @@ const PasswordCardDetails: React.FC<PasswordCardDetailsProps> = ({
       password: decryptedPassword.password,
     },
   });
+
+  // To handle Password Field, removing spaces
+  const handlePassword = (event: React.FormEvent<HTMLInputElement>) => {
+    const inputElement = event.target as HTMLInputElement;
+    inputElement.value = inputElement.value
+        .replace(/\s/g, ""); // Remove spaces
+  };
 
   const onSavePasswordCard = async (
     data: z.infer<typeof PasswordCardDetailsSchema>
@@ -93,7 +103,7 @@ const PasswordCardDetails: React.FC<PasswordCardDetailsProps> = ({
       if (response.ok) {
         refreshPasswordVault();
         setIsFormSubmitted(true);
-        setFormSubmissionStatus("Password card has been updated successfully!");
+        setFormSubmissionStatus("✅Password card has been updated successfully!");
       } else {
         setIsFormSubmitted(true);
         setFormSubmissionStatus("Error! Password card could not be updated!");
@@ -113,14 +123,19 @@ const PasswordCardDetails: React.FC<PasswordCardDetailsProps> = ({
           id: passwordData.id,
         }),
       });
-
       if (response.ok) {
         refreshPasswordVault();
-        setIsFormSubmitted(true);
-        setFormSubmissionStatus("Password card has been deleted successfully!");
+        toast({
+          variant: "default",
+          title: "Password Deleted!",
+          description: `Password has been deleted successfully!`
+        })
       } else {
-        setIsFormSubmitted(true);
-        setFormSubmissionStatus("Error! Password card could not be deleted!");
+        toast({
+            variant: "destructive",
+            title: "Password Deletion Failed!",
+            description: `Password card could not be deleted!`
+        })
       }
     }
     DeletePassword();
@@ -195,10 +210,12 @@ const PasswordCardDetails: React.FC<PasswordCardDetailsProps> = ({
                   <FormItem className="w-full text-left">
                     <FormLabel>Password</FormLabel>
                     <FormControl>
-                      <div className="flex w-full space-x-4">
-                        <div className="relative w-full">
-                          <Input type="password" {...field} />
-                        </div>
+                      <div className="relative">
+                        <Input className={"pr-10"} placeholder="Enter Password" type={showPassword?'text':'password'} {...field} maxLength={64} onInput={handlePassword}/>
+                        <Button variant="ghost" type="button" size='icon' className="absolute right-0 bottom-0" aria-label="Toggle Passowrd Visibility" onClick={() => {setShowPassword(!showPassword)}}>
+                          <Eye className="absolute text-slate-400" visibility={showPassword? 'visible':'hidden'}/>
+                          <EyeOff className="absolute text-slate-300" visibility={showPassword? 'hidden':'visible'}/>
+                        </Button>
                       </div>
                     </FormControl>
                     <FormMessage />

@@ -35,8 +35,8 @@ export async function middleware(nextRequest: NextRequest) {
 
       return NextResponse.next();
     case "/home":
+    case "/profile":
       if (encryptedJwt !== undefined) {
-        console.log("going to /home");
         const checkResponse = await fetch(`${process.env.BASE_URL}/api/check`, {
           method: "GET",
           headers: {
@@ -54,11 +54,8 @@ export async function middleware(nextRequest: NextRequest) {
             secure: true,
           });
 
-          console.log("valid check going to /home");
-
           return nextResponse;
         } else {
-          console.log("invalid check going to /home");
           const nextResponse: NextResponse = NextResponse.redirect(new URL("/", nextRequest.url));
           nextResponse.cookies.delete("encryptedjwt");
 

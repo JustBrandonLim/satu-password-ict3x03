@@ -1,6 +1,6 @@
 "use client"; // This is a client component
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import PasswordVault from "@components/home/password_vault";
 import NoteVault from "@components/home/note_vault";
 import {
@@ -14,65 +14,114 @@ import { Toaster } from "../ui/toaster";
 import { useToast } from "../ui/use-toast";
 import { CreatePasswordDialog } from "./create-password-dialog";
 import { CreateNoteDialog } from "./create-note-card-dialog";
-import { PlusIcon } from "@heroicons/react/24/outline";
+import { Plus } from "lucide-react";
+import { Button } from "@components/ui/button";
 
 export default function Vault() {
+  const [FullName, setFullName] = useState("Loading Name...");
   const [passwordData, setPasswordData] = useState([]);
   const [noteData, setNoteData] = useState([]);
   const [featureDisplay, setFeatureDisplay] = useState(0);
-  const { toast } = useToast(); // Instatiate Toast for status feedback
+  const { toast } = useToast(); // Instantiate Toast for status feedback
   const [openCreatePassword, setOpenCreatePassword] = useState(false);
   const [openCreateNote, setOpenCreateNote] = useState(false);
 
-  const FetchPasswordData = async () => {
+  const FetchPasswordData = async (abortController: AbortController) => {
+  try{
     const response = await fetch(`api/vault/retrieve/passwords`, {
       method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: {"Content-Type": "application/json",},
+      signal: abortController.signal,
     });
-
     const json = await response.json();
-
     if (response.ok) {
       setPasswordData(json.passwords);
     } else {
-      console.log(json);
+      toast({
+        variant: "destructive",
+        title: "Unable to fetch password data",
+        description: `Error ${response.status}: ${json.message}`
+      })
+    }
+  } catch (error: any) {
+    if (error.name === 'AbortError') {
+      // console.log('Fetch aborted');
+    } else {
+      console.error('Error fetching data:', error);
+    }
+  }
+  };
+
+  const FetchProfile = async (abortController: AbortController) => {
+    try {
+      const response = await fetch(`/api/profile`, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+        signal: abortController.signal,
+      });
+      const json = await response.json();
+      console.log(json.profile)
+      setFullName(json.profile.name);
+    } catch (error: any) {
+      if (error.name === 'AbortError') {
+        console.log('Fetch aborted');
+      } else {
+        console.error('Error fetching data:', error);
+      }
     }
   };
 
-  const FetchNotesData = async () => {
-    const response = await fetch(`api/vault/retrieve/notes`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-
-    const json = await response.json();
-
-    if (response.ok) {
-      setNoteData(json.notes);
-    } else {
-      console.log(json);
+  const FetchNotesData = async (abortController: AbortController) => {
+    try{
+      const response = await fetch(`api/vault/retrieve/notes`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        signal: abortController.signal,
+      });
+      const json = await response.json();
+      if (response.ok) {
+        setNoteData(json.notes);
+      } else {
+        toast({
+          variant: "destructive",
+          title: "Unable to fetch note data",
+          description: `Error ${response.status}: ${json.message}`
+        })
+      }
+    }
+    catch (error: any){
+        if (error.name === 'AbortError') {
+            // console.log('Fetch aborted');
+        } else {
+            console.error('Error fetching data:', error);
+        }
     }
   };
 
   useEffect(() => {
-    const FetchData = async () => {
-      await FetchPasswordData();
-      await FetchNotesData();
+    const abortController = new AbortController();
+    const FetchData = async (abortController: AbortController) => {
+      await FetchProfile(abortController);
+      await FetchPasswordData(abortController);
+      await FetchNotesData(abortController);
     };
-
-    FetchData();
+    FetchData(abortController).then(() => console.log("Data fetched"));
+    // Cleanup function to abort fetch when component unmounts
+    return () => {
+      abortController.abort();
+    };
   }, []);
 
   function refreshPasswordVault() {
-    FetchPasswordData();
+    const abortController = new AbortController();
+    FetchPasswordData(abortController).then(() => console.log("Password data fetched"));
   }
 
   function refreshNoteVault() {
-    FetchNotesData();
+    const abortController = new AbortController();
+    FetchNotesData(abortController).then(() => console.log("Note data fetched"));
   }
 
   function handleCreation() {
@@ -104,18 +153,15 @@ export default function Vault() {
   };
 
   return (
-    <div className="flex flex-col items-center text-center gap-2 w-2/3 mx-auto">
+    <div className="flex flex-col items-center max-w-2xl gap-2 w-screen">
       <div className="flex w-full justify-between">
-        <h1 className="flex items-center">Insert User's Name here</h1>
-        <button
-          type="button"
-          className=" flex px-5 py-2 items-center transition-colors duration-150 rounded-md hover:bg-gray-200 bg-white border-2 border-gray-300"
-          onClick={handleCreation}
-        >
-          <PlusIcon className="w-5 h-5 mr-1"/> Add new
-        </button>
+         <h1 className="flex items-center text-lg font-medium">{`${FullName}'s Vault`}</h1>
+        <Button type={"button"} variant={"outline"} onClick={handleCreation}>
+          <Plus/>
+          Add new
+        </Button>
       </div>
-      <div className="flex w-full bg-gray-100 border-2 rounded-lg whitespace-nowrap">
+      <div className="w-full flex bg-gray-100 border-2 rounded-lg whitespace-nowrap">
         <button
           type="button"
           className={`${
@@ -135,7 +181,24 @@ export default function Vault() {
           Secure Note
         </button>
       </div>
-      <div className="w-full">{PageDisplay()}</div>
+      {featureDisplay === 0 && passwordData.length === 0 ? (
+        <div className="flex flex-col items-center justify-center w-full h-96">
+          <h1 className="font-semibold text-xl">No password data found</h1>
+          <p className="text-gray-500">
+            Click on + Add New to add a new Password
+          </p>
+        </div>
+      ) : featureDisplay === 1 && noteData.length === 0 ? (
+        <div className="flex flex-col items-center justify-center w-full h-96">
+          <h1 className="font-semibold text-xl">No note data found</h1>
+          <p className="text-gray-500">
+            Click on + Add New to add a new Secure Note
+          </p>
+        </div>
+      ) : (
+        <div className="w-full">{PageDisplay()}</div>
+      )}
+
       {/* Create Password Modal*/}
       <Dialog open={openCreatePassword} onOpenChange={setOpenCreatePassword}>
         <DialogContent>
@@ -157,8 +220,12 @@ export default function Vault() {
           <DialogHeader>
             <DialogTitle>Create new Note</DialogTitle>
             <DialogDescription>
-                <CreateNoteDialog open={openCreateNote} setOpenCreateNote={setOpenCreateNote} refreshNoteVault={refreshNoteVault} />
-              </DialogDescription>
+              <CreateNoteDialog
+                open={openCreateNote}
+                setOpenCreateNote={setOpenCreateNote}
+                refreshNoteVault={refreshNoteVault}
+              />
+            </DialogDescription>
           </DialogHeader>
         </DialogContent>
       </Dialog>
