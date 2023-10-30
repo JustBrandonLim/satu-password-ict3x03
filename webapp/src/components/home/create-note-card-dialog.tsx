@@ -12,9 +12,10 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
-import React, { Dispatch, SetStateAction, useState } from "react";
+import React, { Dispatch, SetStateAction } from "react";
 import { Textarea } from "../ui/textarea";
 import { Input } from "../ui/input";
+import {toast} from "@components/ui/use-toast";
 
 interface NoteCardDialogProps {
   open: boolean;
@@ -26,19 +27,19 @@ const NoteCardDialogSchema = z.object({
   title: z.string({
     required_error: "Title is required",
   }),
-  note: z.string({
-    required_error: "Note is required",
-  }),
+  note: z.string().optional(),
 });
 
 const CreateNoteDialog: React.FC<NoteCardDialogProps> = ({
   setOpenCreateNote,
   refreshNoteVault,
 }) => {
-  const [isFormSubmitted, setIsFormSubmitted] = useState(false); // Track form submission status
-  const [formSubmissionStatus, setFormSubmissionStatus] = useState(""); // Track result of submitted form status
   const noteCardForm = useForm<z.infer<typeof NoteCardDialogSchema>>({
     resolver: zodResolver(NoteCardDialogSchema),
+    defaultValues: {
+        title: "",
+        note: "",
+    }
   });
 
   const onStoreNoteCard = async (
@@ -61,20 +62,26 @@ const CreateNoteDialog: React.FC<NoteCardDialogProps> = ({
 
       if (response.ok) {
         refreshNoteVault();
-        setIsFormSubmitted(true);
-        setFormSubmissionStatus("Note has been created successfully!");
+        toast({
+          variant: "default",
+          title: "Note created successfully!",
+          description: "Your note has been created successfully!",
+        })
+        setOpenCreateNote(false);
       } else {
-        setIsFormSubmitted(true);
-        setFormSubmissionStatus("Error! Note could not be created!");
+        toast({
+          variant: "destructive",
+          title: "Error!",
+          description: "Note could not be created!",
+        })
+        setOpenCreateNote(false);
       }
     }
-    StoreNote();
+    await StoreNote();
   };
 
   //The HTML elements
   return (
-    <>
-      {!isFormSubmitted ? (
         <Form {...noteCardForm}>
           <form
             onSubmit={noteCardForm.handleSubmit(onStoreNoteCard)}
@@ -147,13 +154,6 @@ const CreateNoteDialog: React.FC<NoteCardDialogProps> = ({
             </div>
           </form>
         </Form>
-      ) : (
-        // Render a success message
-        <div>
-          <p>{formSubmissionStatus}</p>
-        </div>
-      )}
-    </>
   );
 };
 CreateNoteDialog.displayName = "CreateNoteDialog";

@@ -79,7 +79,7 @@ export default function PasswordCard(props: PasswordCardProps) {
         const json = await response.json();
         return json.password; // Return the decrypted password
       } else {
-        throw new Error("Failed to fetch and decrypt the password");
+        return new Error("Failed to fetch and decrypt the password");
       }
     } catch (error) {
       // Handle errors
@@ -119,20 +119,13 @@ export default function PasswordCard(props: PasswordCardProps) {
     }
   }
 
-  function openPasswordDialog() {
-    setSelectedModal("dialog");
-    FetchPasswordData();
-  }
-
   function openPasswordDetails() {
     setSelectedModal("details");
-    FetchPasswordData();
+    FetchPasswordData().then(() => console.log("Password data fetched!"));
   }
 
   return (
-    <div
-      className="flex items-center p-5 m-2 bg-white rounded-md shadow-lg w-full"
-    >
+    <div className="flex items-center p-5 m-2 bg-white rounded-md shadow-lg w-full">
       <FileLock2 className="mr-4" />
       <div className="flex-grow text-left">
         <h2 className="text-lg font-medium">{props.passwordData.title}</h2>
@@ -143,14 +136,13 @@ export default function PasswordCard(props: PasswordCardProps) {
         <Button onClick={openPasswordDetails} size={"icon"} variant={"ghost"}>
           <Eye/>
         </Button>
-        <Button onClick={handleCopyPassword} size={"icon"} variant={"ghost"}>
-          <Copy/>
-        </Button>
         <Button onClick={openPasswordDetails} size={"icon"} variant={"ghost"}>
           <Pencil/>
         </Button>
+        <Button onClick={handleCopyPassword} size={"icon"} variant={"ghost"}>
+          <Copy/>
+        </Button>
       </div>
-      {/* Edit Modal */}
       {/* Password Card Dialog*/}
       <Dialog open={openDialog} onOpenChange={setOpenDialog}>
         <DialogContent>
