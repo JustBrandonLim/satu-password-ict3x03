@@ -96,6 +96,7 @@ const GeneratePasswordForm: React.FC<GeneratePasswordFormProps> = ({updatePasswo
                     title: "Success!",
                     description: `Password generated successfully`
                 })
+                setShowPassword(true)
                 generatePasswordForm.setValue('password', json.password)
             }
         } catch (error: any) {
@@ -131,7 +132,7 @@ const GeneratePasswordForm: React.FC<GeneratePasswordFormProps> = ({updatePasswo
                         <FormControl>
                         <div className="flex w-full space-x-4">
                             <div className="relative w-full">
-                                <Input placeholder="Generate password button ->" type={showPassword?'text':'password'} {...field} onInput={handlePassword}/>
+                                <Input className={"pr-10"} placeholder="Generate password button ->" type={showPassword?'text':'password'} {...field} onInput={handlePassword}/>
                                 <Button variant="ghost" type="button" size='icon' className="absolute right-0 bottom-0" aria-label="Toggle Password Visibility" onClick={() => {setShowPassword(!showPassword)}}>
                                     <Eye className="absolute text-slate-400" visibility={showPassword? 'visible':'hidden'}/>
                                     <EyeOff className="absolute text-slate-300" visibility={showPassword? 'hidden':'visible'}/>

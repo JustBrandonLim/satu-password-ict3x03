@@ -58,10 +58,32 @@ export default function Profile() {
         });
     }
 
+    // Delete on delete button click
+    function DeleteButton() {
+        console.log("Delete Button Clicked")
+        fetch(`/api/profile`, {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" },
+        }).then((response) => {
+            if (response.ok) {
+                console.log("User deleted")
+                toast({
+                    title: "User deleted",
+                })
+                window.location.href = "/login"
+            } else {
+                console.log("Error deleting user")
+                toast({
+                    variant: "destructive",
+                    title: "Something went wrong",
+                })
+            }
+        })
+    }
+
     // Fetch the data from the API on component mount
     useEffect(() => {
         const abortController = new AbortController();
-
         const fetchData = async () => {
             try {
                 const response = await fetch(`/api/profile`, {
@@ -88,7 +110,7 @@ export default function Profile() {
     }, []); // The empty dependency array ensures the effect runs once on component mount
 
     return (
-        <div className={"grow w-full flex justify-center items-center px-16"}>
+        <div className={"grow w-full flex justify-center items-center px-8"}>
             <section className="grow sm:w-1/2 w-5/6 max-w-md space-y-4">
                 <h1 className={"text-2xl"}>My Profile</h1>
                 <Separator className="my-4"/>
@@ -97,7 +119,7 @@ export default function Profile() {
                         <Label htmlFor="fullName">Full Name</Label>
                         <div className={"flex space-x-4"}>
                             {/* Full name field*/}
-                            <Input defaultValue={data.name} readOnly type="text" id="fullName" placeholder="Failed to fetch full name" />
+                            <Input defaultValue={data.name} readOnly type="text" id="fullName" placeholder="Retrieving full name ..." />
                             <Button onClick={()=>{CopyButton(data.name)}} variant="outline" size="icon" className={"text-character-secondary"}>
                                 <Copy className="h-4 w-4" />
                             </Button>
@@ -107,7 +129,7 @@ export default function Profile() {
                         <Label htmlFor="email">Email</Label>
                         <div className={"flex space-x-4"}>
                             {/* Email field*/}
-                            <Input defaultValue={data.email} readOnly type="email" id="email" placeholder="Failed to fetch email" />
+                            <Input defaultValue={data.email} readOnly type="email" id="email" placeholder="Retrieving email ..." />
                             <Button onClick={()=>{CopyButton(data.email)}} variant="outline" size="icon" className={"text-character-secondary"}>
                                 <Copy className="h-4 w-4" />
                             </Button>
@@ -148,7 +170,7 @@ export default function Profile() {
                             </AlertDialogHeader>
                             <AlertDialogFooter>
                                 <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                <AlertDialogAction>Continue</AlertDialogAction>
+                                <AlertDialogAction onClick={DeleteButton}>DELETE</AlertDialogAction>
                             </AlertDialogFooter>
                         </AlertDialogContent>
                     </AlertDialog>
