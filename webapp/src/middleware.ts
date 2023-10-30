@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
+
 export async function middleware(nextRequest: NextRequest) {
   const encryptedJwt = nextRequest.cookies.get("encryptedjwt")?.value;
 
@@ -24,10 +25,12 @@ export async function middleware(nextRequest: NextRequest) {
             secure: true,
           });
 
+
           return nextResponse;
         } else {
           const nextResponse: NextResponse = NextResponse.next();
           nextResponse.cookies.delete("encryptedjwt");
+
 
           return nextResponse;
         }
@@ -54,10 +57,14 @@ export async function middleware(nextRequest: NextRequest) {
             secure: true,
           });
 
+
+
           return nextResponse;
         } else {
           const nextResponse: NextResponse = NextResponse.redirect(new URL("/", nextRequest.url));
           nextResponse.cookies.delete("encryptedjwt");
+
+
 
           return nextResponse;
         }
@@ -93,15 +100,17 @@ export async function middleware(nextRequest: NextRequest) {
             secure: true,
           });
 
+
           return nextResponse;
         } else {
           const nextResponse: NextResponse = NextResponse.json({ message: "Something went wrong!" }, { status: 400 });
           nextResponse.cookies.delete("encryptedjwt");
 
+
+
           return nextResponse;
         }
       }
-
       return NextResponse.json({ message: "Something went wrong!" }, { status: 400 });
   }
 
