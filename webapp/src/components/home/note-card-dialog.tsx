@@ -35,9 +35,7 @@ const NoteCardDialogSchema = z.object({
   title: z.string({
     required_error: "Title is required",
   }),
-  note: z.string({
-    required_error: "Note is required",
-  }),
+  note: z.string().optional(),
 });
 
 const NoteCardDialog: React.FC<NoteCardDialogProps> = ({
@@ -50,6 +48,7 @@ const NoteCardDialog: React.FC<NoteCardDialogProps> = ({
     resolver: zodResolver(NoteCardDialogSchema),
     defaultValues: {
       title: noteData.title,
+      note: decryptedNote.note,
     },
   });
 
@@ -57,7 +56,9 @@ const NoteCardDialog: React.FC<NoteCardDialogProps> = ({
     let id = noteData.id;
     let title = data.title;
     let note = data.note;
-
+    console.log(id);
+    console.log(title);
+    console.log(note);
     async function SaveNote() {
       const response = await fetch(`api/vault/update/note`, {
         method: "POST",
@@ -169,17 +170,12 @@ const NoteCardDialog: React.FC<NoteCardDialogProps> = ({
                         <div className="relative w-full">
                           <Textarea
                             {...field}
-                            defaultValue={
-                              decryptedNote.note !== null
-                                ? decryptedNote.note
-                                : ""
-                            }
+                            placeholder="Input your note here"
                           />
                         </div>
                       </div>
                     </FormControl>
                     <FormMessage className="text-gray-500">
-                      {" "}
                       Your note will be encrypted on the servers.
                     </FormMessage>
                   </FormItem>
@@ -190,8 +186,8 @@ const NoteCardDialog: React.FC<NoteCardDialogProps> = ({
               <div>
                 <Button
                   type="button"
-                  className="w-full"
-                  variant={"destructive"}
+                  className="w-full text-red-500"
+                  variant={"link"}
                   onClick={() => handleDeleteNote()}
                 >
                   Delete

@@ -1,0 +1,3 @@
+2023-10-30T17:11:46.671Z [INFO]: User: deleteTest@test.com Message: Incorrect email, password, or otp!
+2023-10-30T17:11:50.490Z [INFO]: User: deleteTest@test.com Message: Login Successful.
+2023-10-30T17:14:41.222Z [INFO]: User: delete@test.com Message: Login Successful.

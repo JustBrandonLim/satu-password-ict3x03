@@ -26,18 +26,12 @@ const PasswordCardDialogSchema = z
     title: z.string({
       required_error: "Title is required",
     }),
-    url: z.string({
-      required_error: "URL is required",
-      invalid_type_error: "URL must be a string",
-    }),
+    url: z.string().optional(),
     username: z.string({
-      required_error: "Username is required",
-      invalid_type_error: "Username must be a string",
-    }),
+      required_error: "Username is required",}),
     password: z
       .string({
         required_error: "Password is required",
-        invalid_type_error: "Password must be a string",
       })
       .min(8, { message: "Password should be at least 8 characters" })
       .max(64, { message: "Password cannot exceed 64 characters" })
