@@ -10,8 +10,6 @@ export async function GET(nextRequest: NextRequest) {
     const vaultRetrievePasswordData = nextRequest.nextUrl.searchParams.get("password");
 
     if (encryptedJwt !== undefined && vaultRetrievePasswordData !== null) {
-      const prisma = new PrismaClient();
-
       const { payload, protectedHeader } = await jwtDecrypt(encryptedJwt, DecodeHex(process.env.SECRET_KEY!), {
         issuer: "https://satupassword.com",
         audience: "https://satupassword.com",

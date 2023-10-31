@@ -17,6 +17,7 @@ export async function GET(nextRequest: NextRequest) {
 
       await GetPrismaClient().login.findUniqueOrThrow({
         where: {
+          id: payload.id as number,
           email: payload.email as string,
           jwtId: payload.jwtId as string,
         },
@@ -26,6 +27,7 @@ export async function GET(nextRequest: NextRequest) {
 
       await GetPrismaClient().login.update({
         where: {
+          id: payload.id as number,
           email: payload.email as string,
         },
         data: {
