@@ -1,3 +1,5 @@
 secrets
 .idea
 .vscode
+.env
+.env.*
