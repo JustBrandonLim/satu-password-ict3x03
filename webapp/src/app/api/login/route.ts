@@ -4,6 +4,7 @@ import { VerifyPassword, GenerateWrappingKey, DecryptAES, GenerateRandomKey } fr
 import { DecodeHex } from "@libs/enc-dec";
 import { authenticator } from "otplib";
 import { EncryptJWT } from "jose";
+import logger from "@libs/logger";
 
 interface LoginData {
   email: string;
@@ -56,13 +57,17 @@ export async function POST(nextRequest: NextRequest) {
           sameSite: "strict",
           secure: true,
         });
+        
+        logger.info(`User: ${loginData.email} Message: Login Successful.`);
 
         return nextResponse;
       }
     }
 
+    logger.info(`User: ${loginData.email} Message: Incorrect email, password, or otp!`);
     return NextResponse.json({ message: "Incorrect email, password or otp!" }, { status: 400 });
   } catch {
+    logger.info("HTTP 500 : Something went wrong.");
     return NextResponse.json({ message: "Something went wrong!" }, { status: 500 });
   }
 }

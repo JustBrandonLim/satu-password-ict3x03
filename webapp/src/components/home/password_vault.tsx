@@ -1,5 +1,5 @@
 import React from "react";
-import PasswordCard from "@components/home/password_card";
+import PasswordCard from "@components/home/password_list_card";
 
 interface PasswordVaultProps {
   passwordData: PasswordData[];

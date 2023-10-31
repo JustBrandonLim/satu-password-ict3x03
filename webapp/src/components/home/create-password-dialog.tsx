@@ -12,7 +12,8 @@ import {
 import { PasswordSection } from "@components/password-section";
 import { Input } from "@components/ui/input";
 import { useForm } from "react-hook-form";
-import React, { Dispatch, SetStateAction, useState } from "react";
+import { useToast } from "@components/ui/use-toast";
+import React, { Dispatch, SetStateAction } from "react";
 
 interface PasswordCardDialogProps {
   open: boolean;
@@ -25,41 +26,28 @@ const PasswordCardDialogSchema = z
     title: z.string({
       required_error: "Title is required",
     }),
-    url: z.string({
-      required_error: "URL is required",
-      invalid_type_error: "URL must be a string",
-    }),
+    url: z.string().optional(),
     username: z.string({
-      required_error: "Username is required",
-      invalid_type_error: "Username must be a string",
-    }),
+      required_error: "Username is required",}),
     password: z
       .string({
         required_error: "Password is required",
-        invalid_type_error: "Password must be a string",
       })
       .min(8, { message: "Password should be at least 8 characters" })
       .max(64, { message: "Password cannot exceed 64 characters" })
       .regex(new RegExp(/^\S*$/), "Password cannot contain spaces"),
-    confirmPassword: z.string({
-      required_error: "Please confirm your password",
-      invalid_type_error: "Password must be a string",
-    }),
   })
-  .refine((data) => data.password === data.confirmPassword, {
-    path: ["confirmPassword"],
-    message: "Passwords do not match",
-  });
 
 const CreatePasswordDialog: React.FC<PasswordCardDialogProps> = ({
   setOpenCreatePassword,
   refreshPasswordVault,
 }) => {
-  const [isFormSubmitted, setIsFormSubmitted] = useState(false); // Track form submission status
-  const [formSubmissionStatus, setFormSubmissionStatus] = useState(""); // Track result of submitted form status
+  // const [isFormSubmitted, setIsFormSubmitted] = useState(false); // Track form submission status
+  // const [formSubmissionStatus, setFormSubmissionStatus] = useState(""); // Track result of submitted form status
   const passwordCardForm = useForm<z.infer<typeof PasswordCardDialogSchema>>({
     resolver: zodResolver(PasswordCardDialogSchema),
   });
+  const { toast } = useToast();
 
   const onStorePasswordCard = async (
     data: z.infer<typeof PasswordCardDialogSchema>
@@ -85,19 +73,25 @@ const CreatePasswordDialog: React.FC<PasswordCardDialogProps> = ({
 
       if (response.ok) {
         refreshPasswordVault();
-        setIsFormSubmitted(true);
-        setFormSubmissionStatus("Password card has been created successfully!");
+        toast({
+          variant: "default",
+          title: "Password Created!",
+          description: "Password card has been created successfully!",
+        })
+        setOpenCreatePassword(false);
       } else {
-        setIsFormSubmitted(true);
-        setFormSubmissionStatus("Error! Password card could not be created!");
+        toast({
+            variant: "destructive",
+            title: "Uh oh! Something went wrong.",
+            description: "Password card could not be created!",
+        })
+        setOpenCreatePassword(false);
       }
     }
-    StorePassword();
+    await StorePassword();
   };
 
   return (
-    <>
-      {!isFormSubmitted ? (
         <Form {...passwordCardForm}>
           <form
             onSubmit={passwordCardForm.handleSubmit(onStorePasswordCard)}
@@ -133,24 +127,20 @@ const CreatePasswordDialog: React.FC<PasswordCardDialogProps> = ({
               {/* URL Field */}
               <FormField
                 control={passwordCardForm.control}
-                name="url"
                 render={({ field }) => (
                   <FormItem className="w-full text-left">
                     <FormLabel>URL</FormLabel>
                     <FormControl>
                       <div className="flex w-full space-x-4">
                         <div className="relative w-full">
-                          <Input
-                            placeholder="Website URL"
-                            type="url"
-                            {...field}
-                          />
+                          <Input placeholder="Website URL" {...field}/>
                         </div>
                       </div>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
+                name="url"
               />
             </div>
 
@@ -180,14 +170,9 @@ const CreatePasswordDialog: React.FC<PasswordCardDialogProps> = ({
               />
             </div>
             {/* Generate Password Component*/}
-            <PasswordSection />
+            <PasswordSection ShowConfirmPasswordField={false}/>
             <div className="flex space-x-4 w-full">
-              <Button
-                type="button"
-                variant={"outline"}
-                className="w-full"
-                onClick={() => setOpenCreatePassword(false)}
-              >
+              <Button type="button" variant={"outline"} className="w-full" onClick={() => setOpenCreatePassword(false)}>
                 Cancel
               </Button>
               <Button type="submit" className="w-full">
@@ -196,13 +181,6 @@ const CreatePasswordDialog: React.FC<PasswordCardDialogProps> = ({
             </div>
           </form>
         </Form>
-      ) : (
-        // Render a success message
-        <div>
-          <p>{formSubmissionStatus}</p>
-        </div>
-      )}
-    </>
   );
 };
 

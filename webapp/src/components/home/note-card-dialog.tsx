@@ -12,9 +12,10 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
-import React, { Dispatch, SetStateAction, useState } from "react";
+import React, { Dispatch, SetStateAction } from "react";
 import { Textarea } from "../ui/textarea";
 import { Input } from "../ui/input";
+import {toast} from "@components/ui/use-toast";
 
 interface NoteCardDialogProps {
   noteData: {
@@ -34,9 +35,7 @@ const NoteCardDialogSchema = z.object({
   title: z.string({
     required_error: "Title is required",
   }),
-  note: z.string({
-    required_error: "Note is required",
-  }),
+  note: z.string().optional(),
 });
 
 const NoteCardDialog: React.FC<NoteCardDialogProps> = ({
@@ -45,12 +44,11 @@ const NoteCardDialog: React.FC<NoteCardDialogProps> = ({
   noteData,
   refreshNoteVault,
 }) => {
-  const [isFormSubmitted, setIsFormSubmitted] = useState(false); // Track form submission status
-  const [formSubmissionStatus, setFormSubmissionStatus] = useState(""); // Track result of submitted form status
   const noteCardForm = useForm<z.infer<typeof NoteCardDialogSchema>>({
     resolver: zodResolver(NoteCardDialogSchema),
     defaultValues: {
       title: noteData.title,
+      note: decryptedNote.note,
     },
   });
 
@@ -58,7 +56,9 @@ const NoteCardDialog: React.FC<NoteCardDialogProps> = ({
     let id = noteData.id;
     let title = data.title;
     let note = data.note;
-
+    console.log(id);
+    console.log(title);
+    console.log(note);
     async function SaveNote() {
       const response = await fetch(`api/vault/update/note`, {
         method: "POST",
@@ -74,14 +74,22 @@ const NoteCardDialog: React.FC<NoteCardDialogProps> = ({
 
       if (response.ok) {
         refreshNoteVault();
-        setIsFormSubmitted(true);
-        setFormSubmissionStatus("Note has been updated successfully!");
+        toast({
+            variant: "default",
+            title: "Note has been updated successfully!",
+            description: "Your note has been updated successfully!",
+        })
+        setOpenDialog(false);
       } else {
-        setIsFormSubmitted(true);
-        setFormSubmissionStatus("Error! Note could not be updated!");
+        toast({
+            variant: "destructive",
+            title: "Error! Note could not be updated!",
+            description: "Your note could not be updated!",
+        })
+        setOpenDialog(false);
       }
     }
-    SaveNote();
+    await SaveNote();
   };
 
   function handleDeleteNote() {
@@ -98,20 +106,26 @@ const NoteCardDialog: React.FC<NoteCardDialogProps> = ({
 
       if (response.ok) {
         refreshNoteVault();
-        setIsFormSubmitted(true);
-        setFormSubmissionStatus("Note has been deleted successfully!");
+        toast({
+          variant: "default",
+          title: "Note has been deleted successfully!",
+          description: "Your note has been deleted successfully!",
+        })
+        setOpenDialog(false);
       } else {
-        setIsFormSubmitted(true);
-        setFormSubmissionStatus("Error! Note could not be deleted!");
+        toast({
+            variant: "destructive",
+            title: "Error! Note could not be deleted!",
+            description: "Your note could not be deleted!",
+        })
+        setOpenDialog(false);
       }
     }
-    DeleteNote();
+    DeleteNote().then(() => { console.log("Note deleted") });
   }
 
   //The HTML elements
   return (
-    <>
-      {!isFormSubmitted ? (
         <Form {...noteCardForm}>
           <form
             onSubmit={noteCardForm.handleSubmit(onSaveNoteCard)}
@@ -156,17 +170,12 @@ const NoteCardDialog: React.FC<NoteCardDialogProps> = ({
                         <div className="relative w-full">
                           <Textarea
                             {...field}
-                            defaultValue={
-                              decryptedNote.note !== null
-                                ? decryptedNote.note
-                                : ""
-                            }
+                            placeholder="Input your note here"
                           />
                         </div>
                       </div>
                     </FormControl>
                     <FormMessage className="text-gray-500">
-                      {" "}
                       Your note will be encrypted on the servers.
                     </FormMessage>
                   </FormItem>
@@ -177,8 +186,8 @@ const NoteCardDialog: React.FC<NoteCardDialogProps> = ({
               <div>
                 <Button
                   type="button"
-                  className="w-full"
-                  variant={"destructive"}
+                  className="w-full text-red-500"
+                  variant={"link"}
                   onClick={() => handleDeleteNote()}
                 >
                   Delete
@@ -200,13 +209,6 @@ const NoteCardDialog: React.FC<NoteCardDialogProps> = ({
             </div>
           </form>
         </Form>
-      ) : (
-        // Render a success message
-        <div>
-          <p>{formSubmissionStatus}</p>
-        </div>
-      )}
-    </>
   );
 };
 NoteCardDialog.displayName = "NoteCardDialog";

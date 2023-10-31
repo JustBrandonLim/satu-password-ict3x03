@@ -21,9 +21,11 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@components/ui/dialog";
 import EditProfileForm from "@components/profile/profile-form";
+import { useRouter } from "next/navigation";
 
 export default function Profile() {
   const { toast } = useToast();
+  const router = useRouter();
   // Dialog open UseState
   const [open, setOpen] = React.useState(false);
   const [data, setData] = useState({
@@ -64,7 +66,7 @@ export default function Profile() {
         toast({
           title: "User deleted",
         });
-        window.location.href = "/login";
+        router.push("/");
       } else {
         console.log("Error deleting user");
         toast({

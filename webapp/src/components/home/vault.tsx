@@ -18,6 +18,7 @@ import { Plus } from "lucide-react";
 import { Button } from "@components/ui/button";
 
 export default function Vault() {
+  const [FullName, setFullName] = useState("Loading Name...");
   const [passwordData, setPasswordData] = useState([]);
   const [noteData, setNoteData] = useState([]);
   const [featureDisplay, setFeatureDisplay] = useState(0);
@@ -25,16 +26,14 @@ export default function Vault() {
   const [openCreatePassword, setOpenCreatePassword] = useState(false);
   const [openCreateNote, setOpenCreateNote] = useState(false);
 
-  const FetchPasswordData = async () => {
+  const FetchPasswordData = async (abortController: AbortController) => {
+  try{
     const response = await fetch(`api/vault/retrieve/passwords`, {
       method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: {"Content-Type": "application/json",},
+      signal: abortController.signal,
     });
-
     const json = await response.json();
-
     if (response.ok) {
       setPasswordData(json.passwords);
     } else {
@@ -44,44 +43,85 @@ export default function Vault() {
         description: `Error ${response.status}: ${json.message}`
       })
     }
+  } catch (error: any) {
+    if (error.name === 'AbortError') {
+      // console.log('Fetch aborted');
+    } else {
+      console.error('Error fetching data:', error);
+    }
+  }
   };
 
-  const FetchNotesData = async () => {
-    const response = await fetch(`api/vault/retrieve/notes`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+  const FetchProfile = async (abortController: AbortController) => {
+    try {
+      const response = await fetch(`/api/profile`, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+        signal: abortController.signal,
+      });
+      const json = await response.json();
+      console.log(json.profile)
+      setFullName(json.profile.name);
+    } catch (error: any) {
+      if (error.name === 'AbortError') {
+        console.log('Fetch aborted');
+      } else {
+        console.error('Error fetching data:', error);
+      }
+    }
+  };
 
-    const json = await response.json();
-
-    if (response.ok) {
-      setNoteData(json.notes);
-    } else {
-      toast({
-        variant: "destructive",
-        title: "Unable to fetch note data",
-        description: `Error ${response.status}: ${json.message}`
-      })
+  const FetchNotesData = async (abortController: AbortController) => {
+    try{
+      const response = await fetch(`api/vault/retrieve/notes`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        signal: abortController.signal,
+      });
+      const json = await response.json();
+      if (response.ok) {
+        setNoteData(json.notes);
+      } else {
+        toast({
+          variant: "destructive",
+          title: "Unable to fetch note data",
+          description: `Error ${response.status}: ${json.message}`
+        })
+      }
+    }
+    catch (error: any){
+        if (error.name === 'AbortError') {
+            // console.log('Fetch aborted');
+        } else {
+            console.error('Error fetching data:', error);
+        }
     }
   };
 
   useEffect(() => {
-    const FetchData = async () => {
-      await FetchPasswordData();
-      await FetchNotesData();
+    const abortController = new AbortController();
+    const FetchData = async (abortController: AbortController) => {
+      await FetchProfile(abortController);
+      await FetchPasswordData(abortController);
+      await FetchNotesData(abortController);
     };
-
-    FetchData();
+    FetchData(abortController).then(() => console.log("Data fetched"));
+    // Cleanup function to abort fetch when component unmounts
+    return () => {
+      abortController.abort();
+    };
   }, []);
 
   function refreshPasswordVault() {
-    FetchPasswordData();
+    const abortController = new AbortController();
+    FetchPasswordData(abortController).then(() => console.log("Password data fetched"));
   }
 
   function refreshNoteVault() {
-    FetchNotesData();
+    const abortController = new AbortController();
+    FetchNotesData(abortController).then(() => console.log("Note data fetched"));
   }
 
   function handleCreation() {
@@ -113,16 +153,12 @@ export default function Vault() {
   };
 
   return (
-    <div className="flex flex-col items-center max-w-2xl text-center gap-2 w-screen">
-      <div className="flex w-full justify-end">
-        {/* <h1 className="flex items-center">{`[USER NAME]'s Vault`}</h1> */}
-        <Button
-          className={"  "}
-          type={"button"}
-          variant={"outline"}
-          onClick={handleCreation}
-        >
-          <Plus /> Add new
+    <div className="flex flex-col items-center max-w-2xl gap-2 w-screen">
+      <div className="flex w-full justify-between">
+         <h1 className="flex items-center text-lg font-medium">{`${FullName}'s Vault`}</h1>
+        <Button type={"button"} variant={"outline"} onClick={handleCreation}>
+          <Plus/>
+          Add new
         </Button>
       </div>
       <div className="w-full flex bg-gray-100 border-2 rounded-lg whitespace-nowrap">
