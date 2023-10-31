@@ -90,11 +90,23 @@ export default function Profile() {
         const json = await response.json();
         console.log(json.profile);
         setData(json.profile);
+        // Set the values of the input fields
+        const emailFiled = document.getElementById("email")
+        const fullNameField = document.getElementById("fullName")
+        // set the value of the input fields if they are not null
+        if (emailFiled !== null) emailFiled.setAttribute("value", json.profile.email);
+        if (fullNameField !== null) fullNameField.setAttribute("value", json.profile.name);
       } catch (error: any) {
         if (error.name === "AbortError") {
           console.log("Fetch aborted");
         } else {
           console.error("Error fetching data:", error);
+          // Set the values of the input fields
+          const emailFiled = document.getElementById("email")
+          const fullNameField = document.getElementById("fullName")
+          // set the value of the input fields if they are not null
+          if (emailFiled !== null) emailFiled.setAttribute("value", "Error fetching data");
+          if (fullNameField !== null) fullNameField.setAttribute("value", "Error fetching data");
         }
       }
     };
@@ -115,7 +127,7 @@ export default function Profile() {
             <Label htmlFor="fullName">Full Name</Label>
             <div className={"flex space-x-4"}>
               {/* Full name field*/}
-              <Input defaultValue={data.name ? data.name : "Fetching..."} readOnly type="text" id="fullName" placeholder="Retrieving full name ..." />
+              <Input readOnly type="text" id="fullName" placeholder="Retrieving full name ..." />
               <Button
                 onClick={() => {
                   CopyButton(data.name);
@@ -132,7 +144,7 @@ export default function Profile() {
             <Label htmlFor="email">Email</Label>
             <div className={"flex space-x-4"}>
               {/* Email field*/}
-              <Input defaultValue={data.email ? data.email : "Fetching..."} readOnly type="email" id="email" placeholder="Retrieving email ..." />
+              <Input readOnly type="email" id="email" placeholder="Retrieving email ..." />
               <Button
                 onClick={() => {
                   CopyButton(data.email);
