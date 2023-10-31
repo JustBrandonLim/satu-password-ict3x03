@@ -1,5 +1,7 @@
 secrets
 .idea
 .vscode
+node_modules/
+.next/
 .env
 .env.*
