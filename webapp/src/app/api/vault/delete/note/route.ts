@@ -19,21 +19,16 @@ export async function POST(nextRequest: NextRequest) {
         audience: "https://satupassword.com",
       });
 
-      const login = await GetPrismaClient().login.findUniqueOrThrow({
-        where: {
-          email: payload.email as string,
-        },
-      });
-
       const user = await GetPrismaClient().user.findUniqueOrThrow({
         where: {
-          loginId: login.id,
+          loginId: payload.id as number,
         },
       });
 
       await GetPrismaClient().note.delete({
         where: {
           id: vaultDeleteNoteData.id,
+          userId: user.id,
         },
       });
 

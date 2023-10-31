@@ -1,7 +1,7 @@
 // noinspection SpellCheckingInspection
 
 import { NextRequest, NextResponse } from "next/server";
-import { jwtDecrypt } from "jose";
+import { jwtDecrypt, EncryptJWT } from "jose";
 import { DecodeHex } from "@libs/enc-dec";
 import { HashPassword, GenerateNewWrappingKey, EncryptAES } from "@libs/crypto";
 import { GetPrismaClient } from "@libs/prisma";
@@ -23,7 +23,7 @@ export async function GET(nextRequest: NextRequest) {
 
       const user = await GetPrismaClient().user.findUniqueOrThrow({
         where: {
-          loginId: login.id,
+          loginId: payload.id as number,
         },
       });
 
@@ -55,7 +55,7 @@ export async function POST(nextRequest: NextRequest) {
 
       const [hashedPassword, hashedPasswordSalt] = HashPassword(profileUpdateData.password);
 
-      const login = await GetPrismaClient().login.update({
+      await GetPrismaClient().login.update({
         where: {
           id: payload.id as number,
         },
@@ -71,7 +71,7 @@ export async function POST(nextRequest: NextRequest) {
 
       await GetPrismaClient().user.update({
         where: {
-          loginId: login.id,
+          loginId: payload.id as number,
         },
         data: {
           name: profileUpdateData.name,
@@ -80,12 +80,31 @@ export async function POST(nextRequest: NextRequest) {
         },
       });
 
-      return NextResponse.json({ message: "Successful!" }, { status: 200 });
+      const newEncryptedJwt = await new EncryptJWT({
+        id: payload.id as number,
+        email: profileUpdateData.email,
+        masterKey: payload.masterKey,
+        jwtId: payload.jwtId,
+      })
+        .setProtectedHeader({ alg: "dir", enc: "A256GCM" })
+        .setIssuer("https://satupassword.com")
+        .setAudience("https://satupassword.com")
+        .setIssuedAt()
+        .setExpirationTime("3m")
+        .encrypt(DecodeHex(process.env.SECRET_KEY!));
+
+      const nextResponse: NextResponse = NextResponse.json({ message: "Successful!" }, { status: 200 });
+      nextResponse.cookies.set("encryptedjwt", newEncryptedJwt, {
+        httpOnly: true,
+        sameSite: "strict",
+        secure: true,
+      });
+
+      return nextResponse;
     }
 
     return NextResponse.json({ message: "Something went wrong!" }, { status: 400 });
-  } catch (e) {
-    console.log(e);
+  } catch {
     return NextResponse.json({ message: "Something went wrong!" }, { status: 500 });
   }
 }
