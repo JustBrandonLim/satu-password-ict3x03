@@ -64,10 +64,10 @@ export async function POST(nextRequest: NextRequest) {
       }
     }
 
-    logger.info(`User: ${loginData.email} Message: Incorrect email, password, or otp!`);
+    logger.info(`User: ${loginData.email} Action: Login  Message: Incorrect email, password, or otp!`);
     return NextResponse.json({ message: "Incorrect email, password or otp!" }, { status: 400 });
   } catch {
-    logger.info("HTTP 500 : Something went wrong.");
+    logger.info(`Action :Login Message: Internal Server Error`);
     return NextResponse.json({ message: "Something went wrong!" }, { status: 500 });
   }
 }
