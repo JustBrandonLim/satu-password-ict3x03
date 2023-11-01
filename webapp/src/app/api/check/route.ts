@@ -10,6 +10,7 @@ export async function GET(nextRequest: NextRequest) {
     const encryptedJwt = nextRequest.cookies.get("encryptedjwt")?.value;
 
     if (encryptedJwt !== undefined) {
+      console.log("check has jwt");
       const { payload, protectedHeader } = await jwtDecrypt(encryptedJwt, DecodeHex(process.env.SECRET_KEY!), {
         issuer: "https://satupassword.com",
         audience: "https://satupassword.com",
@@ -53,6 +54,8 @@ export async function GET(nextRequest: NextRequest) {
         return NextResponse.json({ message: "Something went wrong!" }, { status: 400 });
       }
     }
+
+    console.log(exception);
 
     return NextResponse.json({ message: "Something went wrong!" }, { status: 500 });
   }

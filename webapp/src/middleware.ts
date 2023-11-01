@@ -63,8 +63,6 @@ export async function middleware(nextRequest: NextRequest) {
     case "/home":
     case "/profile":
       try {
-        console.log("before response");
-
         if (encryptedJwt !== undefined) {
           const checkResponse = await fetch(`${process.env.BASE_URL}/api/check`, {
             method: "GET",
@@ -73,11 +71,7 @@ export async function middleware(nextRequest: NextRequest) {
             },
           });
 
-          console.log("after response");
-
           if (checkResponse.ok) {
-            console.log("response ok");
-
             const checkResponseData = await checkResponse.json();
 
             const nextResponse: NextResponse = NextResponse.next({
@@ -94,13 +88,6 @@ export async function middleware(nextRequest: NextRequest) {
 
             return nextResponse;
           } else {
-            console.log("resposne not ok from check");
-
-            console.log(checkResponse.status);
-            const checkResponseTestData = await checkResponse.json();
-
-            console.log(checkResponseTestData);
-
             const nextResponse: NextResponse = NextResponse.redirect(new URL("/", nextRequest.url), {
               headers: requestHeaders,
             });
@@ -109,9 +96,7 @@ export async function middleware(nextRequest: NextRequest) {
             return nextResponse;
           }
         }
-      } catch (e) {
-        console.log(e);
-      }
+
       return NextResponse.redirect(new URL("/", nextRequest.url));
     case "/api/profile":
     case "/api/vault/retrieve/passwords":
