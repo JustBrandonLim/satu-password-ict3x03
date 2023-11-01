@@ -13,6 +13,8 @@ model Login {
     hashedPassword      String      // hashed password
     hashedPasswordSalt  String      // salt of the hashed password
     totpSecret          String      // used to generate totp, unecrypted 
+    attempts            Int         @default(0) // attempts for login, 3 maximum
+    lockedDateTime      DateTime?   // datetime of the account being locked, when attempts == 3      
     jwtId               String?     // used to prevent replay attacks for JWT
 
     User                User?

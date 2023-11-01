@@ -1,6 +1,0 @@
-2023-10-30T17:11:46.671Z [INFO]: User: deleteTest@test.com Message: Incorrect email, password, or otp!
-2023-10-30T17:11:50.490Z [INFO]: User: deleteTest@test.com Message: Login Successful.
-2023-10-30T17:14:41.222Z [INFO]: User: delete@test.com Message: Login Successful.
-2023-10-31T09:23:12.209Z [INFO]: User: testuser@test.com Message: Login Successful.
-2023-10-31T09:24:24.575Z [INFO]: User: testuser@test.com Message: Login Successful.
-2023-10-31T09:38:38.715Z [INFO]: User: testuser@test.com Message: Login Successful.

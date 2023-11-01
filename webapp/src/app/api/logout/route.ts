@@ -15,7 +15,7 @@ export async function POST(nextRequest: NextRequest) {
 
       await GetPrismaClient().login.update({
         where: {
-          email: payload.email as string,
+          id: payload.id as number,
         },
         data: {
           jwtId: null,
@@ -23,12 +23,12 @@ export async function POST(nextRequest: NextRequest) {
       });
 
       const nextResponse: NextResponse = NextResponse.json({ message: "Successful!" }, { status: 200 });
-      nextResponse.cookies.delete("ejwt");
+      nextResponse.cookies.delete("encryptedjwt");
 
       return nextResponse;
     }
 
-    return NextResponse.json({ message: "Successful logout!" }, { status: 200 });
+    return NextResponse.json({ message: "Successful!" }, { status: 200 });
   } catch {
     return NextResponse.json({ message: "Something went wrong!" }, { status: 500 });
   }
