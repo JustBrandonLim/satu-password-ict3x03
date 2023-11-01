@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { jwtDecrypt } from "jose";
 import { DecodeHex } from "@libs/enc-dec";
 import { GetPrismaClient } from "@libs/prisma";
+import logger from "@libs/logger";
 
 export async function POST(nextRequest: NextRequest) {
   try {
@@ -22,12 +23,13 @@ export async function POST(nextRequest: NextRequest) {
         },
       });
 
+      logger.info(`User: ${payload.id} Action:Logout Message: Logout Successful.`);
       const nextResponse: NextResponse = NextResponse.json({ message: "Successful!" }, { status: 200 });
       nextResponse.cookies.delete("encryptedjwt");
 
       return nextResponse;
     }
-
+    logger.info(`Info: No JWT Token Action:Logout Message: Logout Successful.`);
     return NextResponse.json({ message: "Successful!" }, { status: 200 });
   } catch {
     return NextResponse.json({ message: "Something went wrong!" }, { status: 500 });
