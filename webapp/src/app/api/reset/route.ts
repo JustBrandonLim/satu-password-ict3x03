@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { GetPrismaClient } from "@libs/prisma";
 import { authenticator } from "otplib";
-
+import logger from "@libs/logger";
 interface ResetData {
   email: string;
   password: string;
@@ -40,14 +40,19 @@ export async function POST(nextRequest: NextRequest) {
       if (checkResponse.ok) {
         const checkResponseData = await checkResponse.json();
 
+        logger.info(`User: ${resetData.email} Message: Account Reset Successful`);
         return NextResponse.json({ message: "Successful!", otpUrl: checkResponseData.otpUrl }, { status: 200 });
       } else {
+        logger.info(`User: ${resetData.email} Message: Register for Account Reset fail`);
         return NextResponse.json({ message: "Something went wrong!" }, { status: 400 });
       }
     }
 
+    logger.info(`User: ${resetData.email} Action :AccountReset Message:Incorrect email or otp`);
     return NextResponse.json({ message: "Incorrect email or otp!" }, { status: 400 });
   } catch {
+    
+    logger.info(`Action :AccountReset Message: Internal Server Error`);
     return NextResponse.json({ message: "Something went wrong!" }, { status: 500 });
   }
 }
