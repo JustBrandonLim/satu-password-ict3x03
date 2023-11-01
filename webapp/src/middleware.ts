@@ -62,40 +62,43 @@ export async function middleware(nextRequest: NextRequest) {
       return NextResponse.next();
     case "/home":
     case "/profile":
-      if (encryptedJwt !== undefined) {
-        const checkResponse = await fetch(`${process.env.BASE_URL}/api/check`, {
-          method: "GET",
-          headers: {
-            Cookie: nextRequest.cookies.toString(),
-          },
-        });
-
-        if (checkResponse.ok) {
-          const checkResponseData = await checkResponse.json();
-
-          const nextResponse: NextResponse = NextResponse.next({
-            headers: requestHeaders,
-            request: {
-              headers: requestHeaders,
+      try {
+        if (encryptedJwt !== undefined) {
+          const checkResponse = await fetch(`${process.env.BASE_URL}/api/check`, {
+            method: "GET",
+            headers: {
+              Cookie: nextRequest.cookies.toString(),
             },
           });
-          nextResponse.cookies.set("encryptedjwt", checkResponseData.newEncryptedJwt, {
-            httpOnly: true,
-            sameSite: "strict",
-            secure: true,
-          });
 
-          return nextResponse;
-        } else {
-          const nextResponse: NextResponse = NextResponse.redirect(new URL("/", nextRequest.url), {
-            headers: requestHeaders,
-          });
-          nextResponse.cookies.delete("encryptedjwt");
+          if (checkResponse.ok) {
+            const checkResponseData = await checkResponse.json();
 
-          return nextResponse;
+            const nextResponse: NextResponse = NextResponse.next({
+              headers: requestHeaders,
+              request: {
+                headers: requestHeaders,
+              },
+            });
+            nextResponse.cookies.set("encryptedjwt", checkResponseData.newEncryptedJwt, {
+              httpOnly: true,
+              sameSite: "strict",
+              secure: true,
+            });
+
+            return nextResponse;
+          } else {
+            const nextResponse: NextResponse = NextResponse.redirect(new URL("/", nextRequest.url), {
+              headers: requestHeaders,
+            });
+            nextResponse.cookies.delete("encryptedjwt");
+
+            return nextResponse;
+          }
         }
+      } catch (e) {
+        console.log(e);
       }
-
       return NextResponse.redirect(new URL("/", nextRequest.url));
     case "/api/profile":
     case "/api/vault/retrieve/passwords":
