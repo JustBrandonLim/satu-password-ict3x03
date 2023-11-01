@@ -3,6 +3,7 @@ import { HashPassword, GenerateNewWrappingKey, GenerateRandomKey, EncryptAES } f
 import { authenticator } from "otplib";
 import { Prisma } from "@prisma/client";
 import { GetPrismaClient } from "@libs/prisma";
+import logger from "@libs/logger";
 
 interface RegisterData {
   email: string;
@@ -46,10 +47,12 @@ export async function POST(nextRequest: NextRequest) {
 
     const otpUrl = authenticator.keyuri(registerData.name, "SatuPassword", totpSecret);
 
+    logger.info(`User: ${registerData.email} Message: Account created successfully.`);
     return NextResponse.json({ message: "Successful!", otpUrl: otpUrl }, { status: 200 });
   } catch (exception) {
     if (exception instanceof Prisma.PrismaClientKnownRequestError) {
       if (exception.code === "P2002") {
+        logger.info(`Category: RegistrationAttempt Message: Email is already registered ActionTaken : Registration request denied.`);
         return NextResponse.json({ message: "Email already exists!" }, { status: 400 });
       }
     }
