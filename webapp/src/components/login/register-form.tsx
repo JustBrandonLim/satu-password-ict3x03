@@ -86,7 +86,6 @@ function RegisterForm() {
     // For Debugging
     console.log("Register Form Submitted")
     setIsLoading(true)
-    console.log(data)
 
     let name = data.name
     let email = data.email
@@ -101,7 +100,6 @@ function RegisterForm() {
   
       if ((response.ok) && (json.otpUrl!=null))  {
         setIsLoading(false)
-        console.log(json);
         toast({
           variant: "default",
           title: "Success!!",
@@ -112,8 +110,6 @@ function RegisterForm() {
       }
       else{
         setIsLoading(false)
-        console.log(response)
-        console.log(json);
         toast({
           variant: "destructive",
           title: "Uh oh! Something went wrong.",
