@@ -63,6 +63,8 @@ export async function middleware(nextRequest: NextRequest) {
     case "/home":
     case "/profile":
       try {
+        console.log("before response");
+
         if (encryptedJwt !== undefined) {
           const checkResponse = await fetch(`${process.env.BASE_URL}/api/check`, {
             method: "GET",
@@ -71,7 +73,11 @@ export async function middleware(nextRequest: NextRequest) {
             },
           });
 
+          console.log("after response");
+
           if (checkResponse.ok) {
+            console.log("response ok");
+
             const checkResponseData = await checkResponse.json();
 
             const nextResponse: NextResponse = NextResponse.next({
@@ -88,6 +94,8 @@ export async function middleware(nextRequest: NextRequest) {
 
             return nextResponse;
           } else {
+            console.log("no token");
+
             const nextResponse: NextResponse = NextResponse.redirect(new URL("/", nextRequest.url), {
               headers: requestHeaders,
             });
