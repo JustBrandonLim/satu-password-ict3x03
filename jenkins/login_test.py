@@ -20,7 +20,7 @@ test_successful = False
 
 try:
     # Navigate to Login Page
-    driver.get("https://happy-williamson.cloud/")  # Replace with your website's URL
+    driver.get("https://18.141.182.156/") 
 
     # Wait for the email field to be visible (increased timeout to 10 seconds)
     WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.XPATH, "//input[@name='email']")))
@@ -32,7 +32,7 @@ try:
     password.send_keys("12345678")
 
     # Generate OTP
-    totpSecret = "BVCSO6DVJEHAIUKC"  # Replace with your TOTP secret
+    totpSecret = "BVCSO6DVJEHAIUKC" 
     totp = pyotp.TOTP(totpSecret)
     otp_code = totp.now()
 
@@ -49,14 +49,10 @@ try:
 
 except selenium.common.exceptions.TimeoutException:
     print("Timeout occurred: The page did not load or the element was not found within 10 seconds.")
-    # Optionally, add more specific error handling or logging here
 
 finally:
-    # Close the browser after a delay or after verification
-    time.sleep(5)  # Adjust time as needed
+    time.sleep(5) 
     driver.quit()
 
-    # Print success message if test was successful
     if test_successful:
         print("Test completed successfully with no errors.")
-
