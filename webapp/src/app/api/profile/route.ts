@@ -48,7 +48,7 @@ export async function POST(nextRequest: NextRequest) {
     if (encryptedJwt !== undefined) {
       const profileUpdateData: ProfileUpdateData = await nextRequest.json();
 
-      const { payload, protectedHeader } = await jwtDecrypt(encryptedJwt, DecodeHex(process.env.SECRET_KEY!), {
+      const { payload} = await jwtDecrypt(encryptedJwt, DecodeHex(process.env.SECRET_KEY!), {
         issuer: "https://satupassword.com",
         audience: "https://satupassword.com",
       });
