@@ -80,8 +80,6 @@ function LoginForm() {
     });
     const json = await response.json();
 
-    // DEBUG RESPONSE
-    console.log("DEBUG")
     // Catch HTTP Response Errors
     if (!response.ok) {
       const responseError = Response.error();
