@@ -1,7 +1,7 @@
 "use client";
 
 import { Separator } from "@components/ui/separator";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Input } from "@components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@components/ui/button";
@@ -24,10 +24,12 @@ import EditProfileForm from "@components/profile/profile-form";
 import { useRouter } from "next/navigation";
 
 export default function Profile() {
+  const isCalled = useRef(false);
+
   const { toast } = useToast();
   const router = useRouter();
   // Dialog open UseState
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
   const [data, setData] = useState({
     email: "",
     password: "",
@@ -91,8 +93,8 @@ export default function Profile() {
         console.log(json.profile);
         setData(json.profile);
         // Set the values of the input fields
-        const emailFiled = document.getElementById("email")
-        const fullNameField = document.getElementById("fullName")
+        const emailFiled = document.getElementById("email");
+        const fullNameField = document.getElementById("fullName");
         // set the value of the input fields if they are not null
         if (emailFiled !== null) emailFiled.setAttribute("value", json.profile.email);
         if (fullNameField !== null) fullNameField.setAttribute("value", json.profile.name);
@@ -102,18 +104,24 @@ export default function Profile() {
         } else {
           console.error("Error fetching data:", error);
           // Set the values of the input fields
-          const emailFiled = document.getElementById("email")
-          const fullNameField = document.getElementById("fullName")
+          const emailFiled = document.getElementById("email");
+          const fullNameField = document.getElementById("fullName");
           // set the value of the input fields if they are not null
           if (emailFiled !== null) emailFiled.setAttribute("value", "Error fetching data");
           if (fullNameField !== null) fullNameField.setAttribute("value", "Error fetching data");
         }
       }
     };
-    fetchData().then(() => console.log("Fetched data"));
+
+    if (!isCalled.current) {
+      console.log("fetch from useeffect");
+      fetchData().then(() => console.log("Fetched data"));
+    }
+
     // Cleanup function to abort fetch when component unmounts
     return () => {
-      abortController.abort();
+      isCalled.current = true;
+      //abortController.abort();
     };
   }, []); // The empty dependency array ensures the effect runs once on component mount
 

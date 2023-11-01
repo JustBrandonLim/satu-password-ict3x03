@@ -18,7 +18,7 @@ export async function GET(nextRequest: NextRequest) {
 
       const login = await GetPrismaClient().login.findUniqueOrThrow({
         where: {
-          email: payload.email as string,
+          id: payload.id as number,
         },
       });
 
@@ -34,7 +34,6 @@ export async function GET(nextRequest: NextRequest) {
     logger.info(`Action :RetrieveProfile Message: No JWT Token. Profile Retrieve not successful.`);
     return NextResponse.json({ message: "Something went wrong!" }, { status: 400 });
   } catch {
-
     logger.info(`Action :RetrieveProfile Message: Internal Server Error`);
     return NextResponse.json({ message: "Something went wrong!" }, { status: 500 });
   }
@@ -112,7 +111,6 @@ export async function POST(nextRequest: NextRequest) {
     logger.info(`Action :UpdateProfile Message: No JWT Token. Profile Update not successful.`);
     return NextResponse.json({ message: "Something went wrong!" }, { status: 400 });
   } catch {
-
     logger.info(`Action :UpdateProfile Message: Internal Server Error`);
     return NextResponse.json({ message: "Something went wrong!" }, { status: 500 });
   }
@@ -140,7 +138,6 @@ export async function DELETE(nextRequest: NextRequest) {
 
     return NextResponse.json({ message: "Something went wrong!" }, { status: 400 });
   } catch {
-
     logger.info(`Action :DeleteProfile Message: Internal Server Error`);
     return NextResponse.json({ message: "Something went wrong!" }, { status: 500 });
   }
