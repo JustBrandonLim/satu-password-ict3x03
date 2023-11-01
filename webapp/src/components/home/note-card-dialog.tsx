@@ -56,9 +56,6 @@ const NoteCardDialog: React.FC<NoteCardDialogProps> = ({
     let id = noteData.id;
     let title = data.title;
     let note = data.note;
-    console.log(id);
-    console.log(title);
-    console.log(note);
     async function SaveNote() {
       const response = await fetch(`api/vault/update/note`, {
         method: "POST",

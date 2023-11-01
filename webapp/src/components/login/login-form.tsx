@@ -69,7 +69,6 @@ function LoginForm() {
     // Do something with the form values.
     console.log("Login Form Submitted");
     setIsLoading(true)
-    console.log(data);
     let email = data.email;
     let password = data.password;
     let otp = data.otp;
@@ -81,13 +80,8 @@ function LoginForm() {
     });
     const json = await response.json();
 
-    // DEBUG RESPONSE
-    console.log("DEBUG")
-    console.log(response)
-    console.log(json)
     // Catch HTTP Response Errors
     if (!response.ok) {
-      console.log(response);
       const responseError = Response.error();
       toast({
         variant: "destructive",
@@ -96,8 +90,6 @@ function LoginForm() {
       })
     }
     else{
-      console.log(response)
-      console.log(json)
       toast({
         variant: "default",
         title: "Success!",
@@ -121,8 +113,6 @@ function LoginForm() {
     setIsLoading(true)
     // For Debugging
     console.log("Recover Form Submitted")
-    console.log(data)
-    console.log(typeof data)
     setTimeout(()=>{setIsLoading(false)}, 1000);
   }
 

@@ -84,15 +84,12 @@ function EditProfileForm({ data, setOpenDialog }: ProfileFormProps) {
 
         if ((response.ok))  {
             setIsLoading(false)
-            console.log(json);
             toast({
                 variant: "default",
                 title: "Success!",
             })
         }
         else{
-            console.log(response)
-            console.log(json);
             toast({
                 variant: "destructive",
                 title: "Uh oh! Something went wrong.",

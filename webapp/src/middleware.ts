@@ -1,7 +1,25 @@
 import { NextRequest, NextResponse } from "next/server";
 
-
 export async function middleware(nextRequest: NextRequest) {
+  const nonce = Buffer.from(crypto.randomUUID()).toString("base64");
+  const cspHeader = `
+    default-src 'self';
+    script-src 'unsafe-inline' 'self' 'unsafe-eval';
+    style-src 'unsafe-inline' 'self' https://fonts.googleapis.com;
+    img-src 'self' blob: data:;
+    font-src 'self' https://fonts.gstatic.com;
+    object-src 'none';
+    base-uri 'self';
+    form-action 'self';
+    frame-ancestors 'none';
+    block-all-mixed-content;
+    upgrade-insecure-requests;
+`;
+
+  const requestHeaders = new Headers(nextRequest.headers);
+  requestHeaders.set("x-nonce", nonce);
+  requestHeaders.set("Content-Security-Policy", cspHeader.replace(/\s{2,}/g, " ").trim());
+
   const encryptedJwt = nextRequest.cookies.get("encryptedjwt")?.value;
 
   switch (nextRequest.nextUrl.pathname) {
@@ -18,19 +36,24 @@ export async function middleware(nextRequest: NextRequest) {
         if (checkResponse.ok) {
           const checkResponseData = await checkResponse.json();
 
-          const nextResponse: NextResponse = NextResponse.redirect(new URL("/home", nextRequest.url));
+          const nextResponse: NextResponse = NextResponse.redirect(new URL("/home", nextRequest.url), {
+            headers: requestHeaders,
+          });
           nextResponse.cookies.set("encryptedjwt", checkResponseData.newEncryptedJwt, {
             httpOnly: true,
             sameSite: "strict",
             secure: true,
           });
 
-
           return nextResponse;
         } else {
-          const nextResponse: NextResponse = NextResponse.next();
+          const nextResponse: NextResponse = NextResponse.next({
+            headers: requestHeaders,
+            request: {
+              headers: requestHeaders,
+            },
+          });
           nextResponse.cookies.delete("encryptedjwt");
-
 
           return nextResponse;
         }
@@ -50,21 +73,24 @@ export async function middleware(nextRequest: NextRequest) {
         if (checkResponse.ok) {
           const checkResponseData = await checkResponse.json();
 
-          const nextResponse: NextResponse = NextResponse.next();
+          const nextResponse: NextResponse = NextResponse.next({
+            headers: requestHeaders,
+            request: {
+              headers: requestHeaders,
+            },
+          });
           nextResponse.cookies.set("encryptedjwt", checkResponseData.newEncryptedJwt, {
             httpOnly: true,
             sameSite: "strict",
             secure: true,
           });
 
-
-
           return nextResponse;
         } else {
-          const nextResponse: NextResponse = NextResponse.redirect(new URL("/", nextRequest.url));
+          const nextResponse: NextResponse = NextResponse.redirect(new URL("/", nextRequest.url), {
+            headers: requestHeaders,
+          });
           nextResponse.cookies.delete("encryptedjwt");
-
-
 
           return nextResponse;
         }
@@ -93,26 +119,45 @@ export async function middleware(nextRequest: NextRequest) {
         if (checkResponse.ok) {
           const checkResponseData = await checkResponse.json();
 
-          const nextResponse: NextResponse = NextResponse.next();
+          const nextResponse: NextResponse = NextResponse.next({
+            headers: requestHeaders,
+            request: {
+              headers: requestHeaders,
+            },
+          });
           nextResponse.cookies.set("encryptedjwt", checkResponseData.newEncryptedJwt, {
             httpOnly: true,
             sameSite: "strict",
             secure: true,
           });
 
-
           return nextResponse;
         } else {
-          const nextResponse: NextResponse = NextResponse.json({ message: "Something went wrong!" }, { status: 400 });
+          const nextResponse: NextResponse = NextResponse.json(
+            { message: "Something went wrong!" },
+            {
+              status: 400,
+              headers: requestHeaders,
+            }
+          );
           nextResponse.cookies.delete("encryptedjwt");
-
-
 
           return nextResponse;
         }
       }
-      return NextResponse.json({ message: "Something went wrong!" }, { status: 400 });
+      return NextResponse.json(
+        { message: "Something went wrong!" },
+        {
+          status: 400,
+          headers: requestHeaders,
+        }
+      );
   }
 
-  return NextResponse.next();
+  return NextResponse.next({
+    headers: requestHeaders,
+    request: {
+      headers: requestHeaders,
+    },
+  });
 }

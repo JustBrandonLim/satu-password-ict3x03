@@ -5,6 +5,7 @@ import { jwtDecrypt, EncryptJWT } from "jose";
 import { DecodeHex } from "@libs/enc-dec";
 import { HashPassword, GenerateNewWrappingKey, EncryptAES } from "@libs/crypto";
 import { GetPrismaClient } from "@libs/prisma";
+import logger from "@libs/logger";
 
 export async function GET(nextRequest: NextRequest) {
   try {
@@ -17,7 +18,7 @@ export async function GET(nextRequest: NextRequest) {
 
       const login = await GetPrismaClient().login.findUniqueOrThrow({
         where: {
-          email: payload.email as string,
+          id: payload.id as number,
         },
       });
 
@@ -27,10 +28,13 @@ export async function GET(nextRequest: NextRequest) {
         },
       });
 
+      logger.info(`User: ${payload.email} Action: RetrieveProfile Message: Profile Retrieved Sucessfully.`);
       return NextResponse.json({ message: "Successful!", profile: { id: login.id, email: login.email, name: user.name } }, { status: 200 });
     }
+    logger.info(`Action :RetrieveProfile Message: No JWT Token. Profile Retrieve not successful.`);
     return NextResponse.json({ message: "Something went wrong!" }, { status: 400 });
   } catch {
+    logger.info(`Action :RetrieveProfile Message: Internal Server Error`);
     return NextResponse.json({ message: "Something went wrong!" }, { status: 500 });
   }
 }
@@ -100,11 +104,14 @@ export async function POST(nextRequest: NextRequest) {
         secure: true,
       });
 
+      logger.info(`User: ${payload.id} Action: UpdateProfile Message: Profile Updated Sucessfully.`);
       return nextResponse;
     }
 
+    logger.info(`Action :UpdateProfile Message: No JWT Token. Profile Update not successful.`);
     return NextResponse.json({ message: "Something went wrong!" }, { status: 400 });
   } catch {
+    logger.info(`Action :UpdateProfile Message: Internal Server Error`);
     return NextResponse.json({ message: "Something went wrong!" }, { status: 500 });
   }
 }
@@ -125,11 +132,13 @@ export async function DELETE(nextRequest: NextRequest) {
         },
       });
 
+      logger.info(`User: ${payload.id} Action: DeleteProfile Message: Profile Deleted Sucessfully.`);
       return NextResponse.json({ message: "Successful!" }, { status: 200 });
     }
 
     return NextResponse.json({ message: "Something went wrong!" }, { status: 400 });
   } catch {
+    logger.info(`Action :DeleteProfile Message: Internal Server Error`);
     return NextResponse.json({ message: "Something went wrong!" }, { status: 500 });
   }
 }

@@ -5,7 +5,6 @@ import { Prisma } from "@prisma/client";
 import { GetPrismaClient } from "@libs/prisma";
 import logger from "@libs/logger";
 
-
 interface RegisterData {
   email: string;
   password: string;
@@ -53,7 +52,6 @@ export async function POST(nextRequest: NextRequest) {
   } catch (exception) {
     if (exception instanceof Prisma.PrismaClientKnownRequestError) {
       if (exception.code === "P2002") {
-    
         logger.info(`Category: RegistrationAttempt Message: Email is already registered ActionTaken : Registration request denied.`);
         return NextResponse.json({ message: "Email already exists!" }, { status: 400 });
       }

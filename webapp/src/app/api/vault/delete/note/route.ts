@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { jwtDecrypt } from "jose";
 import { DecodeHex } from "@libs/enc-dec";
 import { GetPrismaClient } from "@libs/prisma";
+import logger from "@libs/logger";
 
 interface VaultDeleteNoteData {
   id: number;
@@ -32,11 +33,14 @@ export async function POST(nextRequest: NextRequest) {
         },
       });
 
+      logger.info(`User: ${payload.id} Message: Note deleted successfully.`);
       return NextResponse.json({ message: "Successful!" }, { status: 200 });
     }
+    logger.info(`Action: DeleteNote Message: No JWT Token. Note delete not successful`);
 
     return NextResponse.json({ message: "Something went wrong!" }, { status: 400 });
   } catch {
+    logger.info(`Action :DeleteNote Message: Internal Server Error`);
     return NextResponse.json({ message: "Something went wrong!" }, { status: 500 });
   }
 }

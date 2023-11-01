@@ -44,7 +44,7 @@ export default function PasswordCard(props: PasswordCardProps) {
     if (response.ok) {
       setDecryptedPassword(json);
     } else {
-      console.log(json);
+      console.error("An unexpected error occurred");
     }
   };
 
