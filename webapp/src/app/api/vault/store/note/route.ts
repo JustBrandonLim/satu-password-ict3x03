@@ -3,6 +3,7 @@ import { jwtDecrypt } from "jose";
 import { DecodeHex } from "@libs/enc-dec";
 import { EncryptAES } from "@libs/crypto";
 import { GetPrismaClient } from "@libs/prisma";
+import logger from "@libs/logger";
 
 interface VaultStoreNoteData {
   title: string;
@@ -35,11 +36,15 @@ export async function POST(nextRequest: NextRequest) {
         },
       });
 
+      logger.info(`User ID: ${payload.id} Action: StoreNotes Message: Notes Stored successful`);
       return NextResponse.json({ message: "Successful!" }, { status: 200 });
     }
 
+    logger.info(`Action :StoreNote Message: No JWT Token. Store Note not successful`);
     return NextResponse.json({ message: "Something went wrong!" }, { status: 400 });
   } catch {
+
+    logger.info(`Action :StoreNote Message: Internal Server Error`);
     return NextResponse.json({ message: "Something went wrong!" }, { status: 500 });
   }
 }
