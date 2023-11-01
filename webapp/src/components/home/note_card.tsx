@@ -40,7 +40,7 @@ export default function NoteCard(props: NoteCardProps) {
     if (response.ok) {
       setDecryptedNote(json);
     } else {
-      console.log("An unexpected error occurred");
+      console.error("An unexpected error occurred");
     }
   };
 
