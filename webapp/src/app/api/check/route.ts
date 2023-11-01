@@ -47,6 +47,8 @@ export async function GET(nextRequest: NextRequest) {
       return NextResponse.json({ message: "Successful!", newEncryptedJwt: newEncryptedJwt }, { status: 200 });
     }
 
+    console.log("no token??");
+
     return NextResponse.json({ message: "Something went wrong!" }, { status: 400 });
   } catch (exception) {
     if (exception instanceof Prisma.PrismaClientKnownRequestError) {
