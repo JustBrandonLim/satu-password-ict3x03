@@ -60,7 +60,6 @@ const GeneratePasswordForm: React.FC<GeneratePasswordFormProps> = ({updatePasswo
     })
     // 2. Define a submit handler.
     async function onGenerate(data: z.infer<typeof generatePasswordFormSchema>) {
-        console.log(data)
         // Declare Variables to be submitted on post request
         let passwordLength = data.passwordLength
         let uppercase = data.uppercase
@@ -83,14 +82,12 @@ const GeneratePasswordForm: React.FC<GeneratePasswordFormProps> = ({updatePasswo
             const json = await response.json();
 
             if (!response.ok) {
-                console.log(response);
                 toast({
                     variant: "destructive",
                     title: "Error",
                     description: `Request Error: ${response.status} ${response.statusText}, ${json.message}`
                 })
             } else {
-                console.log(json)
                 toast({
                     variant: "default",
                     title: "Success!",
