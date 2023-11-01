@@ -49,7 +49,6 @@ export default function Vault() {
         headers: { "Content-Type": "application/json" },
       });
       const json = await response.json();
-      console.log(json.profile);
       setFullName(json.profile.name);
     }
     catch (error: any) {
