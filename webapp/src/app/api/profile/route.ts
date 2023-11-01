@@ -28,14 +28,14 @@ export async function GET(nextRequest: NextRequest) {
         },
       });
 
-      logger.info(`User: ${payload.email} Action: CreateProfile Message: Profile Retrieved Sucessfully.`);
+      logger.info(`User: ${payload.email} Action: RetrieveProfile Message: Profile Retrieved Sucessfully.`);
       return NextResponse.json({ message: "Successful!", profile: { id: login.id, email: login.email, name: user.name } }, { status: 200 });
     }
     logger.info(`Action :RetrieveProfile Message: No JWT Token. Profile Retrieve not successful.`);
     return NextResponse.json({ message: "Something went wrong!" }, { status: 400 });
   } catch {
 
-    logger.info(`Action :RestrieveProfile Message: Internal Server Error`);
+    logger.info(`Action :RetrieveProfile Message: Internal Server Error`);
     return NextResponse.json({ message: "Something went wrong!" }, { status: 500 });
   }
 }

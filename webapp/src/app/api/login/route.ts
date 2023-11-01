@@ -93,6 +93,7 @@ export async function POST(nextRequest: NextRequest) {
     });
 
     if (totalFailedAttempts >= 3) {
+      logger.info(`User: ${loginData.email} Action: Login  Message: This account has been locked for 15 minutes!`);
       return NextResponse.json({ message: `This account has been locked for 15 minutes.` }, { status: 400 });
     }
 
