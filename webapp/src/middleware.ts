@@ -94,7 +94,12 @@ export async function middleware(nextRequest: NextRequest) {
 
             return nextResponse;
           } else {
-            console.log("no token");
+            console.log("resposne not ok from check");
+
+            console.log(checkResponse.status);
+            const checkResponseTestData = await checkResponse.json();
+
+            console.log(checkResponseTestData);
 
             const nextResponse: NextResponse = NextResponse.redirect(new URL("/", nextRequest.url), {
               headers: requestHeaders,
