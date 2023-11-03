@@ -83,12 +83,10 @@ export default function Vault() {
       await FetchProfile();
       await FetchPasswordData();
       await FetchNotesData();
-      console.log("inside fetch-data");
     };
 
     if (!isCalled.current) {
-      FetchData().then(() => console.log("Data fetched"));
-      console.log("CALLED");
+      FetchData();
     }
 
     // Cleanup function to abort fetch when component unmounts
@@ -98,11 +96,11 @@ export default function Vault() {
   }, []);
 
   async function refreshPasswordVault() {
-    await FetchPasswordData().then(() => console.log("Password data fetched"));
+    await FetchPasswordData();
   }
 
   async function refreshNoteVault() {
-    await FetchNotesData().then(() => console.log("Note data fetched"));
+    await FetchNotesData();
   }
 
   function handleCreation() {
