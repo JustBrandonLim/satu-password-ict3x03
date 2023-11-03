@@ -84,7 +84,6 @@ function RegisterForm() {
   
   const onRegister = async (data: z.infer<typeof RegisterFormSchema>) => {
     // For Debugging
-    console.log("Register Form Submitted")
     setIsLoading(true)
 
     let name = data.name
