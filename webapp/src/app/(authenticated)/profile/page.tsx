@@ -41,7 +41,6 @@ export default function Profile() {
     navigator.clipboard
       .writeText(text)
       .then(() => {
-        console.log("Copied to clipboard");
         setTimeout(() => {}, 2000); // Reset copied state after 2 seconds
         toast({
           title: "Copied to clipboard",
@@ -58,19 +57,16 @@ export default function Profile() {
 
   // Delete on delete button click
   function DeleteButton() {
-    console.log("Delete Button Clicked");
     fetch(`/api/profile`, {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
     }).then((response) => {
       if (response.ok) {
-        console.log("User deleted");
         toast({
           title: "User deleted",
         });
         router.push("/");
       } else {
-        console.log("Error deleting user");
         toast({
           variant: "destructive",
           title: "Something went wrong",
@@ -88,7 +84,6 @@ export default function Profile() {
           headers: { "Content-Type": "application/json" },
         });
         const json = await response.json();
-        console.log(json.profile);
         setData(json.profile);
         // Set the values of the input fields
         const emailFiled = document.getElementById("email");
@@ -108,8 +103,7 @@ export default function Profile() {
     };
 
     if (!isCalled.current) {
-      console.log("fetch from use-effect");
-      fetchData().then(() => console.log("Fetched data"));
+      fetchData();
     }
 
     // Cleanup function to abort fetch when component unmounts
