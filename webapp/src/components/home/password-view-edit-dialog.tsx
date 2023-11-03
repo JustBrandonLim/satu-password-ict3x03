@@ -150,14 +150,13 @@ const PasswordViewEditCard: React.FC<PasswordCardDetailsProps> = ({
         })
       }
     }
-    DeletePassword().then(() => {console.log("Password Deleted")});
+    DeletePassword();
   }
 
   // Copy Button Functionality
   function CopyButton(text: string) {
     navigator.clipboard.writeText(text)
         .then(() => {
-          console.log('Copied to clipboard');
           setTimeout(() => {}, 2000); // Reset copied state after 2 seconds
           toast({
             title: "Copied to clipboard",
