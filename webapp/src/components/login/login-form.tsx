@@ -81,11 +81,10 @@ function LoginForm() {
 
     // Catch HTTP Response Errors
     if (!response.ok) {
-      const responseError = Response.error();
       toast({
         variant: "destructive",
         title: "Error",
-        description: `Request Error: ${response.status} ${response.statusText}, ${responseError.body}`
+        description: `Request Error: ${response.status} ${response.statusText}, ${json.message}`
       })
     }
     else{
@@ -183,69 +182,15 @@ function LoginForm() {
               </FormItem> 
             )}
           />
-          {/* Remember Me Checkbox */}
-          <div className="flex justify-between px-1 pb-8">
-            <FormField control={loginForm.control}
-            name="rememberMe"
-            render={({ field }) => (
-              <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md">
-                <FormControl>
-                  <Checkbox checked={field.value} onCheckedChange={field.onChange}/>
-                </FormControl>
-                <div className="space-y-1 leading-none">
-                  <FormLabel>
-                    Remember Me
-                  </FormLabel>
-                </div>
-              </FormItem>
-            )}/>
-            {/* Forget and Recover Password Dialog */}
-            <Dialog>
-              <DialogTrigger className="text-character-secondary text-sm hover:underline">Forgot your password?</DialogTrigger>
-                <DialogContent>
-                  <DialogHeader>
-                    <DialogTitle>Recover your account</DialogTitle>
-                    <DialogDescription className="text-character-secondary">
-                      Please enter in your email address associated with your account
-                    </DialogDescription>
-                  </DialogHeader>
-                  {/* Recover Form */}
-                  <Form {...recoverForm}>
-                    <form className="w-full space-y-3" >
-                      {/* Recover Email Field */}
-                      <FormField
-                        control={recoverForm.control}
-                        name="email"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Username</FormLabel>
-                            <FormControl>
-                              <Input placeholder="Enter Email" type="email" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormDescription className="text-character-secondary">
-                        A recovery email will be sent if such an account exists
-                      </FormDescription> 
-                      {/* Revere Form Submit */}
-                      <Button type="button" className={`w-full ${isLoading ? 'hidden' : ''}`} onClick={recoverForm.handleSubmit(onRecover)}>Recover</Button>
-                      <Button disabled className={`w-full ${isLoading ? '' : 'hidden'}`}>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Please wait
-                      </Button>
-                    </form>
-                  </Form>
-                </DialogContent>
-            </Dialog>
-          </div>
+
           {/* Login Button */}
-        <Button type="submit" className={`w-full ${isLoading ? 'hidden' : ''}`}>Login</Button>
-        <Button disabled className={`w-full ${isLoading ? '' : 'hidden'}`}>
-          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-          Please wait
-        </Button>
+          <div className={'pt-4'}>
+              <Button type="submit" className={`w-full ${isLoading ? 'hidden' : ''}`}>Login</Button>
+              <Button disabled className={`w-full ${isLoading ? '' : 'hidden'}`}>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Please wait
+              </Button>
+          </div>
       </form>
       <p className="mt-16 font-medium text-center text-sm pb-5 text-black">
         New to SatuPassword?{"   "}
