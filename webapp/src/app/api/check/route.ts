@@ -40,7 +40,7 @@ export async function GET(nextRequest: NextRequest) {
         .setIssuer("https://satupassword.com")
         .setAudience("https://satupassword.com")
         .setIssuedAt()
-        .setExpirationTime("30m")
+        .setExpirationTime("3m")
         .encrypt(DecodeHex(process.env.SECRET_KEY!));
 
       return NextResponse.json({ message: "Successful!", newEncryptedJwt: newEncryptedJwt }, { status: 200 });
