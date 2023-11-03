@@ -67,7 +67,6 @@ function LoginForm() {
   // Handle login form submit
   async function onLoginSubmit(data: z.infer<typeof formSchema>) {
     // Do something with the form values.
-    console.log("Login Form Submitted");
     setIsLoading(true)
     let email = data.email;
     let password = data.password;
@@ -112,7 +111,6 @@ function LoginForm() {
   const onRecover = async (data: z.infer<typeof RecoverFormSchema>) => {
     setIsLoading(true)
     // For Debugging
-    console.log("Recover Form Submitted")
     setTimeout(()=>{setIsLoading(false)}, 1000);
   }
 
