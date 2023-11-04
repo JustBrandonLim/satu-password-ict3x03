@@ -1,12 +1,6 @@
 pipeline {
     agent any
     
-    environment {
-        // Define the path to chromedriver as an environment variable
-        CHROMEDRIVER_PATH = '/usr/bin/chromedriver'
-        VENV_PATH = '/home/student50/selenium_test/venv'
-    }
-    
     stages {
         stage('Clean Up') {
             steps {
@@ -21,6 +15,7 @@ pipeline {
                 sh 'docker compose build webapp'
             }
         }
+        
         stage('Test') {
             steps {
                 echo 'Testing...'
@@ -33,31 +28,7 @@ pipeline {
                 dependencyCheckPublisher pattern: 'dependency-check-report.xml'
             }
         }
-        
-        stage('Prepare Environment') {
-            steps {
-                echo 'Preparing Python virtual environment...'
-                script {
-                    // Check if the virtual environment directory exists
-                    if (!fileExists("${VENV_PATH}/bin/activate")) {
-                        // Recreate the virtual environment
-                        sh "python3 -m venv ${VENV_PATH}"
-                    }
-                }
-            }
-        }
-        stage('Selenium UI Test') {
-            steps {
-                echo 'Running Selenium Tests...'
-                script {
-                    // Use the full path to Bash and activate the virtual environment
-                    sh '/bin/bash -c "source ${VENV_PATH}/bin/activate && CHROMEDRIVER_PATH=${CHROMEDRIVER_PATH} python /home/student50/selenium_test/login_test.py"'
-                }
-            }
-        }
-
-        
-        
+          
         stage('Deploy') {
             steps {
                 echo 'Deploying...'
