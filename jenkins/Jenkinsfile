@@ -9,6 +9,17 @@ pipeline {
                 sh 'docker image prune -f --filter "dangling=true"'
             }
         }
+        
+        stage('Unit Test') {
+            steps {
+                echo 'Building test...'
+                sh 'docker build --build-arg="ENV_VALUE=DEV" -t webapp-test .'
+                echo 'Running test...'
+                sh 'docker run --rm --name webapp-test -t webapp-test'
+                sh 'docker rmi webapp-test'
+            }
+        }
+
         stage('Build') {
             steps {
                 echo 'Building...'
