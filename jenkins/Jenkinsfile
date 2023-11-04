@@ -33,6 +33,7 @@ pipeline {
                 dependencyCheckPublisher pattern: 'dependency-check-report.xml'
             }
         }
+        
         stage('Prepare Environment') {
             steps {
                 echo 'Preparing Python virtual environment...'
