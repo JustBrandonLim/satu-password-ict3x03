@@ -1,10 +1,14 @@
 from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import pyotp
 import time
 import selenium.common.exceptions
+
+# Path to chromium-chromedriver
+chromedriver_path = '/usr/bin/chromedriver'  # or the path where chromium-chromedriver is located
 
 # Initialize WebDriver with headless option
 options = webdriver.ChromeOptions()
@@ -13,7 +17,12 @@ options.add_argument('--ignore-certificate-errors')
 options.add_argument('--headless')  # Run Chrome in headless mode
 options.add_argument('--no-sandbox')  # Bypass OS security model, required for headless mode
 options.add_argument('--disable-dev-shm-usage')  # Overcome limited resource problems
-driver = webdriver.Chrome(options=options)
+
+# Set up service to point to chromium-chromedriver
+service = Service(chromedriver_path)
+
+# Initialize the driver with the service and options
+driver = webdriver.Chrome(service=service, options=options)
 
 # Flag to track success
 test_successful = False
