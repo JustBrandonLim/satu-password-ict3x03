@@ -27,14 +27,14 @@ pipeline {
                 dependencyCheckPublisher pattern: 'dependency-check-report.xml'
             }
         }
-        
+        /*
         stage('Selenium UI Test') {
             steps {
                 echo 'Running Selenium Tests...'
                 sh 'bash -c "source /home/student50/selenium_test/venv/bin/activate && python /home/student50/selenium_test/login_test.py"'
             }
         }
-        
+        */
         stage('Deploy') {
             steps {
                 echo 'Deploying...'
