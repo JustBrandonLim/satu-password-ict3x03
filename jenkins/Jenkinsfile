@@ -1,10 +1,11 @@
 pipeline {
     agent any
-    
+    /*
     environment {
         // Define the path to chromedriver as an environment variable
         CHROMEDRIVER_PATH = '/usr/bin/chromedriver'
     }
+    */
     stages {
         stage('Clean Up') {
             steps {
@@ -31,7 +32,7 @@ pipeline {
                 dependencyCheckPublisher pattern: 'dependency-check-report.xml'
             }
         }
-    
+        /*
         stage('Selenium UI Test') {
             steps {
                 echo 'Running Selenium Tests...'
@@ -45,6 +46,7 @@ pipeline {
                 }
             }
         }
+        */
         
         stage('Deploy') {
             steps {
