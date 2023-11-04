@@ -31,11 +31,8 @@ pipeline {
         stage('Selenium UI Test') {
             steps {
                 echo 'Running Selenium Tests...'
-                sh 'source /home/student50/selenium_test/venv/bin/activate'
-                dir('/home/student50/selenium_test') {
-                    // Run the Selenium test script
-                    sh 'python login_test.py'
-                }
+                // Use the Bash shell to source the virtual environment
+                sh 'bash -c "source /home/student50/selenium_test/venv/bin/activate && python /home/student50/selenium_test/login_test.py"'
             }
         }
         
