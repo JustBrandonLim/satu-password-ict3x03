@@ -19,4 +19,7 @@ RUN yarn build
 
 RUN chmod u+x run.sh
 
+ARG ENV_VALUE=PROD
+ENV ENVIRONMENT=$ENV_VALUE
+
 CMD [ "./run.sh" ]

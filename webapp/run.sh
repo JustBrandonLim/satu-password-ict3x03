@@ -1,4 +1,4 @@
-if [ ${ENV} = "DEV" ]; then 
+if [ ${ENVIRONMENT} = "DEV" ]; then 
     yarn test
 else
     yarn start
