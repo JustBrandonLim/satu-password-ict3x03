@@ -6,7 +6,7 @@ import {
   GenerateRandomKey,
   EncryptAES,
   DecryptAES,
-} from "../libs/crypto.ts";
+} from "@libs/crypto";
 
 import { randomBytes } from "crypto";
 
