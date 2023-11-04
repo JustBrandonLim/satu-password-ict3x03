@@ -19,7 +19,7 @@ ARG ENV_VALUE=PROD
 ENV ENVIRONMENT=$ENV_VALUE
 
 RUN if [ "$ENVIRONMENT" = "PROD" ]; then \
-        yarn build
+        yarn build \
     fi
 
 RUN chmod u+x run.sh
