@@ -1,6 +1,10 @@
 pipeline {
     agent any
-
+    
+    environment {
+        // Define the path to chromedriver as an environment variable
+        CHROMEDRIVER_PATH = '/usr/bin/chromedriver'
+    }
     stages {
         stage('Clean Up') {
             steps {
@@ -27,14 +31,21 @@ pipeline {
                 dependencyCheckPublisher pattern: 'dependency-check-report.xml'
             }
         }
-        /*
+    
         stage('Selenium UI Test') {
             steps {
                 echo 'Running Selenium Tests...'
-                sh 'bash -c "source /home/student50/selenium_test/venv/bin/activate && python /home/student50/selenium_test/login_test.py"'
+                // Activate the virtual environment and run the test script
+                // Pass the CHROMEDRIVER_PATH environment variable to the script
+                script {
+                    sh '''
+                    source /home/student50/selenium_test/venv/bin/activate
+                    CHROMEDRIVER_PATH=${CHROMEDRIVER_PATH} python /home/student50/selenium_test/login_test.py
+                    '''
+                }
             }
         }
-        */
+        
         stage('Deploy') {
             steps {
                 echo 'Deploying...'
