@@ -15,11 +15,15 @@ EXPOSE 3000
 
 RUN yarn prisma generate
 
-RUN yarn build
+ARG ENV_VALUE=PROD
+ENV ENVIRONMENT=$ENV_VALUE
+
+RUN if [ "$ENVIRONMENT" = "PROD" ]; then \
+        yarn build
+    fi
 
 RUN chmod u+x run.sh
 
-ARG ENV_VALUE=PROD
-ENV ENVIRONMENT=$ENV_VALUE
+
 
 CMD [ "./run.sh" ]

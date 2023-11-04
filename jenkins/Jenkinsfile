@@ -13,7 +13,7 @@ pipeline {
         stage('Unit Test') {
             steps {
                 echo 'Building test...'
-                sh 'docker compose build webapp --build-arg="ENV_VALUE=DEV" webapp'
+                sh 'docker compose build webapp --build-arg="ENV_VALUE=TEST" webapp'
                 echo 'Running test...'
                 sh 'docker compose up webapp'
                 sh 'docker system prune -a -f'
