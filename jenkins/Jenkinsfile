@@ -6,7 +6,7 @@ pipeline {
             steps {
                 echo "Cleaning up..."
                 sh 'docker compose down webapp'
-                sh 'docker image prune -f --filter "dangling=true"'
+                sh 'docker system prune -a -f'
             }
         }
         
@@ -16,7 +16,7 @@ pipeline {
                 sh 'docker compose build webapp --build-arg="ENV_VALUE=DEV" webapp'
                 echo 'Running test...'
                 sh 'docker compose up webapp'
-                sh 'docker rmi webapp -f'
+                sh 'docker system prune -a -f'
             }
         }
 
