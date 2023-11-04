@@ -1,8 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
-import { HashPassword, GenerateNewWrappingKey, GenerateRandomKey, EncryptAES } from "@libs/crypto";
+import {
+  HashPassword,
+  GenerateNewWrappingKey,
+  GenerateRandomKey,
+  EncryptAES,
+} from "@libs/crypto";
 import { authenticator } from "otplib";
 import { Prisma } from "@prisma/client";
-import { GetPrismaClient } from "@libs/prisma";
+import prisma from "@libs/prisma";
 import logger from "@libs/logger";
 
 interface RegisterData {
@@ -15,18 +20,22 @@ export async function POST(nextRequest: NextRequest) {
   try {
     const registerData: RegisterData = await nextRequest.json();
 
-    const [hashedPassword, hashedPasswordSalt] = HashPassword(registerData.password);
+    const [hashedPassword, hashedPasswordSalt] = HashPassword(
+      registerData.password
+    );
 
     const totpSecret = authenticator.generateSecret();
 
-    const [wrappingKey, wrappingKeySalt] = GenerateNewWrappingKey(registerData.password);
+    const [wrappingKey, wrappingKeySalt] = GenerateNewWrappingKey(
+      registerData.password
+    );
 
     const masterKey = GenerateRandomKey();
 
     const encryptedMasterKey = EncryptAES(masterKey, wrappingKey);
 
-    await GetPrismaClient()
-      .login.create({
+    await prisma.login
+      .create({
         data: {
           email: registerData.email,
           hashedPassword: hashedPassword,
@@ -35,7 +44,7 @@ export async function POST(nextRequest: NextRequest) {
         },
       })
       .then(async (loginData) => {
-        await GetPrismaClient().user.create({
+        await prisma.user.create({
           data: {
             name: registerData.name,
             encryptedMasterKey: encryptedMasterKey,
@@ -45,18 +54,35 @@ export async function POST(nextRequest: NextRequest) {
         });
       });
 
-    const otpUrl = authenticator.keyuri(registerData.name, "SatuPassword", totpSecret);
+    const otpUrl = authenticator.keyuri(
+      registerData.name,
+      "SatuPassword",
+      totpSecret
+    );
 
-    logger.info(`User: ${registerData.email} Message: Account created successfully.`);
-    return NextResponse.json({ message: "Successful!", otpUrl: otpUrl }, { status: 200 });
+    logger.info(
+      `User: ${registerData.email} Message: Account created successfully.`
+    );
+    return NextResponse.json(
+      { message: "Successful!", otpUrl: otpUrl },
+      { status: 200 }
+    );
   } catch (exception) {
     if (exception instanceof Prisma.PrismaClientKnownRequestError) {
       if (exception.code === "P2002") {
-        logger.info(`Category: RegistrationAttempt Message: Email is already registered ActionTaken : Registration request denied.`);
-        return NextResponse.json({ message: "Email already exists!" }, { status: 400 });
+        logger.info(
+          `Category: RegistrationAttempt Message: Email is already registered ActionTaken : Registration request denied.`
+        );
+        return NextResponse.json(
+          { message: "Email already exists!" },
+          { status: 400 }
+        );
       }
     }
 
-    return NextResponse.json({ message: "Something went wrong!" }, { status: 500 });
+    return NextResponse.json(
+      { message: "Something went wrong!" },
+      { status: 500 }
+    );
   }
 }
