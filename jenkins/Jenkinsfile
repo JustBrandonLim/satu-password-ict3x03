@@ -28,13 +28,6 @@ pipeline {
             }
         }
         
-        stage('Setup Virtual Environment') {
-            steps {
-                echo 'Setting up virtual environment...'
-                sh 'python3 -m venv /home/student50/selenium_test/venv'
-            }
-        }
-
         stage('Selenium UI Test') {
             steps {
                 echo 'Running Selenium Tests...'
