@@ -6,6 +6,7 @@ pipeline {
             steps {
                 echo "Cleaning up..."
                 sh 'docker compose down webapp'
+                sh 'docker image prune -f --filter "dangling=true"'
             }
         }
         stage('Build') {
