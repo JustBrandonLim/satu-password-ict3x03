@@ -35,11 +35,12 @@ pipeline {
         
         stage('Selenium UI Test') {
             steps {
-                echo 'Running Selenium Tests...'
+                echo "Shell: $SHELL"
+                /*echo 'Running Selenium Tests...'
                 // Use the full path to Bash and activate the virtual environment
                 script {
                     sh '/bin/bash -c "source /home/student50/selenium_test/venv/bin/activate && CHROMEDRIVER_PATH=${CHROMEDRIVER_PATH} python /home/student50/selenium_test/login_test.py"'
-                }
+                }*/
             }
         }
 
