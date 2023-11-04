@@ -4,38 +4,58 @@ import { NextRequest, NextResponse } from "next/server";
 import { jwtDecrypt, EncryptJWT } from "jose";
 import { DecodeHex } from "@libs/enc-dec";
 import { HashPassword, GenerateNewWrappingKey, EncryptAES } from "@libs/crypto";
-import { GetPrismaClient } from "@libs/prisma";
+import prisma from "@libs/prisma";
 import logger from "@libs/logger";
 
 export async function GET(nextRequest: NextRequest) {
   try {
     const encryptedJwt = nextRequest.cookies.get("encryptedjwt")?.value;
     if (encryptedJwt !== undefined) {
-      const { payload } = await jwtDecrypt(encryptedJwt, DecodeHex(process.env.SECRET_KEY!), {
-        issuer: "https://satupassword.com",
-        audience: "https://satupassword.com",
-      });
+      const { payload } = await jwtDecrypt(
+        encryptedJwt,
+        DecodeHex(process.env.SECRET_KEY!),
+        {
+          issuer: "https://satupassword.com",
+          audience: "https://satupassword.com",
+        }
+      );
 
-      const login = await GetPrismaClient().login.findUniqueOrThrow({
+      const login = await prisma.login.findUniqueOrThrow({
         where: {
           id: payload.id as number,
         },
       });
 
-      const user = await GetPrismaClient().user.findUniqueOrThrow({
+      const user = await prisma.user.findUniqueOrThrow({
         where: {
           loginId: payload.id as number,
         },
       });
 
-      logger.info(`User: ${payload.email} Action: RetrieveProfile Message: Profile Retrieved Sucessfully.`);
-      return NextResponse.json({ message: "Successful!", profile: { id: login.id, email: login.email, name: user.name } }, { status: 200 });
+      logger.info(
+        `User: ${payload.email} Action: RetrieveProfile Message: Profile Retrieved Sucessfully.`
+      );
+      return NextResponse.json(
+        {
+          message: "Successful!",
+          profile: { id: login.id, email: login.email, name: user.name },
+        },
+        { status: 200 }
+      );
     }
-    logger.info(`Action :RetrieveProfile Message: No JWT Token. Profile Retrieve not successful.`);
-    return NextResponse.json({ message: "Something went wrong!" }, { status: 400 });
+    logger.info(
+      `Action :RetrieveProfile Message: No JWT Token. Profile Retrieve not successful.`
+    );
+    return NextResponse.json(
+      { message: "Something went wrong!" },
+      { status: 400 }
+    );
   } catch {
     logger.info(`Action :RetrieveProfile Message: Internal Server Error`);
-    return NextResponse.json({ message: "Something went wrong!" }, { status: 500 });
+    return NextResponse.json(
+      { message: "Something went wrong!" },
+      { status: 500 }
+    );
   }
 }
 
@@ -52,14 +72,20 @@ export async function POST(nextRequest: NextRequest) {
     if (encryptedJwt !== undefined) {
       const profileUpdateData: ProfileUpdateData = await nextRequest.json();
 
-      const { payload, protectedHeader } = await jwtDecrypt(encryptedJwt, DecodeHex(process.env.SECRET_KEY!), {
-        issuer: "https://satupassword.com",
-        audience: "https://satupassword.com",
-      });
+      const { payload, protectedHeader } = await jwtDecrypt(
+        encryptedJwt,
+        DecodeHex(process.env.SECRET_KEY!),
+        {
+          issuer: "https://satupassword.com",
+          audience: "https://satupassword.com",
+        }
+      );
 
-      const [hashedPassword, hashedPasswordSalt] = HashPassword(profileUpdateData.password);
+      const [hashedPassword, hashedPasswordSalt] = HashPassword(
+        profileUpdateData.password
+      );
 
-      await GetPrismaClient().login.update({
+      await prisma.login.update({
         where: {
           id: payload.id as number,
         },
@@ -70,10 +96,15 @@ export async function POST(nextRequest: NextRequest) {
         },
       });
 
-      const [wrappingKey, wrappingKeySalt] = GenerateNewWrappingKey(profileUpdateData.password);
-      const encryptedMasterKey = EncryptAES(payload.masterKey as string, wrappingKey);
+      const [wrappingKey, wrappingKeySalt] = GenerateNewWrappingKey(
+        profileUpdateData.password
+      );
+      const encryptedMasterKey = EncryptAES(
+        payload.masterKey as string,
+        wrappingKey
+      );
 
-      await GetPrismaClient().user.update({
+      await prisma.user.update({
         where: {
           loginId: payload.id as number,
         },
@@ -97,22 +128,35 @@ export async function POST(nextRequest: NextRequest) {
         .setExpirationTime("3m")
         .encrypt(DecodeHex(process.env.SECRET_KEY!));
 
-      const nextResponse: NextResponse = NextResponse.json({ message: "Successful!" }, { status: 200 });
+      const nextResponse: NextResponse = NextResponse.json(
+        { message: "Successful!" },
+        { status: 200 }
+      );
       nextResponse.cookies.set("encryptedjwt", newEncryptedJwt, {
         httpOnly: true,
         sameSite: "strict",
         secure: true,
       });
 
-      logger.info(`User: ${payload.id} Action: UpdateProfile Message: Profile Updated Sucessfully.`);
+      logger.info(
+        `User: ${payload.id} Action: UpdateProfile Message: Profile Updated Sucessfully.`
+      );
       return nextResponse;
     }
 
-    logger.info(`Action :UpdateProfile Message: No JWT Token. Profile Update not successful.`);
-    return NextResponse.json({ message: "Something went wrong!" }, { status: 400 });
+    logger.info(
+      `Action :UpdateProfile Message: No JWT Token. Profile Update not successful.`
+    );
+    return NextResponse.json(
+      { message: "Something went wrong!" },
+      { status: 400 }
+    );
   } catch {
     logger.info(`Action :UpdateProfile Message: Internal Server Error`);
-    return NextResponse.json({ message: "Something went wrong!" }, { status: 500 });
+    return NextResponse.json(
+      { message: "Something went wrong!" },
+      { status: 500 }
+    );
   }
 }
 
@@ -121,24 +165,36 @@ export async function DELETE(nextRequest: NextRequest) {
     const encryptedJwt = nextRequest.cookies.get("encryptedjwt")?.value;
 
     if (encryptedJwt !== undefined) {
-      const { payload } = await jwtDecrypt(encryptedJwt, DecodeHex(process.env.SECRET_KEY!), {
-        issuer: "https://satupassword.com",
-        audience: "https://satupassword.com",
-      });
+      const { payload } = await jwtDecrypt(
+        encryptedJwt,
+        DecodeHex(process.env.SECRET_KEY!),
+        {
+          issuer: "https://satupassword.com",
+          audience: "https://satupassword.com",
+        }
+      );
 
-      await GetPrismaClient().login.delete({
+      await prisma.login.delete({
         where: {
           id: payload.id as number,
         },
       });
 
-      logger.info(`User: ${payload.id} Action: DeleteProfile Message: Profile Deleted Sucessfully.`);
+      logger.info(
+        `User: ${payload.id} Action: DeleteProfile Message: Profile Deleted Sucessfully.`
+      );
       return NextResponse.json({ message: "Successful!" }, { status: 200 });
     }
 
-    return NextResponse.json({ message: "Something went wrong!" }, { status: 400 });
+    return NextResponse.json(
+      { message: "Something went wrong!" },
+      { status: 400 }
+    );
   } catch {
     logger.info(`Action :DeleteProfile Message: Internal Server Error`);
-    return NextResponse.json({ message: "Something went wrong!" }, { status: 500 });
+    return NextResponse.json(
+      { message: "Something went wrong!" },
+      { status: 500 }
+    );
   }
 }
