@@ -13,7 +13,7 @@ const config = {
   testEnvironment: 'jest-environment-jsdom',
   clearMocks: true,
   preset: 'ts-jest',
-  setupFilesAfterEnv: ['<rootDir>/singleton.ts']
+  setupFilesAfterEnv: ['<rootDir>/src/__test__/singleton.ts']
 }
 
 // createJestConfig is exported this way to ensure that next/jest can load the Next.js config which is async
