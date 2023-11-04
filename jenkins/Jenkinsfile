@@ -28,10 +28,16 @@ pipeline {
             }
         }
         
+        stage('Setup Virtual Environment') {
+            steps {
+                echo 'Setting up virtual environment...'
+                sh 'python3 -m venv /home/student50/selenium_test/venv'
+            }
+        }
+
         stage('Selenium UI Test') {
             steps {
                 echo 'Running Selenium Tests...'
-                // Use the Bash shell to source the virtual environment
                 sh 'bash -c "source /home/student50/selenium_test/venv/bin/activate && python /home/student50/selenium_test/login_test.py"'
             }
         }
