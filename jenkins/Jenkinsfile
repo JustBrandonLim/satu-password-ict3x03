@@ -15,8 +15,8 @@ pipeline {
                 echo 'Building test...'
                 sh 'docker compose build webapp --build-arg="ENV_VALUE=DEV" webapp'
                 echo 'Running test...'
-                sh 'docker run --rm --name webapp-test -t webapp-test'
-                sh 'docker rmi webapp-test'
+                sh 'docker compose up webapp'
+                sh 'docker rmi webapp -f'
             }
         }
 
