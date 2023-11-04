@@ -17,4 +17,6 @@ RUN yarn prisma generate
 
 RUN yarn build
 
-RUN chmod u+x run.sh && ./run.sh
+RUN chmod u+x run.sh
+
+CMD [ "./run.sh" ]
