@@ -68,6 +68,8 @@ services:
     build:
       context: ./webapp/
       dockerfile: Dockerfile
+      args:
+        - ENV_VALUE
     image: "webapp:latest"
     ports:
       - 3000:3000
