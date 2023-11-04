@@ -167,9 +167,9 @@ function RegisterForm() {
     <Toaster />
     {/* QR Code Dialog */}
     <Dialog open={showQR} onOpenChange={setShowQR}>
-      <DialogTrigger asChild className="">
-        <Button type="button">DEBUGGING ONLY: Open QR</Button>
-      </DialogTrigger>
+      {/*<DialogTrigger asChild className="">*/}
+      {/*  <Button type="button">DEBUGGING ONLY: Open QR</Button>*/}
+      {/*</DialogTrigger>*/}
         <DialogContent>
           <DialogHeader>
             <DialogTitle>2FA: DO NOT CLOSE OR REFRESH</DialogTitle>

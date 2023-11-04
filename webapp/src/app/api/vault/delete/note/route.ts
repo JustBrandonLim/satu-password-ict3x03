@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { jwtDecrypt } from "jose";
 import { DecodeHex } from "@libs/enc-dec";
-import { GetPrismaClient } from "@libs/prisma";
+import prisma from "@libs/prisma";
 import logger from "@libs/logger";
 
 interface VaultDeleteNoteData {
@@ -15,18 +15,22 @@ export async function POST(nextRequest: NextRequest) {
     if (encryptedJwt !== undefined) {
       const vaultDeleteNoteData: VaultDeleteNoteData = await nextRequest.json();
 
-      const { payload, protectedHeader } = await jwtDecrypt(encryptedJwt, DecodeHex(process.env.SECRET_KEY!), {
-        issuer: "https://satupassword.com",
-        audience: "https://satupassword.com",
-      });
+      const { payload, protectedHeader } = await jwtDecrypt(
+        encryptedJwt,
+        DecodeHex(process.env.SECRET_KEY!),
+        {
+          issuer: "https://satupassword.com",
+          audience: "https://satupassword.com",
+        }
+      );
 
-      const user = await GetPrismaClient().user.findUniqueOrThrow({
+      const user = await prisma.user.findUniqueOrThrow({
         where: {
           loginId: payload.id as number,
         },
       });
 
-      await GetPrismaClient().note.delete({
+      await prisma.note.delete({
         where: {
           id: vaultDeleteNoteData.id,
           userId: user.id,
@@ -36,11 +40,19 @@ export async function POST(nextRequest: NextRequest) {
       logger.info(`User: ${payload.id} Message: Note deleted successfully.`);
       return NextResponse.json({ message: "Successful!" }, { status: 200 });
     }
-    logger.info(`Action: DeleteNote Message: No JWT Token. Note delete not successful`);
+    logger.info(
+      `Action: DeleteNote Message: No JWT Token. Note delete not successful`
+    );
 
-    return NextResponse.json({ message: "Something went wrong!" }, { status: 400 });
+    return NextResponse.json(
+      { message: "Something went wrong!" },
+      { status: 400 }
+    );
   } catch {
     logger.info(`Action :DeleteNote Message: Internal Server Error`);
-    return NextResponse.json({ message: "Something went wrong!" }, { status: 500 });
+    return NextResponse.json(
+      { message: "Something went wrong!" },
+      { status: 500 }
+    );
   }
 }
