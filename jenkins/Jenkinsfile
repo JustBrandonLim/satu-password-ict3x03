@@ -29,20 +29,19 @@ pipeline {
                 echo 'Running test...'
                 sh 'docker exec webapp apt-get update'
                 sh 'docker exec webapp apt-get install libgtk2.0-0 libgtk-3-0 libgbm-dev libnotify-dev libnss3 libxss1 libasound2 libxtst6 xauth xvfb -y'
-                script {
-                    def retryCount = 2 // Number of retry attempts
-
-                    retry(retryCount) {
-                        echo "Attempt #${retryCount - currentBuild.rawBuild.retry.number + 1}"
-
-                        echo 'Running test...'
-                        sh 'docker exec webapp yarn cypress:run'
-                    }
+                try{
+                    echo 'Running test...'
+                    sh 'docker exec webapp yarn cypress:run'
+                } catch (error) {
+                    echo "First test failed, retying again..."
+                    sh 'docker exec webapp yarn cypress:run'
                 }
-                echo 'Stopping webapp in dev'
-                sh 'docker compose down webapp'
-                echo 'Cleaning up images...'
-                sh 'docker system prune -a -f'
+                finally {
+                    echo 'Stopping webapp in dev'
+                    sh 'docker compose down webapp'
+                    echo 'Cleaning up images...'
+                    sh 'docker system prune -a -f'
+                }
             }
         }
 
