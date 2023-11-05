@@ -1,6 +1,6 @@
 import { authenticator } from "otplib";
 
-describe("/api/login", () => {
+describe("API tests", () => {
   const totpSecret = "BUVBQAZZKFSCUHAL";
   let cookieValues;
 
