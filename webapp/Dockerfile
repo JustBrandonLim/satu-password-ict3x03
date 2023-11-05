@@ -18,6 +18,9 @@ RUN yarn prisma generate
 ARG ENV_VALUE=PROD
 ENV ENVIRONMENT=$ENV_VALUE
 
+RUN apt-get update
+RUN apt-get install libssl-dev
+
 RUN if [ "$ENVIRONMENT" = "PROD" ]; then \
         yarn build; \
     fi
