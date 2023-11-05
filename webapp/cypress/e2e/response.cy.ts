@@ -7,6 +7,7 @@ describe("API tests", () => {
   it("/api/login", () => {
     let otpNow = authenticator.generate(totpSecret);
 
+    // Test account that does not contain any sensitive information
     cy.request({
       method: "POST",
       url: "https://happy-williamson.cloud/api/login",
