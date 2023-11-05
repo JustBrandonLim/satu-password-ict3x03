@@ -40,10 +40,10 @@ pipeline {
                     finally {
                         echo 'Stopping webapp in dev'
                         sh 'docker compose down webapp'
-                        echo 'Cleaning up images...'
-                        sh 'docker system prune -a -f'
                     }
                 }
+                echo 'Cleaning up images...'
+                sh 'docker system prune -a -f'
             }
         }
 
