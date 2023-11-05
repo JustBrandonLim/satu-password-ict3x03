@@ -27,7 +27,6 @@ pipeline {
                 echo 'Starting webapp in dev'
                 sh 'docker compose up webapp -d'
                 sh 'docker exec webapp cp /env/.env /app'
-                sh 'docker exec webapp yarn prisma db push'
                 echo 'Running test...'
                 sh 'docker exec webapp apt-get update'
                 sh 'docker exec webapp apt-get install libgtk2.0-0 libgtk-3-0 libgbm-dev libnotify-dev libnss3 libxss1 libasound2 libxtst6 xauth xvfb -y'
