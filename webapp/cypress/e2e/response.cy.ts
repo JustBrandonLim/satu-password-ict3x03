@@ -9,7 +9,7 @@ describe("/api/login", () => {
 
     cy.request({
       method: "POST",
-      url: "http://localhost:3000/api/login",
+      url: "https://happy-williamson.cloud/api/login",
       body: {
         email: "alford@hentai.com",
         password: "12345678",
@@ -32,7 +32,7 @@ describe("/api/login", () => {
   it("/api/profile", function () {
     cy.request({
       method: "GET",
-      url: "http://localhost:3000/api/profile",
+      url: "https://happy-williamson.cloud/api/profile",
       headers: {
         Cookie: this.cookieValues,
       },
