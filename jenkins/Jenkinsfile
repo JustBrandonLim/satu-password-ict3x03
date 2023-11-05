@@ -17,7 +17,6 @@ pipeline {
                 echo 'Running test...'
                 sh 'docker compose up webapp'
                 echo 'Cleaning up images...'
-                sh 'docker system prune -a -f'
             }
         }
 
