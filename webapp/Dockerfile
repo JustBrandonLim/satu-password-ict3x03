@@ -18,6 +18,11 @@ RUN yarn prisma generate
 ARG ENV_VALUE=PROD
 ENV ENVIRONMENT=$ENV_VALUE
 
+RUN if [ "$ENVIRONMENT" = "DEV" ]; then \
+        apt-get update; \
+        apt-get install libgtk2.0-0 libgtk-3-0 libgbm-dev libnotify-dev libnss3 libxss1 libasound2 libxtst6 xauth xvfb -y; \
+    fi
+
 RUN if [ "$ENVIRONMENT" = "PROD" ]; then \
         yarn build; \
     fi
