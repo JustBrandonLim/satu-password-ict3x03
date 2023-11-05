@@ -27,9 +27,9 @@ pipeline {
             }
         }
         
-        stage('Test') {
+        stage('OWASP Dependency Check') {
             steps {
-                echo 'Testing...'
+                echo 'OWASP Dependency Check Running...'
                 dependencyCheck additionalArguments: ''' 
                     -o './'
                     -s './'
