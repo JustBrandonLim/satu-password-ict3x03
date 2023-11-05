@@ -19,7 +19,7 @@ ARG ENV_VALUE=PROD
 ENV ENVIRONMENT=$ENV_VALUE
 
 RUN apt-get update
-RUN apt-get install libssl-dev
+RUN apt-get install -y openssl
 
 RUN if [ "$ENVIRONMENT" = "PROD" ]; then \
         yarn build; \
