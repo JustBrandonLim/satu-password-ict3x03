@@ -40,6 +40,7 @@ pipeline {
                     }
                     finally {
                         echo 'Stopping webapp in dev'
+                        sh 'sleep 300'
                         sh 'docker compose down webapp'
                     }
                 }
