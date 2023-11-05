@@ -6,7 +6,7 @@ pipeline {
             steps {
                 echo "Cleaning up..."
                 sh 'docker compose down webapp'
-                sh 'docker system prune -a -f'
+                //sh 'docker system prune -a -f'
             }
         }
         
