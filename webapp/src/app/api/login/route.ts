@@ -136,7 +136,8 @@ export async function POST(nextRequest: NextRequest) {
       { message: "Incorrect email, password or otp!" },
       { status: 400 }
     );
-  } catch {
+  } catch (error) {
+    console.log(error);
     logger.info(`Action :Login Message: Internal Server Error`);
     return NextResponse.json(
       { message: "Something went wrong!" },
