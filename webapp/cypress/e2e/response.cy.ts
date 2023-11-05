@@ -1,19 +1,18 @@
 import { authenticator } from "otplib";
 
 describe("API tests", () => {
-  const totpSecret = "BUVBQAZZKFSCUHAL";
   let cookieValues;
 
   it("/api/login", () => {
-    let otpNow = authenticator.generate(totpSecret);
+    let otpNow = authenticator.generate(Cypress.env("testTotpSecret"));
 
     // Test account that does not contain any sensitive information
     cy.request({
       method: "POST",
       url: "https://happy-williamson.cloud/api/login",
       body: {
-        email: "alford@hentai.com",
-        password: "12345678",
+        email: Cypress.env("testEmail"),
+        password: Cypress.env("testPassword"),
         otp: otpNow,
       },
       headers: {
